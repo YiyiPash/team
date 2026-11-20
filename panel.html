@@ -71,6 +71,18 @@ label{display:grid;gap:4px;font-size:13px;font-weight:600}
   <section id="vNota" class="lista" hidden>
     <p class="ok" id="aviso" hidden></p>
     <div class="card" id="resumen"></div>
+    <section class="card" id="cClienta">
+      <h2>Clienta</h2>
+      <p style="margin:0" id="clientaTxt"></p>
+      <button class="btn sec" type="button" id="bAsignar">Asignar clienta</button>
+      <div id="vAsignar" class="lista" hidden>
+        <label for="qCli">Buscar clienta<input type="search" id="qCli" placeholder="Nombre, apodo, ID o WhatsApp" autocomplete="off"></label>
+        <p class="mu" id="estCli" style="margin:0"></p>
+        <div class="lista" id="clientas"></div>
+        <button class="btn sec" type="button" id="bCancelarAsig">Cancelar</button>
+      </div>
+      <p class="err" id="eAsignar" hidden></p>
+    </section>
     <form class="card" id="fCorregir">
       <h2>Corregir</h2>
       <label for="nombre">Nombre<input id="nombre" autocomplete="off"></label>
@@ -134,6 +146,7 @@ function pintar(n,msg){
     +(n.anticipo?'<div class="fila"><span>Anticipo</span><span>'+esc(dinero(n.anticipo))+'</span></div>':'')
     +n.pagos.map(p=>'<div class="fila"><span>'+esc(p.tipo)+'</span><span>'+esc(dinero(p.monto))+'</span></div>').join('')
     +(n.comentarios&&n.comentarios!=='-'?'<p class="mu" style="margin:0">'+esc(n.comentarios)+'</p>':'');
+  pintarClienta(n);
   $('fCorregir').hidden=anulada;$('fAnular').hidden=anulada||!/^D-/.test(n.id);
   $('nombre').value=n.nombre;$('correos').value=n.emails_nota;$('manual').value=n.emails_manual;
   if(!$('por').value)$('por').value=leer('yp_elaboro_alias');
@@ -141,10 +154,55 @@ function pintar(n,msg){
   AV=window.YP&&YP.avance?YP.avance($('fCorregir'),n.id):null;   // avance guardado de la corrección
   if(!msg&&AV&&AV.restaurar()){$('aviso').textContent='Seguiste donde te quedaste: todavía no está guardado.';$('aviso').hidden=false;}
   $('historial').hidden=!n.cambios.length;
-  $('historial').innerHTML='<h2>Cambios</h2>'+n.cambios.map(c=>'<div class="ev"><b>'+esc(c.accion)+'</b>'+(c.campo?' '+esc(({Nombre_Clienta:'nombre',Email_Clienta:'correo de la nota','Correos manual':'correo del manual'})[c.campo]||c.campo):'')+' · '+esc(c.por)+' · '+esc(c.fecha)+(c.despues?'<br>'+esc(c.despues):'')+(c.motivo?'<br>'+esc(c.motivo):'')+'</div>').join('');
+  $('historial').innerHTML='<h2>Cambios</h2>'+n.cambios.map(c=>'<div class="ev"><b>'+esc(c.accion)+'</b>'+(c.campo&&c.campo!=='ID_Clienta'?' '+esc(({Nombre_Clienta:'nombre',Email_Clienta:'correo de la nota','Correos manual':'correo del manual'})[c.campo]||c.campo):'')+' · '+esc(c.por)+' · '+esc(c.fecha)+(c.despues?'<br>'+esc(c.despues):'')+(c.motivo?'<br>'+esc(c.motivo):'')+'</div>').join('');
   scrollTo(0,0);
 }
 let AV=null;
+// Clienta de la nota (21/11): asignar o cambiar mientras la nota no haya dado puntos ni compras en el Pink Club
+function pintarClienta(n){
+  const c=n.clienta,anulada=n.estado==='Anulada';
+  $('cClienta').hidden=anulada&&!c;
+  const mv=(n.pink_movs||[]).filter(m=>m.tipo==='Acumula');
+  $('clientaTxt').innerHTML=c?'<b>'+esc(c.id)+' · '+esc(c.apodo)+'</b><br><span class="mu">'+esc(c.nombre)+'</span>'
+      +(mv.length?'<br><span class="mu">Pink Club: '+mv.map(m=>m.puntos?esc(m.puntos)+' puntos':'suma '+esc(dinero(m.monto))+' para activar').join(' · ')+'</span>':'')
+    :(n.id_clienta?'Tiene el ID '+esc(n.id_clienta)+', pero no está en la lista de clientas.':'Esta nota no está ligada a ninguna clienta.');
+  $('bAsignar').hidden=!n.asignable;
+  $('bAsignar').textContent=c?'Cambiar clienta':'Asignar clienta';
+  $('vAsignar').hidden=true;$('qCli').value='';$('clientas').innerHTML='';$('estCli').textContent='';error('eAsignar','');
+}
+let tCli=0,turnoCli=0;
+$('bAsignar').onclick=()=>{$('vAsignar').hidden=false;$('bAsignar').hidden=true;$('qCli').focus();};
+$('bCancelarAsig').onclick=()=>pintarClienta(actual);
+$('qCli').oninput=()=>{clearTimeout(tCli);tCli=setTimeout(buscarCli,450);};
+async function buscarCli(){
+  const q=$('qCli').value.trim(),mio=++turnoCli;
+  error('eAsignar','');
+  if(q.length<2){$('clientas').innerHTML='';$('estCli').textContent='';return;}
+  $('estCli').textContent='Buscando…';
+  try{
+    const d=await api('pink_buscar',{q});
+    if(mio!==turnoCli)return;
+    $('estCli').textContent=d.resultados.length?'Toca a la clienta correcta:':'No encontré a nadie. Si es nueva, primero regístrala.';
+    $('clientas').innerHTML=d.resultados.map(r=>'<button class="nota" type="button" data-cli="'+esc(r.id)+'" data-apodo="'+esc(r.apodo)+'"><span><b>'+esc(r.id)+' · '+esc(r.apodo)+'</b><small>'+esc(r.nombre)+(r.wa_final?' · WA …'+esc(r.wa_final):'')+'</small></span><span class="der"><small>'+esc(r.estado==='Sin cuenta'?'Sin Pink':r.estado)+'</small></span></button>').join('');
+  }catch(x){if(mio===turnoCli){$('estCli').textContent='';error('eAsignar',x.message);}}
+}
+$('clientas').onclick=async e=>{
+  const b=e.target.closest('[data-cli]');if(!b)return;
+  error('eAsignar','');
+  if(!quien())return error('eAsignar','Escribe quién hace el cambio (abajo, en Corregir).');
+  const txt=actual.clienta?'¿Cambiar la clienta de la nota '+actual.id+' de '+actual.clienta.id+' a '+b.dataset.cli+' ('+b.dataset.apodo+')?':'¿Ligar la nota '+actual.id+' a '+b.dataset.cli+' ('+b.dataset.apodo+')?';
+  if(!confirm(txt))return;
+  $('clientas').querySelectorAll('button').forEach(x=>x.disabled=true);$('estCli').textContent='Guardando…';
+  try{
+    const r=await api('consent_nota_asignar',{id:actual.id,id_clienta:b.dataset.cli,por:quien()});
+    const quienEs=b.dataset.cli+' ('+b.dataset.apodo+')';
+    const msg=r.ya?'La nota ya estaba ligada a '+quienEs+'.'
+      :'Listo: la nota quedó ligada a '+quienEs+'. '+(r.mov
+        ?(r.previa?'Es de antes del Pink Club: suma '+dinero(r.monto)+' para activar, sin puntos.':(r.puntos?'Ganó '+r.puntos+' puntos.':'Suma '+dinero(r.monto)+' para activar (todavía no completa los $999).'))+(r.founder?' ¡Ya es Founder!':'')
+        :(/no tiene cuenta Pink/.test(r.aviso||'')?'Todavía no está en el Pink Club: cuando se registre, esta nota le saldrá para vincular.':r.aviso?'Pink Club: '+r.aviso+'.':''));
+    pintar(r.nota,msg);
+  }catch(x){$('estCli').textContent='';error('eAsignar',x.message);$('clientas').querySelectorAll('button').forEach(x=>x.disabled=false);}
+};
 function aLista(){$('vNota').hidden=true;$('vLista').hidden=false;$('aLista').hidden=true;actual=null;buscar();}
 $('aLista').onclick=aLista;
 $('notas').onclick=async e=>{
