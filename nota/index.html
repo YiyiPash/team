@@ -643,8 +643,8 @@ async function cargarPorCobrar(){
 }
 function pintarCobrar(){
   const b=document.getElementById('btn-cobrar');if(!b)return;
-  const abierta=c=>tabs.some(t=>!t.registrada&&((c.id_consent&&t.consent&&t.consent.id===c.id_consent)||(c.prenota&&t.prenota===c.prenota.id)));
-  const n=_porCobrar.filter(c=>!abierta(c)).length;
+  // Cuenta también lo que ya está abierto en esta nota mientras no se registre (Luis, 20/11 noche: antes no se contaba)
+  const n=_porCobrar.length;
   b.textContent=n?`📋 Por cobrar (${n})`:'📋 Por cobrar';
   b.classList.toggle('hay',n>0);
 }
