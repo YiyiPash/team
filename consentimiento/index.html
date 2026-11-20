@@ -1,0 +1,1477 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="../sesion.js" data-pagina="consentimiento"></script>
+<title>Consentimiento Yiyi Pash</title><link rel="icon" type="image/png" sizes="32x32" href="https://yiyipash.com/team/icono-32.png"><link rel="icon" type="image/png" sizes="192x192" href="https://yiyipash.com/team/icono-192.png"><link rel="apple-touch-icon" href="https://yiyipash.com/team/icono-180.png">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Titan+One&display=swap">
+<style>
+/* Layout: una columna de celular (máx. 520px), un paso a la vez. Dos partes: Equipo (gris) y Clienta (rosa), con una pantalla de "pasa el celular" entre ellas. */
+/* Marca Yiyi Pash: rosa pastel de fondo, rosa fuerte para acentos, títulos Titan One con borde blanco, texto Montserrat. Siempre en claro. */
+:root{
+  --bg:#ffe1ee; --surface:#ffffff; --fg:#3b1f2e; --mu:#7d5468; --line:#f8c4dc;
+  --accent:#d6347f; --accent2:#ff74af; --soft:#ffd3e6; --on-accent:#ffffff;
+  --team:#5b4a63; --team-soft:#ece6f2;
+  --ok:#15803d; --ok-bg:#dcfce7; --bad:#c0262d; --warn-bg:#fef3c7; --warn-fg:#92400e;
+  --ink:#1f2937; --paper:#ffffff;
+  --font:'Montserrat',system-ui,sans-serif; --title:'Titan One','Montserrat',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px}
+.app{max-width:520px;margin:0 auto}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px 10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.logo{display:block;height:46px;width:auto}
+.where{font-size:12px;color:var(--mu);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;max-width:44vw;overflow:hidden;text-overflow:ellipsis}
+.demo{font-size:11px;font-weight:600;background:var(--warn-bg);color:var(--warn-fg);border-radius:999px;padding:2px 8px}
+.phase{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-top:10px}
+.phase.team{background:var(--team-soft);color:var(--team)}
+.phase.client{background:var(--soft);color:var(--accent)}
+.bar{display:flex;gap:4px;margin-top:8px}
+.bar i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.bar i.on{background:var(--accent)}
+.bar i.team.on{background:var(--team)}
+.stepname{font-size:12px;color:var(--mu);margin-top:6px}
+h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:#b82a6c;margin:8px 0 6px;letter-spacing:-.2px;text-wrap:balance}   /* misma letra que el Inicio (Luis, 19/11) */
+.hint{font-size:13.5px;color:var(--mu);margin:0 0 14px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:20px;box-shadow:0 2px 0 #f8c4dc;padding:16px;display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+.card h2{font-size:15px;font-weight:700;color:var(--accent);margin:0}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--mu);letter-spacing:.3px}
+label.f .opc{font-weight:400}
+input[type=text],input[type=tel],input[type=email],input[type=date],input[type=search],input[type=password],select,textarea{
+  width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font-family:inherit;font-size:16px;color:var(--fg);background:var(--surface);outline:none}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row>*{min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:8px 13px;font-family:inherit;font-size:14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:var(--on-accent);font-weight:600}
+.chip.none[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);flex-shrink:0}
+.req{color:var(--accent);font-weight:700}
+.btn{display:block;width:100%;text-align:center;padding:14px;border:none;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--on-accent);font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sec{background:var(--surface);color:var(--accent);border:1.5px solid var(--line)}
+.btn.small{display:inline-block;width:auto;padding:8px 14px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.chip:focus-visible,.where:focus-visible,.zone:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+footer.nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);
+  padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:5}
+footer.nav .in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:1fr 2fr;gap:10px}
+footer.nav .btn{padding:13px 8px;font-size:15px;line-height:1.2}
+.err{color:var(--bad);font-size:13.5px;min-height:1px}
+.result{display:flex;gap:12px;align-items:center;justify-content:space-between;border:1.5px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--surface);width:100%;text-align:left;font-family:inherit;color:var(--fg)}
+.result:hover{border-color:var(--accent)}
+.result b{display:block}
+.result small{color:var(--mu)}
+.pill{font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pill.pink{background:var(--soft);color:var(--accent)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn-fg)}
+.box{background:var(--soft);border-radius:12px;padding:12px;font-size:13.5px}
+/* Zonas */
+.zones{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.zone{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:10px;font-family:inherit;font-size:14px;cursor:pointer;text-align:left}
+.zone small{display:block;color:var(--mu);font-size:11px}
+.zgroup{font-size:12px;font-weight:600;color:var(--mu);margin:4px 0 -4px}
+.loading{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:20;color:var(--mu);font-size:14px}
+.perfo{border:1.5px solid var(--accent);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.perfo-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.perfo-h b{font-size:15px}
+.x{background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;font-family:inherit;text-decoration:underline}
+/* Entrega del celular */
+.handoff{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px}
+.handoff .ico{width:84px;height:84px;border-radius:24px;background:var(--soft);display:grid;place-items:center;font-size:40px}
+.handoff h1{font-size:34px}
+details.leer{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+details.leer summary{cursor:pointer;font-weight:600;color:var(--accent);font-size:14px}
+details.leer div{font-size:13px;color:var(--fg);margin-top:8px;max-height:280px;overflow:auto}
+details.leer li{margin-bottom:4px}
+.sigwrap{position:relative;border:2px dashed var(--line);border-radius:12px;background:var(--paper);touch-action:none}
+canvas#sig{display:block;width:100%;height:200px;border-radius:10px;cursor:crosshair;touch-action:none}
+@media (min-width:700px){canvas#sig{height:280px}}   /* iPad: más espacio para firmar con la pluma */
+.pf-acc{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pf-acc .btn{padding:9px 10px;font-size:14px}
+.pf-z{font-size:13.5px}
+.sigline{position:absolute;left:20px;right:20px;bottom:44px;border-bottom:1px solid #d1d5db;pointer-events:none}
+.sigph{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12px;color:#9ca3af;pointer-events:none}
+.summary{font-size:14px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}
+.summary dt{color:var(--mu)}
+.summary dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.done-ico{width:56px;height:56px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;font-size:28px;margin:8px auto 0}
+.center{text-align:center}
+.timeline{display:flex;flex-direction:column;gap:8px;font-size:14px}
+.timeline div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.timeline b{white-space:nowrap;text-align:right}
+/* Vista previa de la nota */
+.nota{border:1.5px solid var(--team);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.nota .ln{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.nota .ln span:last-child{color:var(--mu);text-align:right}
+.nota .pend{color:var(--warn-fg);background:var(--warn-bg);border-radius:8px;padding:6px 8px;font-size:13px}
+/* Documento (vista previa del PDF): siempre en papel blanco */
+.doc{background:var(--paper);color:var(--ink);border-radius:8px;padding:22px 20px;font-size:11.5px;line-height:1.45;box-shadow:0 2px 14px rgba(0,0,0,.12);overflow-x:auto}
+.doc h3{text-align:center;margin:0;font-size:15px;color:var(--ink)}
+.doc h4{text-align:center;margin:0 0 10px;font-size:12.5px;font-weight:600;color:var(--ink)}
+.doc ul{padding-left:18px;margin:6px 0}
+.doc table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
+.doc td{border:1px solid #e5e7eb;padding:4px 6px;vertical-align:top;color:var(--ink);font-size:11px}
+.doc .sec{background:#fdf2f8;font-weight:700}
+.doc .firma{margin-top:14px;text-align:center}
+.doc .firma img{max-width:220px;height:auto;display:block;margin:0 auto -6px}
+.doc .firma .ln{border-top:1px solid #111;width:70%;margin:0 auto;padding-top:3px}
+.doc .marca{display:flex;flex-direction:column;gap:2px;margin-top:6px;font-size:11px}
+/* Campo que falta: se marca en rojo y se lleva la vista ahí */
+.bad,input.bad,select.bad,textarea.bad{border-color:var(--bad)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 22%,transparent)}
+.card.bad,.perfo.bad,.sigwrap.bad,label.check.bad{border:1.5px solid var(--bad);border-radius:12px}
+label.check.bad{padding:6px}
+/* Zona elegida */
+.zone[aria-pressed="true"]{border-color:var(--accent);background:var(--soft)}
+.zone small.sel{color:var(--accent);font-weight:600}
+/* Ventanita para elegir el lado, abre abajo, junto al dedo */
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center}
+.sheet-in{background:var(--surface);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
+.sheet-in h2{margin:0;font-size:18px;color:var(--fg)}
+.sheet-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.sheet-btns .btn{padding:14px 6px}
+/* Aviso corto que aparece abajo */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:25;max-width:min(92vw,480px);
+  background:var(--fg);color:var(--bg);border-radius:12px;padding:10px 14px;font-size:14px;box-shadow:0 4px 18px rgba(0,0,0,.2)}
+.toast.err{background:var(--bad);color:#fff}
+/* Resumen antes de firmar */
+.acepta{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.acepta div{display:flex;gap:8px;align-items:flex-start}
+.acepta .si{color:var(--ok);font-weight:700}
+.acepta .no{color:var(--mu);font-weight:700}
+.pdfwait{opacity:.6;pointer-events:none}
+.lbl{font-size:12px;font-weight:600;color:var(--mu);letter-spacing:.3px}
+.positiva{background:#fde8e8;color:var(--bad);border-left:5px solid var(--bad);border-radius:10px;padding:8px 10px;font-size:14px}
+.leerbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.leerbtns .btn{padding:12px 8px;font-size:14px}
+.lector{position:fixed;inset:0;z-index:40;background:rgba(59,31,46,.45);display:flex;align-items:flex-end;justify-content:center}
+.lector-in{background:var(--surface);width:100%;max-width:560px;height:92vh;border-radius:22px 22px 0 0;display:flex;flex-direction:column;gap:10px;
+  padding:16px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.lector-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.lector-h h2{margin:0;font-family:var(--font);font-weight:700;font-size:18px;color:var(--accent)}
+.lector-txt{flex:1;overflow:auto;font-size:14px;line-height:1.55;border-top:1px solid var(--line);padding-top:10px;overscroll-behavior:contain}
+.lector-txt ul,.lector-txt ol{padding-left:20px}
+.lector-txt li{margin-bottom:6px}
+.lector-txt h3{font-size:15px;color:var(--accent);margin:14px 0 4px}
+@media (max-width:380px){.row{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.step{animation:in .18s ease-out}@keyframes in{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}}
+/* Casillas que marca la clienta al firmar: grandes y visibles */
+.check.grande{font-size:15.5px;padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--surface);gap:12px;align-items:center}
+.check.grande input{width:28px;height:28px;margin-top:0}
+.check.grande:has(input:checked){border-color:var(--accent);background:var(--soft)}
+/* Pantalla de espera: no deja tocar nada mientras se guarda o se carga */
+.cargando{position:fixed;inset:0;z-index:60;background:rgba(255,225,238,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-weight:600;color:var(--accent);text-align:center;padding:24px}
+.spin{width:46px;height:46px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--accent);animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.zlista{display:flex;flex-direction:column;gap:10px;max-height:58vh;overflow:auto;overscroll-behavior:contain}
+.sigbtns{display:flex;gap:8px}
+a.where{text-decoration:none;color:var(--accent);font-weight:600}
+/* Página única: secciones numeradas, como el formulario de Google */
+.fsec{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;box-shadow:0 2px 0 #f8c4dc;padding:14px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.fsec h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--team);display:flex;gap:8px;align-items:center}
+.fsec h2 .n,.paso h3 .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12.5px;letter-spacing:0;flex:none}
+.fsec h2 .n{background:var(--team-soft)}
+.q{font-size:14px;font-weight:600;margin:4px 0 -2px}
+.zrow{display:grid;grid-template-columns:1.5fr 1fr auto;gap:6px;align-items:center}
+.zrow .x{font-size:20px;text-decoration:none;padding:4px 8px}
+.zfila{display:flex;flex-direction:column;gap:6px}
+/* Recorrido con la clienta: se lee como el documento */
+.docv{background:var(--paper);color:var(--ink);border-radius:16px;box-shadow:0 2px 14px rgba(120,30,70,.12);padding:16px;display:flex;flex-direction:column;gap:14px}
+.paso{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:14px}
+.paso:first-child{border-top:none;padding-top:0}
+.paso h3{margin:0;font-size:16px;color:var(--accent);display:flex;gap:8px;align-items:center}
+.paso h3 .n{background:var(--soft)}
+.dice{font-size:12.5px;color:var(--mu);font-style:italic;margin:0}
+.pasobtns{display:flex;gap:8px;flex-wrap:wrap}
+.docv ul{margin:0;padding-left:20px;font-size:14px}
+.decl p{margin:0 0 8px;font-size:14px;line-height:1.55}
+.decl .datos{font-size:12.5px;color:var(--mu);font-style:italic}
+.indic ul{margin:0;padding-left:20px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+</style>
+
+<div class="loading" id="loading">Cargando…</div>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <img class="logo" alt="Yiyi Pash" src="data:image/png;base64,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">
+      <span style="display:flex;gap:6px;align-items:center">
+        <span class="demo" id="demoTag" hidden>DEMO</span>
+        <a class="where" href="../" id="inicioBtn">⌂ Inicio</a>
+        <button class="where" id="whereBtn" type="button"></button>
+      </span>
+    </div>
+    <span class="phase team" id="phase">Equipo</span>
+    <div class="bar" id="bar"></div>
+    <div class="stepname" id="stepname"></div>
+  </header>
+
+  <!-- ═══════════ EQUIPO: solo la primera vez en este celular ═══════════ -->
+  <section class="step" data-step="0" data-part="team" data-name="Antes de empezar">
+    <a href="../" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none">← Inicio</a>
+    <h1>Antes de empezar</h1>
+    <p class="hint">Solo se pide una vez en este celular.</p>
+    <div class="card">
+      <label class="f" id="claveWrap">Clave del equipo<input type="password" id="clave" autocomplete="off" placeholder="La misma de la nota"></label>
+    </div>
+  </section>
+
+  <!-- ═══════════ EQUIPO: todo en una página ═══════════ -->
+  <section class="step" data-step="2" data-part="team" data-name="Lo llena el equipo">
+    <div class="box" id="borr1" hidden style="margin-bottom:12px"></div>
+    <h1 id="formTit">Generar consentimiento</h1>
+    <p class="hint">Llénalo con ella, preguntándole cada punto. Al final se lo enseñas y firma.</p>
+
+    <div class="fsec" id="secIndic"><h2><span class="n">!</span>Indicaciones previas</h2>
+      <p class="hint" style="margin:0">Léeselas antes de pedir sus datos.</p>
+      <div id="indForm" class="indic"></div>
+    </div>
+
+    <div class="fsec" id="secAtencion"><h2><span class="n">1</span>Atención</h2>
+      <div class="row">
+        <label class="f">Lugar<select id="lugar"></select></label>
+        <label class="f">Quién atiende<select id="atiende"></select></label>
+      </div>
+      <label class="f" id="lugarOtroWrap" hidden>¿Cuál lugar?<input type="text" id="lugarOtro" placeholder="Ej. Bazar de la UAM"></label>
+      <label class="f" id="perfoWrap">¿Quién perfora?<select id="perforadora"></select></label>
+    </div>
+
+    <div class="fsec" id="secClienta"><h2><span class="n">2</span>Clienta</h2>
+      <label class="f">¿Ya ha venido? Búscala por nombre o WhatsApp<input type="search" id="q" placeholder="Ej. Ana o 5512345678" autocomplete="off"></label>
+      <div id="results" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="box" id="clientaBox" hidden></div>
+      <div class="box" id="reemplazoBox" hidden></div>
+      <div class="row">
+        <label class="f">¿Cómo le gusta que le digan?<input type="text" id="apodo" autocomplete="off"></label>
+        <label class="f">Fecha de nacimiento<input type="date" id="fn" data-nac></label>
+      </div>
+      <label class="f">Nombre completo<input type="text" id="nombre" autocomplete="off"></label>
+      <div class="row">
+        <label class="f">WhatsApp (10 dígitos)<input type="tel" id="wa" inputmode="numeric" placeholder="5512345678"></label>
+        <label class="f">Correo <span class="opc">(opcional)</span><input type="email" id="email"></label>
+      </div>
+      <div id="tutorCard" hidden style="display:flex;flex-direction:column;gap:10px">
+        <p class="lbl" style="margin:4px 0 0">Es menor de edad: datos de su mamá, papá o tutor</p>
+        <label class="f">Nombre completo del tutor<input type="text" id="tnombre"></label>
+        <div class="row">
+          <label class="f">Parentesco<input type="text" id="tpar" placeholder="Madre, padre…"></label>
+          <label class="f">WhatsApp del tutor<input type="tel" id="twa" inputmode="numeric"></label>
+        </div>
+        <label class="f" id="tfnWrap" hidden>Fecha de nacimiento del tutor<input type="date" id="tfn" data-nac></label>
+      </div>
+    </div>
+
+    <div class="fsec" id="secServicio"><h2><span class="n">3</span>Servicio y zonas</h2>
+      <div class="seg" id="segServicio"><button class="chip" type="button" data-v="Perforación" aria-pressed="true">💎 Perforación</button><button class="chip" type="button" data-v="Tatuaje" aria-pressed="false">🖋️ Tatuaje</button></div>
+      <p class="hint" id="perfHint" style="margin:0">Elige cada zona y su lado. La pieza se elige después, en la nota.</p>
+      <div id="bloqueTat" hidden><div id="tats" style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px"></div>
+        <button class="btn sec small" type="button" id="btnOtroTat">+ Otro tatuaje</button></div>
+      <div id="bloquePerfo" style="display:flex;flex-direction:column;gap:8px">
+        <div id="perfos" style="display:flex;flex-direction:column;gap:8px"></div>
+        <button class="btn sec small" type="button" id="btnOtraZona" style="align-self:flex-start">+ Agregar otra zona</button>
+      </div>
+    </div>
+
+    <div class="fsec" id="secSalud"><h2><span class="n">4</span>Salud</h2>
+      <p class="hint" style="margin:0">Solo la ven las perforadoras y administración.</p>
+      <div class="box" id="saludPrev" hidden></div>
+      <label class="f">Tipo de sangre<select id="sangre">
+        <option value="">Elegir…</option><option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+        <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>No sé</option></select></label>
+      <p class="q">¿Padece alguna enfermedad?</p><div class="chips" id="enf"></div>
+      <input type="text" id="enfOtra" placeholder="Otra enfermedad (escribe cuál)">
+      <p class="q">¿Alguna condición importante?</p><div class="chips" id="cond"></div>
+      <input type="text" id="condOtra" placeholder="Otra condición (escribe cuál)">
+      <p class="q">¿Le da miedo alguno de estos?</p><div class="chips" id="fob"></div>
+      <p class="q">¿Tiene alguna alergia?</p><div class="chips" id="ale"></div>
+      <input type="text" id="alergias" placeholder="Otra alergia (escribe cuál)">
+      <div class="row">
+        <div class="f" style="display:flex;flex-direction:column;gap:6px"><span class="lbl">¿Toma algún medicamento?</span><div class="chips" id="med"></div><input type="text" id="meds" placeholder="¿Cuál? (escríbelo)"></div>
+        <label class="f">Comentarios <span class="opc">(opcional)</span><input type="text" id="coment"></label>
+      </div>
+    </div>
+
+    <div class="fsec" id="secPreguntas"><h2><span class="n">5</span>Preguntas</h2>
+      <p class="q">¿Le mandamos el manual de cuidados por WhatsApp?</p>
+      <div class="seg" id="segManual"><button class="chip" type="button" data-v="si">Sí</button><button class="chip" type="button" data-v="no">No</button></div>
+      <label class="f">Notas del equipo <span class="opc">(opcional, solo las ve el equipo)</span><textarea id="notasEquipo" placeholder="Algo que no esté contemplado arriba"></textarea></label>
+    </div>
+    <div id="despuesWrap" style="margin-top:12px">
+      <button class="btn sec" type="button" id="btnDespues">Guardar y firmar después</button>
+      <p class="hint" style="margin:6px 0 0">Si todavía no deciden las zonas o no ha visto el material: queda en <b>Por firmar</b>.</p>
+    </div>
+    <div id="textoConsent" hidden></div>
+  </section>
+
+  <!-- ═══════════ CON LA CLIENTA: se le enseña en el orden de siempre y firma (sin casillas) ═══════════ -->
+  <section class="step" data-step="7" data-part="client" data-name="Revisión y firma">
+    <h1>Revisión y firma</h1>
+    <p class="hint" id="firmaHint">Léelo con ella en este orden. Al firmar acepta todo lo de la declaración; si no está de acuerdo, no firma y no se hace el procedimiento.</p>
+    <div class="docv">
+      <div class="paso"><h3><span class="n">1</span>Estos son tus datos</h3>
+        <p class="dice">"Estos son tus datos, ¿los confirmas?"</p>
+        <dl class="summary" id="resumen"></dl>
+        <div class="acepta" id="aceptas"></div>
+        <div class="pasobtns"><button class="btn sec small" type="button" id="btnCorregir">Corregir</button><button class="btn sec small" type="button" id="btnZonas">✏️ Cambiar zonas</button></div>
+      </div>
+      <div class="paso"><h3><span class="n">2</span>El material que se usa</h3>
+        <p class="dice">"Aquí viene el material, nuevo, cerrado y estéril."</p>
+        <div id="matTxt"></div>
+      </div>
+      <div class="paso"><h3><span class="n">3</span>Indicaciones y declaración</h3>
+        <p class="dice">"Y finalmente viene la declaración."</p>
+        <details class="leer"><summary>Indicaciones previas (tocar para leer)</summary><div id="indTxt"></div></details>
+        <div class="decl" id="declTxt"></div>
+      </div>
+      <div class="paso"><h3><span class="n">4</span>Tu firma</h3>
+        <p class="dice">"De este lado va tu firma, por favor."</p>
+        <div class="sigwrap" id="sigwrap"><canvas id="sig"></canvas><div class="sigline"></div><div class="sigph" id="sigph">Firma aquí</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="hint" style="margin:0" id="firmante"></span>
+          <span class="sigbtns"><button class="btn sec small" type="button" id="deshacer">↶ Quitar último trazo</button><button class="btn sec small" type="button" id="limpiar">Borrar</button></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ EQUIPO: CIERRE ═══════════ -->
+  <section class="step" data-step="9" data-part="team" data-name="Listo">
+    <div class="done-ico">✓</div>
+    <a href="../" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none">← Inicio</a>
+    <h1 class="center" id="listoTit">Consentimiento guardado</h1>
+    <p class="hint center" id="listoHint"></p>
+    <button class="btn" type="button" id="btnFirmarYa" hidden style="margin-bottom:12px">Firmar ahora</button>
+    <div class="box" id="alertaSalud" hidden></div>
+    <div class="card">
+      <h2>Sigue: la nota</h2>
+      <div class="nota" id="notaPrev"></div>
+      <button class="btn" type="button" id="btnNota">Continuar a la nota</button>
+      <p class="hint" style="margin:0" id="notaDemo" hidden>En la demo no se abre la nota. Ya conectado, se abre Notas Digitales con todo esto puesto y solo eliges las piezas.</p>
+    </div>
+    <a class="btn sec" id="waBtn" target="_blank" rel="noopener" style="margin-bottom:12px">Mandar manual de cuidados por WhatsApp</a>
+    <a class="btn sec" id="pdfBtn" target="_blank" rel="noopener" style="margin-bottom:12px" hidden>Ver el PDF firmado</a>
+    <a class="btn sec" href="../fichas.html" style="margin-bottom:12px">Ver las fichas del día (para la perforadora)</a>
+    <div class="card">
+      <h2>Recordatorios programados</h2>
+      <div class="timeline" id="recordatorios"></div>
+    </div>
+    <div class="card">
+      <h2>Lo que se guardó</h2>
+      <div class="timeline" id="guardado"></div>
+    </div>
+    <div class="card" id="docCard">
+      <h2>Así queda el PDF</h2>
+      <div class="doc" id="doc"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ EQUIPO: POR FIRMAR ═══════════ -->
+  <section class="step" data-step="10" data-part="team" data-name="Por firmar">
+    <a href="../" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none">← Inicio</a>
+    <div class="box" id="borr10" hidden style="margin:10px 0 12px"></div>
+    <h1>Por firmar</h1>
+    <p class="hint">La clienta firma cuando ya están decididas sus zonas y vio el material nuevo, cerrado y estéril. Antes de firmar todavía se pueden cambiar las zonas.</p>
+    <div id="pfLista" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
+    <button class="btn sec" type="button" id="pfNuevo">+ Generar consentimiento</button>
+  </section>
+
+  <p class="err" id="err"></p>
+</div>
+
+<!-- Se fue sin firmar: motivo con botones y texto libre -->
+<div class="sheet" id="nfSheet" hidden>
+  <div class="sheet-in" role="dialog" aria-modal="true" aria-labelledby="nfTit">
+    <h2 id="nfTit">Se fue sin firmar</h2>
+    <p class="hint" style="margin:0" id="nfQuien"></p>
+    <div class="chips" id="nfChips"></div>
+    <label class="f"><span id="nfLbl">Comentario <span class="opc">(opcional)</span></span><textarea id="nfTxt" placeholder="Ej. regresa el sábado"></textarea></label>
+    <p class="err" id="nfErr" style="margin:0"></p>
+    <button class="btn" type="button" id="nfOk">Guardar como no firmado</button>
+    <button class="btn sec" type="button" id="nfCancel">Cancelar</button>
+  </div>
+</div>
+<!-- "Es nueva": antes de crear otro ID, se revisa si ya la tenemos -->
+<div class="sheet" id="dupSheet" hidden>
+  <div class="sheet-in" role="dialog" aria-modal="true" aria-labelledby="dupTit">
+    <h2 id="dupTit">¿Ya había venido?</h2>
+    <p class="hint" style="margin:0">Encontramos a alguien con datos parecidos. ¿Es ella?</p>
+    <div id="dupLista" style="display:flex;flex-direction:column;gap:8px"></div>
+    <button class="btn sec" type="button" id="dupNo">No, es otra persona</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-in" role="dialog" aria-modal="true" aria-labelledby="sheetTit">
+    <h2 id="sheetTit"></h2>
+    <p class="hint" style="margin:0">¿De qué lado?</p>
+    <div class="sheet-btns" id="sheetBtns"></div>
+    <button class="btn sec" type="button" id="sheetCancel">Cancelar</button>
+  </div>
+</div>
+<!-- Cambiar zonas antes de firmar: solo las que ya se eligieron, sin el menú completo -->
+<div class="sheet" id="zSheet" hidden>
+  <div class="sheet-in" role="dialog" aria-modal="true" aria-labelledby="zTit">
+    <h2 id="zTit">Zonas</h2>
+    <p class="hint" style="margin:0">Cambia la zona o el lado de cada una. Si no cambia nada, solo confirma.</p>
+    <div class="zlista" id="zLista"></div>
+    <button class="btn sec" type="button" id="zAgregar">+ Agregar zona</button>
+    <p class="err" id="zErr" style="margin:0"></p>
+    <button class="btn" type="button" id="zOk">Confirmar zonas</button>
+  </div>
+</div>
+<div class="cargando" id="cargando" hidden><div class="spin"></div><div id="cargandoTxt">Cargando…</div></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<!-- Lector: consentimiento, aviso y términos, dentro del formulario para no perder lo llenado -->
+<div class="lector" id="lector" hidden>
+  <div class="lector-in" role="dialog" aria-modal="true" aria-labelledby="lectorTit">
+    <div class="lector-h"><h2 id="lectorTit"></h2><button class="btn small" type="button" id="lectorCerrar">Cerrar</button></div>
+    <div class="lector-txt" id="lectorTxt"></div>
+    <button class="btn" type="button" id="lectorListo">Listo, ya lo leí</button>
+  </div>
+</div>
+
+<footer class="nav"><div class="in">
+  <button class="btn sec" type="button" id="back">Atrás</button>
+  <button class="btn sec" type="button" id="despuesNav" hidden>Guardar y firmar después</button>
+  <button class="btn" type="button" id="next">Siguiente</button>
+</div></footer>
+
+<script>
+// ── Configuración ────────────────────────────────────────────────────
+// En GitHub, las listas (lugares, equipo, zonas, servicios y texto) vienen del servidor (consent_config).
+// Lo de aquí abajo es solo para la demo.
+const CFG={
+  url:'https://script.google.com/macros/s/AKfycbwJhAO5anQhZ_tzZ7f6jSE133AxFzSLU2rXkVH1vdtH9SlkMlbnvdjbez3786HIEhAf/exec',
+  notas:'../nota/',
+  manual:'https://drive.google.com/drive/folders/1OQgdBLqUJ-0H-Aib08YtvjkkbQwQ59TX?usp=drive_link',
+  lugares:['Yiyipash Studio','Peace & Love Stores','Casa OKO','Peace & Love Market','Catarsis Bazar'],
+  equipo:[{id:'ART-001',alias:'Yiyi'},{id:'STA-001',alias:'Luis'},{id:'',alias:'Cam'},{id:'ART-003',alias:'Kat'}],
+  perforadoras:[{id:'ART-001',alias:'Yiyi',nombre:'Yoltic Yarel Ballesteros Bravo'},{id:'ART-003',alias:'Kat',nombre:'Katia Ximena Lopez Pacheco'}],
+  enfermedades:['Ansiedad','Dermatitis','Hipertensión','Presión baja','Diabetes','Resistencia a la insulina','Hipotiroidismo','Cicatrización queloide','Problemas de coagulación','Anemia','Epilepsia','Lupus'],
+  condiciones:['Embarazo','Lactancia','Tratamiento inmunodepresivo (radioterapia, quimioterapia)','Tomo anticoagulantes','Enfermedad infecciosa, fiebre o gripe'],
+  fobias:['Sangre','Agujas (cánulas o catéteres)','Tijeras o pinzas'],
+  alergias:['Níquel u otros metales','Látex','Medicamentos','Yodo o antisépticos','Anestesia local'],
+  // Zonas: servicio de la nota, lados permitidos y días de cuidado [seguimiento, retiro] (borrador)
+  zonas:[
+    // Ya conectado, salen de la columna Zonas del catálogo de servicios; "(centro)" = solo se hace al centro.
+    {z:'Lóbulo',g:'Oreja',serv:'PIR-001'},{z:'Lóbulo superior',g:'Oreja',serv:'PIR-001'},{z:'Helix',g:'Oreja',serv:'PIR-001'},
+    {z:'Tragus',g:'Oreja',serv:'PIR-002'},{z:'Antitragus',g:'Oreja',serv:'PIR-002'},{z:'Industrial',g:'Oreja',serv:'PIR-002'},
+    {z:'Conch',g:'Oreja',serv:'PIR-002'},{z:'Daith',g:'Oreja',serv:'PIR-002'},
+    {z:'Flat',g:'Oreja',serv:'PIR-002'},{z:'Rook',g:'Oreja',serv:'PIR-002'},
+    {z:'Forward helix',g:'Oreja',serv:'PIR-002'},{z:'Midi helix',g:'Oreja',serv:'PIR-002'},{z:'Antihelix',g:'Oreja',serv:'PIR-002'},
+    {z:'Nostril',g:'Cara',serv:'PIR-003'},{z:'Septum',g:'Cara',serv:'PIR-004',lados:['Centro']},{z:'Ceja',g:'Cara',serv:'PIR-006'},
+    {z:'Nipple',g:'Cuerpo',serv:'PIR-005'},{z:'Ombligo',g:'Cuerpo',serv:'PIR-007',lados:['Centro']},
+  ],
+  ladosDefault:['Izquierdo','Derecho','Ambos','Centro'],
+  ladosTodos:['Izquierdo','Derecho','Ambos','Centro'],
+  servicios:{'PIR-001':['Perforación oreja básica',140],'PIR-002':['Perforación oreja avanzada',160],'PIR-003':['Perforación nostril',160],'PIR-004':['Perforación septum',160],'PIR-005':['Perforación nipple',160],'PIR-006':['Perforación ceja',160],'PIR-007':['Perforación navy',160]},
+  dias:{seguimiento:30,retiro:14},
+  tamanos:[{sku:'TAT-001',nombre:'Tatuaje Pequeño (<5cm)',precio:500},{sku:'TAT-002',nombre:'Tatuaje Mediano (5-15cm)',precio:1500},{sku:'TAT-003',nombre:'Tatuaje Grande (>15cm)',precio:4000}],
+  manual_tatuaje:'',
+};
+CFG.tamanos.forEach(x=>CFG.servicios[x.sku]=[x.nombre,x.precio]);
+// Demo fuera de GitHub (por ejemplo, la vista previa) o con ?demo en la liga
+const DEMO=!/(\.github\.io|(^|\.)yiyipash\.com)$/.test(location.hostname)||/[?&]demo/.test(location.search);
+// Datos de ejemplo para el modo demo. En producción vienen del servidor.
+const DEMO_PERSONAS=[
+  {id:'LUI-0001',apodo:'Luis',nombre:'Luis Enrique Lopez Pacheco',fn:'2002-08-16',wa:'5547061079',email:'luiselp0216@gmail.com',pink:{estado:'Registrada',puntos:0},ultima:null},
+  {id:'EJE-0001',apodo:'Ana (ejemplo)',nombre:'Ana Ejemplo Ficticia',fn:'2011-03-02',wa:'5500000000',email:'',pink:null,
+   tutor:{nombre:'María Ficticia',par:'Madre',wa:'5500000001'},
+   ultima:{fecha:'2026-05-14',sangre:'O+',enf:['Ansiedad'],cond:[],fob:['Agujas (cánulas o catéteres)'],alergias:'Níquel',meds:'',enfOtra:'',condOtra:''}},
+];
+
+// ── Estado ───────────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dig=s=>String(s||'').replace(/\D/g,'');
+const S={step:0,persona:null,salud:{enf:[],cond:[],fob:[],ale:[],med:[]},perfos:[],servicio:'Perforación',tats:[],fotos:'si',manual:null,pink:null,firmaVacia:true,res:null};
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const steps=[];document.querySelectorAll('.step').forEach(x=>steps[+x.dataset.step]=x);
+const LAST=steps.length-1;
+const zona=z=>CFG.zonas.find(x=>x.z===z);
+const servNom=sku=>(CFG.servicios[sku]||['Sin servicio en el catálogo',''])[0];
+const servPrecio=sku=>(CFG.servicios[sku]||['',''])[1];
+const ladosDe=p=>p.custom?CFG.ladosTodos:((zona(p.zona)||{}).lados||CFG.ladosDefault);
+
+// ── Servidor ─────────────────────────────────────────────────────────
+async function api(action,data){
+  const res=await fetch(CFG.url,{method:'POST',headers:{'Content-Type':'text/plain'},redirect:'follow',
+    body:JSON.stringify(Object.assign({action,clave:store.get('yp_pink_clave')||''},data||{}))});
+  const j=await res.json();
+  if(!j.ok){if(/Clave de equipo/i.test(j.error||'')){try{localStorage.removeItem('yp_pink_clave')}catch(e){}}throw new Error(j.error||'Error del servidor');}
+  return j.data;
+}
+// Abre al momento con las últimas listas de este celular; las nuevas llegan por detrás y las reemplazan
+async function cargarConfig(){
+  let guardada=null;
+  try{guardada=JSON.parse(store.get('yp_cache_config')||'null');}catch(e){}
+  const pedido=fetch(CFG.url+'?action=consent_config',{redirect:'follow'}).then(r=>r.json()).then(j=>{
+    if(!j.ok)throw new Error(j.error||'No pude cargar las listas');
+    store.set('yp_cache_config',JSON.stringify(j.data));
+    usarConfig(j.data);
+  });
+  if(guardada){usarConfig(guardada);pedido.catch(()=>{});return;}
+  await pedido;
+}
+function usarConfig(c){
+  CFG.lugares=c.lugares;CFG.equipo=c.equipo;CFG.perforadoras=c.perforadoras;CFG.manual=c.manual;CFG.dias.seguimiento=c.dias.seguimiento;
+  CFG.zonas=c.zonas.map(z=>({z:z.z,g:z.grupo,serv:z.serv,lados:z.lados||undefined}));
+  if(c.lados&&c.lados.length)CFG.ladosDefault=c.lados;   // Config → Lados_Zona
+  CFG.servicios={};c.servicios.forEach(x=>CFG.servicios[x.sku]=[x.nombre,x.precio]);
+  CFG.tamanos=c.tamanos||[];CFG.tamanos.forEach(x=>CFG.servicios[x.sku]=[x.nombre,x.precio]);
+  CFG.textoP=c.texto;CFG.textoT=c.texto_tatuaje||c.texto;CFG.manual_tatuaje=c.manual_tatuaje||'';
+  $('textoConsent').innerHTML=c.texto;
+}
+
+function edad(iso){const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return null;const h=new Date();let e=h.getFullYear()-+m[1];if(h.getMonth()+1<+m[2]||(h.getMonth()+1==+m[2]&&h.getDate()<+m[3]))e--;return e;}
+function fmt(d){return d.toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});}
+function sumaDias(n){const d=new Date();d.setDate(d.getDate()+n);return d;}
+const atiende=()=>store.get('yp_elaboro_alias')||'—';
+const lugar=()=>store.get('yp_lugar')==='Otro'?(store.get('yp_lugar_otro')||'Otro'):(store.get('yp_lugar')||'');
+// "Ambos" son dos perforaciones: una por lado
+const perfosPorLado=()=>S.perfos.flatMap(p=>p.lado==='Ambos'?[{...p,lado:'Izquierdo'},{...p,lado:'Derecho'}]:[p]);
+
+// ── Pasos ────────────────────────────────────────────────────────────
+// 0: clave (solo la primera vez) · 2: todo lo llena el equipo en una página · 7: revisión y firma con la clienta
+// 9: final del equipo · 10: Por firmar. (Los demás números ya no existen: Luis, 19/11.)
+const BACK_OK={7:2};
+function show(n){
+  S.step=n;$('err').textContent='';
+  steps.forEach((s,i)=>{if(s)s.hidden=i!==n;});
+  const cli=n===7;
+  $('phase').className='phase '+(cli?'client':'team');
+  $('phase').textContent=cli?'Para la clienta':'Equipo';
+  const vis=[2,7,9];
+  $('bar').innerHTML=vis.map(i=>`<i class="${i!==7?'team':''} ${i<=n?'on':''}"></i>`).join('');
+  $('bar').hidden=n===10;
+  $('stepname').textContent=n?steps[n].dataset.name:'';
+  $('back').hidden=atras(n)===undefined;
+  const firmar=S.modo==='firmar';
+  const labels={0:'Guardar clave',2:firmar?'Listo, volver a la firma':'Revisar y firmar',7:'Firmar y terminar',9:firmar?'Volver a Por firmar':'Siguiente clienta'};
+  $('next').textContent=labels[n]||'Siguiente';
+  $('next').hidden=n===10;
+  $('despuesWrap').hidden=true;   // el botón vive abajo, junto a "Revisar y firmar"
+  $('despuesNav').hidden=!(n===2&&!firmar);
+  $('segServicio').hidden=firmar;          // al firmar no se cambia de perforación a tatuaje: el texto ya lo leyó
+  $('formTit').textContent=firmar?'Revisa antes de firmar':'Generar consentimiento';
+  $('back').parentElement.style.gridTemplateColumns=!$('despuesNav').hidden?'1fr 1fr':(($('back').hidden||$('next').hidden)?'1fr':'1fr 2fr');
+  $('whereBtn').hidden=true;
+  if(n===2){renderZonas();ponerServicio(S.servicio);pintarIndicaciones();$('secIndic').hidden=S.modo==='firmar';}
+  if(n===7){setTimeout(sizeCanvas,0);renderResumen();}
+  if(n===2||n===10)pintarBorrador();
+  if(n===10)cargarPorFirmar();
+  guardarBorrador();
+  window.scrollTo(0,0);
+}
+function where(){ $('whereBtn').textContent=`${lugar()||'Sin lugar'} · ${atiende()} ✎`; }
+
+$('next').onclick=async()=>{
+  try{
+    const e=validar(S.step);if(e)return falta(e);
+    if(S.step===0)return guardarPaso0();
+    if(S.step===2)return await irAFirmar();
+    if(S.step===7)return await guardar();
+    if(S.step===9){if(S.modo==='firmar'){reiniciar(true);return show(10);}return reiniciar();}
+    show(S.step+1);
+  }catch(x){sinCarga();toast('Algo falló: '+x.message,true);}
+};
+// Cualquier error se ve en pantalla (para no quedarse sin saber qué pasó)
+window.addEventListener('error',e=>toast('Algo falló: '+(e.message||'error'),true));
+window.addEventListener('unhandledrejection',e=>toast('Algo falló: '+((e.reason&&e.reason.message)||e.reason),true));
+// Pantalla de espera
+function cargando(t){$('cargandoTxt').textContent=t||'Cargando…';$('cargando').hidden=false;}
+function sinCarga(){$('cargando').hidden=true;}
+// Avisa qué falta, lleva la vista a ese campo y lo marca en rojo hasta que lo toquen
+let tToast=null;
+function toast(m,err){const t=$('toast');t.textContent=m;t.className='toast'+(err?' err':'');t.hidden=false;clearTimeout(tToast);tToast=setTimeout(()=>t.hidden=true,err?4500:2200);}
+function falta(e){
+  $('err').textContent=e.m;toast(e.m,true);
+  document.querySelectorAll('.bad').forEach(x=>x.classList.remove('bad'));
+  const el=typeof e.el==='string'?$(e.el):e.el;if(!el)return;
+  const box=el.matches('input[type=checkbox]')?el.closest('label'):el;
+  box.classList.add('bad');
+  box.scrollIntoView({block:'center'});
+  if(el.matches('input:not([type=checkbox]),select,textarea'))setTimeout(()=>el.focus({preventScroll:true}),350);
+}
+['input','change','click'].forEach(t=>document.addEventListener(t,ev=>{const b=ev.target.closest&&ev.target.closest('.bad');if(b)b.classList.remove('bad');},true));
+// Atrás: en "firmar" se regresa a la lista, y de la firma a las zonas
+function atras(n){return S.modo==='firmar'?{2:7,7:10}[n]:BACK_OK[n];}
+$('back').onclick=()=>show(atras(S.step));
+$('whereBtn').onclick=()=>show(2);
+$('btnCorregir').onclick=()=>show(2);
+
+// Del formulario a la revisión con la clienta: revisa todo lo que falta, de arriba abajo
+function validarForm(){
+  if($('lugar').value==='Otro'&&!$('lugarOtro').value.trim())return F('Escribe el lugar.','lugarOtro');
+  for(const n of [4,2,5,6]){const e=validar(n);if(e)return e;}
+  return null;
+}
+// Lugar y quién atiende: el lugar se recuerda en este celular; quién atiende solo la primera vez (luego lo fija la nota)
+function recordarAtencion(){
+  store.set('yp_lugar',$('lugar').value);store.set('yp_lugar_otro',$('lugarOtro').value.trim());
+  if(!store.get('yp_elaboro_id')){const o=$('atiende').selectedOptions[0];if(o){store.set('yp_elaboro_id',o.value);store.set('yp_elaboro_alias',o.textContent);}}
+}
+async function irAFirmar(){
+  if(S.modo==='firmar')return show(7);
+  const e=validarForm();if(e)return falta(e);
+  S.trasDup='firmar';
+  if(!S.persona&&!S.dupVisto&&revisarParecidas())return;
+  if(!(await esperarDetalle()))return;
+  recordarAtencion();show(7);
+}
+
+async function guardarPaso0(){
+  if(!DEMO&&!store.get('yp_pink_clave')){
+    const c=$('clave').value.trim();if(!c)return falta(F('Escribe la clave del equipo.','clave'));
+    cargando('Revisando la clave…');
+    try{store.set('yp_pink_clave',c);await api('pink_validar_clave');}
+    catch(x){return falta(F(x.message,'clave'));}
+    finally{sinCarga();}
+    cargarLista().catch(()=>{});
+  }
+  where();show(2);
+}
+// Regresa {m: mensaje, el: campo que falta} o null
+const F=(m,el)=>({m,el});
+function validar(n){
+  if(n===2&&esTat()){
+    for(let i=0;i<S.tats.length;i++){const t=S.tats[i],el=$('tat'+i);
+      if(t.prueba==='Positiva')return F('La prueba de alergia salió positiva: no se puede realizar el tatuaje.',el);
+      if(!t.zona.trim())return F('Escribe la zona del tatuaje.',el.querySelector('[data-k=zona]'));
+      if(!t.sku)return F('Elige el tamaño del tatuaje (para la nota).',el.querySelector('[data-k=sku]'));
+      if(!t.color)return F('Elige el color del tatuaje.',el);
+      if(!t.prueba)return F('Marca el resultado de la prueba de alergia.',el);}
+  }
+  if(n===2&&!esTat()){
+    if(!S.perfos.length)return F('Elige al menos una zona.','btnOtraZona');
+    let i=S.perfos.findIndex(p=>!p.zona.trim());
+    if(i>=0)return F(S.perfos[i].custom?'Escribe el nombre de la otra zona.':`Elige la zona ${i+1}.`,document.querySelector(S.perfos[i].custom?`#perfos [data-zt="${i}"]`:`#perfos [data-zs="${i}"]`));
+  }
+  if(n===4){
+    const e=edad($('fn').value);
+    if(!$('apodo').value.trim())return F('Falta cómo le gusta que le digan.','apodo');
+    if(e===null||e<0||e>110)return F('Revisa la fecha de nacimiento.','fn');
+    if(!$('nombre').value.trim())return F('Falta el nombre completo.','nombre');
+    if(dig($('wa').value).length!==10)return F('El WhatsApp debe tener 10 dígitos.','wa');
+    if(e<18){
+      if(!$('tnombre').value.trim())return F('Falta el nombre del tutor.','tnombre');
+      if(!$('tpar').value.trim())return F('Falta el parentesco del tutor.','tpar');
+      if(dig($('twa').value).length!==10)return F('El WhatsApp del tutor debe tener 10 dígitos.','twa');
+    }
+    if(e<12&&edad($('tfn').value)===null)return F('Falta la fecha de nacimiento del tutor.','tfn');
+  }
+  if(n===5){
+    if(!$('sangre').value)return F('Elige el tipo de sangre (o "No sé").','sangre');
+    if(!S.salud.enf.length&&!$('enfOtra').value.trim())return F('Marca sus enfermedades o "Ninguna".','enf');
+    if(!S.salud.cond.length&&!$('condOtra').value.trim())return F('Marca sus condiciones o "Ninguna".','cond');
+    if(!S.salud.fob.length)return F('Marca sus miedos o "Ninguno".','fob');
+    if(!S.salud.ale.length&&!$('alergias').value.trim())return F('Marca sus alergias o "Ninguna".','ale');
+    if(!S.salud.med.length&&!$('meds').value.trim())return F('Marca "Ninguno" o escribe qué medicamento toma.','med');
+  }
+  if(n===6&&!S.manual)return F('Falta contestar lo del manual de cuidados.','segManual');
+  if(n===7&&S.firmaVacia)return F('Falta la firma.','sigwrap');
+  return null;
+}
+
+// ── Paso 0 ───────────────────────────────────────────────────────────
+function llenarListas(){
+  $('lugar').innerHTML=[...CFG.lugares,'Otro'].map(l=>`<option>${esc(l)}</option>`).join('');
+  $('atiende').innerHTML=CFG.equipo.map(p=>`<option value="${esc(p.id)}">${esc(p.alias)}</option>`).join('');
+  $('perforadora').innerHTML=[...CFG.perforadoras.map(p=>p.alias),'Otra persona'].map(a=>`<option>${esc(a)}</option>`).join('');
+}
+$('lugar').onchange=()=>{$('lugarOtroWrap').hidden=$('lugar').value!=='Otro';};
+
+// ── Paso 1: buscar ───────────────────────────────────────────────────
+const norm=s=>String(s||'').normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().trim();
+// La lista de clientas (sin salud) se baja una vez y se busca en el celular: es instantáneo.
+let LISTA=null,listaProm=null,hits=[];
+function cargarLista(){
+  if(DEMO){LISTA=DEMO_PERSONAS;return Promise.resolve();}
+  if(!listaProm)listaProm=api('consent_lista').then(d=>{LISTA=d.personas;},x=>{listaProm=null;throw x;});
+  return listaProm;
+}
+$('q').addEventListener('input',buscar);
+async function buscar(){
+  const raw=$('q').value.trim(),q=norm(raw),qd=dig(raw),qu=raw.toUpperCase();
+  if(q.length<2){$('results').innerHTML='';return;}
+  if(!LISTA){
+    $('results').innerHTML='<p class="hint" style="margin:0">Cargando la lista de clientas…</p>';
+    try{await cargarLista();}catch(x){$('results').innerHTML=`<p class="err">${esc(x.message)}</p>`;return;}
+    if($('q').value.trim()!==raw)return;
+  }
+  hits=LISTA.filter(p=>p.id===qu||norm(p.nombre).includes(q)||norm(p.apodo).includes(q)||(qd.length>=4&&String(p.wa).includes(qd))).slice(0,15);
+  $('results').innerHTML=hits.length?hits.map((p,i)=>`<button class="result" type="button" data-i="${i}">
+      <span><b>${esc(p.apodo)} · ${esc(p.nombre)}</b><small>${esc(p.id)} · WhatsApp …${esc(String(p.wa).slice(-4))}</small></span>
+      ${p.pink?'<span class="pill pink">Pink</span>':''}</button>`).join('')
+    :'<p class="hint" style="margin:0">No la encontré. Puede ser nueva.</p>';
+  $('results').querySelectorAll('.result').forEach(b=>b.onclick=()=>elegir(hits[+b.dataset.i]));
+}
+function limpiarClienta(){
+  ['apodo','nombre','fn','wa','email','tnombre','tpar','twa','tfn','alergias','meds','coment','enfOtra','condOtra'].forEach(id=>$(id).value='');
+  $('sangre').value='';S.salud={enf:[],cond:[],fob:[],ale:[],med:[]};$('saludPrev').hidden=true;pintarChips();
+}
+// Al elegirla se sigue de inmediato; sus datos completos (fecha, tutor, salud) llegan mientras el equipo elige zonas.
+function elegir(p){
+  limpiarClienta();
+  S.persona=Object.assign({},p);
+  $('apodo').value=p.apodo;$('nombre').value=p.nombre;$('wa').value=p.wa;
+  pintarClienta();
+  pedirDetalle(p.id,true);
+  $('q').value='';$('results').innerHTML='';
+  $('secServicio').scrollIntoView({block:'start'});
+}
+function pedirDetalle(id,conEspera){
+  if(conEspera)cargando('Trayendo sus datos y su salud de la última vez…');
+  const pr=S.detalle=(DEMO?Promise.resolve(DEMO_PERSONAS.find(x=>x.id===id)):api('consent_detalle',{id}))
+    .then(d=>{if(S.persona&&S.persona.id===d.id)llenarDetalle(d);S.detalle=null;});
+  pr.catch(x=>{if(conEspera)toast('No pude traer sus datos: '+x.message,true);}).finally(()=>{if(conEspera)sinCarga();});
+}
+// Antes de pasarle el celular, sus datos ya deben estar puestos
+async function esperarDetalle(){
+  if(!S.detalle)return true;
+  cargando('Cargando sus datos…');
+  try{await S.detalle;return true;}
+  catch(x){toast('No pude traer sus datos: '+x.message+'. Toca de nuevo.',true);pedirDetalle(S.persona.id);return false;}
+  finally{sinCarga();}
+}
+function llenarDetalle(p){
+  S.persona=p;
+  $('apodo').value=p.apodo;$('nombre').value=p.nombre;$('fn').value=p.fn;$('wa').value=p.wa;$('email').value=p.email||'';
+  if(p.tutor){$('tnombre').value=p.tutor.nombre;$('tpar').value=p.tutor.par;$('twa').value=p.tutor.wa;}
+  revisarEdad();
+  pintarReemplazo(p.hoy||[]);
+  if(p.ultima){
+    const u=p.ultima;
+    $('sangre').value=u.sangre==='No sabe'?'No sé':u.sangre;S.salud.enf=[...u.enf];S.salud.cond=[...u.cond];S.salud.fob=[...u.fob];
+    // lo que no está en las listas va a "Otra"
+    const fuera=(arr,lista)=>arr.filter(x=>!lista.includes(x)&&!/^Ningun[ao]$/.test(x)).join(', ');
+    const enfOtra=u.enfOtra||fuera(u.enf,CFG.enfermedades),condOtra=u.condOtra||fuera(u.cond,CFG.condiciones);
+    S.salud.enf=u.enf.filter(x=>CFG.enfermedades.includes(x)||x==='Ninguna');S.salud.cond=u.cond.filter(x=>CFG.condiciones.includes(x)||x==='Ninguna');
+    S.salud.fob=u.fob.filter(x=>CFG.fobias.includes(x)||x==='Ninguno');
+    const al=String(u.alergias||'').split(/\s*,\s*/).filter(Boolean),ning=x=>/^ningun[ao]$/i.test(x);
+    S.salud.ale=al.filter(x=>CFG.alergias.includes(x)||ning(x)).map(x=>ning(x)?'Ninguna':x);
+    $('alergias').value=al.filter(x=>!CFG.alergias.includes(x)&&!ning(x)).join(', ');
+    if(!al.length)S.salud.ale=['Ninguna'];
+    const md=String(u.meds||'').trim();S.salud.med=!md||/^ningun[ao]$/i.test(md)?['Ninguno']:[];$('meds').value=S.salud.med.length?'':md;
+    $('enfOtra').value=enfOtra;$('condOtra').value=condOtra;
+    if(!S.salud.enf.length&&!enfOtra)S.salud.enf=['Ninguna'];
+    if(!S.salud.cond.length&&!condOtra)S.salud.cond=['Ninguna'];
+    if(!S.salud.fob.length)S.salud.fob=['Ninguno'];
+    $('saludPrev').hidden=false;
+    $('saludPrev').innerHTML=`Esto nos dijo el <b>${fmt(new Date(u.fecha+'T12:00'))}</b>. Pregúntale y cambia lo que ya no sea igual.`;
+    pintarChips();
+  }
+  guardarBorrador();
+}
+// Clienta elegida de la lista: se ve arriba de sus datos, con opción de cambiarla
+function pintarClienta(){
+  const b=$('clientaBox');b.hidden=!S.persona;if(!S.persona)return;
+  b.innerHTML=`Ya vino antes: <b>${esc(S.persona.apodo)}</b> · ${esc(S.persona.id)}. Revisa con ella que sus datos sigan igual. <button class="x" type="button" id="btnNueva">No es ella / es nueva</button>`;
+  $('btnNueva').onclick=()=>{
+    S.persona=null;S.detalle=null;S.dupVisto=false;limpiarClienta();pintarReemplazo([]);pintarClienta();revisarEdad();
+    $('apodo').focus();
+  };
+}
+function revisarEdad(){
+  const e=edad($('fn').value);
+  $('tutorCard').hidden=!(e!==null&&e<18);
+  $('tfnWrap').hidden=!(e!==null&&e<12);
+}
+$('fn').addEventListener('change',revisarEdad);
+
+// ── Paso 2: ¿perforación o tatuaje? ─────────────────────────────────
+const TAT_COLOR=['Negro','A color','Negro y color'],TAT_PRUEBA=['Negativa','Positiva','No se hizo'];
+const defTatuadora=()=>(CFG.perforadoras.find(x=>/^kat/i.test(x.alias))||CFG.perforadoras[0]||{}).alias||'';
+const nuevoTat=()=>({zona:'',dimensiones:'',sku:'',color:'',prueba:'',tipo:'Nuevo',tatuadora:defTatuadora()});
+const esTat=()=>S.servicio==='Tatuaje';
+function ponerServicio(v){
+  S.servicio=v;
+  $('segServicio').querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));
+  $('bloquePerfo').hidden=esTat();$('bloqueTat').hidden=!esTat();$('perfoWrap').hidden=esTat();
+  if(esTat()&&!S.tats.length)S.tats.push(nuevoTat());
+  $('perfHint').textContent=esTat()?'Llena los datos de cada tatuaje. Si la prueba de alergia sale positiva, no se puede continuar.'
+    :(S.persona?`Para ${S.persona.apodo}. Toca la zona; la pieza se elige después, en la nota.`:'Toca la zona. La pieza se elige después, en la nota.');
+  $('textoConsent').innerHTML=esTat()?(CFG.textoT||$('textoConsent').innerHTML):(CFG.textoP||$('textoConsent').innerHTML);
+  renderTats();
+}
+$('segServicio').querySelectorAll('.chip').forEach(b=>b.onclick=()=>ponerServicio(b.dataset.v));
+const chipT=(i,k,v,cur)=>`<button class="chip" type="button" data-ti="${i}" data-tk="${k}" data-tv="${esc(v)}" aria-pressed="${cur===v}">${esc(v)}</button>`;
+function renderTats(){
+  $('tats').innerHTML=S.tats.map((t,i)=>`<div class="perfo" id="tat${i}">
+    <div class="perfo-h"><b>🖋️ Tatuaje ${S.tats.length>1?i+1:''}</b>${S.tats.length>1?`<button class="x" type="button" data-tdel="${i}">Quitar</button>`:''}</div>
+    <label class="f">Zona del cuerpo<input type="text" data-t="${i}" data-k="zona" value="${esc(t.zona)}" placeholder="Ej. Antebrazo izquierdo"></label>
+    <div class="row"><label class="f">Dimensiones<input type="text" data-t="${i}" data-k="dimensiones" value="${esc(t.dimensiones)}" placeholder="Ej. 5 x 3 cm"></label>
+      <label class="f">Tamaño (para la nota)<select data-t="${i}" data-k="sku"><option value="">Elegir…</option>${CFG.tamanos.map(x=>`<option value="${esc(x.sku)}"${t.sku===x.sku?' selected':''}>${esc(x.nombre)}</option>`).join('')}</select></label></div>
+    <span class="lbl">Color</span><div class="chips">${TAT_COLOR.map(c=>chipT(i,'color',c,t.color)).join('')}</div>
+    <span class="lbl">Prueba de alergia</span><div class="chips">${TAT_PRUEBA.map(c=>chipT(i,'prueba',c,t.prueba)).join('')}</div>
+    ${t.prueba==='Positiva'?`<div class="positiva">⚠️ La prueba salió <b>positiva</b>: no se puede realizar el tatuaje.${S.persona?`<br><button class="btn sec small" type="button" data-tanota="${i}" style="margin-top:6px">Anotar en su expediente</button>`:''}</div>`:''}
+    <div class="row"><div><span class="lbl">¿Nuevo o retoque?</span><div class="chips">${['Nuevo','Retoque'].map(c=>chipT(i,'tipo',c,t.tipo)).join('')}</div></div>
+      <label class="f">¿Quién tatúa?<select data-t="${i}" data-k="tatuadora">${CFG.perforadoras.map(x=>`<option${t.tatuadora===x.alias?' selected':''}>${esc(x.alias)}</option>`).join('')}</select></label></div>
+  </div>`).join('');
+  $('tats').querySelectorAll('[data-t]').forEach(el=>{const f=()=>{S.tats[+el.dataset.t][el.dataset.k]=el.value;};el.oninput=f;el.onchange=f;});
+  $('tats').querySelectorAll('[data-ti]').forEach(b=>b.onclick=()=>{S.tats[+b.dataset.ti][b.dataset.tk]=b.dataset.tv;renderTats();});
+  $('tats').querySelectorAll('[data-tdel]').forEach(b=>b.onclick=()=>{S.tats.splice(+b.dataset.tdel,1);renderTats();});
+  $('tats').querySelectorAll('[data-tanota]').forEach(b=>b.onclick=async()=>{
+    const t=S.tats[+b.dataset.tanota];b.disabled=true;
+    try{
+      if(!DEMO)await api('consent_visita',{id_clienta:S.persona.id,tipo:'Prueba de alergia',obs:`Prueba de alergia positiva${t.zona?' ('+t.zona+')':''}: no se realizó el tatuaje.`,estado:'',
+        atiende:{id:store.get('yp_elaboro_id')||'',alias:store.get('yp_elaboro_alias')||''}});
+      toast('Anotado en su expediente');b.textContent='✓ Anotado';
+    }catch(x){toast(x.message,true);b.disabled=false;}
+  });
+}
+$('btnOtroTat').onclick=()=>{S.tats.push(nuevoTat());renderTats();};
+
+// ── Paso 2: zonas y lados ────────────────────────────────────────────
+function renderZonas(){
+  $('perfHint').textContent='Elige cada zona y su lado. La pieza se elige después, en la nota.';
+  renderPerfos();
+}
+const ladoTxt=l=>l==='Centro'?'(centro)':l.toLowerCase();
+// Un renglón por zona: [zona ▼] [lado ▼] ✕ (Luis, 19/11: desplegables en vez de botones)
+function renderPerfos(){
+  if(!S.perfos.length)S.perfos.push({zona:'',lado:'',serv:'',custom:false});
+  $('perfos').innerHTML=S.perfos.map((p,i)=>{const lados=p.zona||p.custom?ladosDe(p):CFG.ladosDefault;return `<div class="zfila" id="perfo${i}">
+    <div class="zrow"><select data-zs="${i}" aria-label="Zona ${i+1}">${zOpts(p.custom?'__otra':p.zona)}</select>
+      <select data-zl="${i}" aria-label="Lado ${i+1}"${lados.length===1?' disabled':''}>${lados.length===1?'':'<option value="">Sin lado</option>'}${lados.map(l=>`<option${p.lado===l?' selected':''}>${esc(l)}</option>`).join('')}</select>
+      <button class="x" type="button" data-del="${i}" aria-label="Quitar zona ${i+1}">✕</button></div>
+    ${p.custom?`<input type="text" data-zt="${i}" value="${esc(p.zona)}" placeholder="Nombre de la zona">
+      <label class="f">Servicio para la nota<select data-sv="${i}"><option value="">Sin servicio</option>${Object.keys(CFG.servicios).map(k=>`<option value="${esc(k)}"${p.serv===k?' selected':''}>${esc(servNom(k))}</option>`).join('')}</select></label>`:''}
+  </div>`;}).join('');
+  $('perfos').querySelectorAll('[data-zs]').forEach(x=>x.onchange=()=>{
+    const i=+x.dataset.zs,v=x.value,ant=S.perfos[i];
+    if(v==='__otra')S.perfos[i]={zona:'',lado:'',serv:'',custom:true};
+    else if(!v)S.perfos[i]={zona:'',lado:'',serv:'',custom:false};
+    else{const z=zona(v),l=z.lados||CFG.ladosDefault;S.perfos[i]={zona:v,lado:l.includes(ant.lado)?ant.lado:(l.length===1?l[0]:''),serv:z.serv,custom:false};}
+    renderPerfos();
+    const t=$('perfos').querySelector(S.perfos[i].custom?`[data-zt="${i}"]`:`[data-zl="${i}"]`);if(t&&!t.disabled&&!S.perfos[i].lado)t.focus();
+  });
+  $('perfos').querySelectorAll('[data-zl]').forEach(x=>x.onchange=()=>{S.perfos[+x.dataset.zl].lado=x.value;});
+  $('perfos').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{S.perfos.splice(+b.dataset.del,1);renderPerfos();});
+  $('perfos').querySelectorAll('[data-zt]').forEach(t=>t.oninput=()=>{S.perfos[+t.dataset.zt].zona=t.value;});
+  $('perfos').querySelectorAll('[data-sv]').forEach(t=>t.onchange=()=>{S.perfos[+t.dataset.sv].serv=t.value;});
+}
+$('btnOtraZona').onclick=()=>{S.perfos.push({zona:'',lado:'',serv:'',custom:false});renderPerfos();const x=[...$('perfos').querySelectorAll('[data-zs]')].pop();if(x)x.focus();};
+
+// ── Paso 3: entrega ──────────────────────────────────────────────────
+function renderHandoff(){
+  const n=S.persona?S.persona.apodo:'la clienta';
+  $('handTit').textContent=S.persona?`Pásale el celular a ${n}`:'Pásale el celular a la clienta';
+}
+
+// ── Paso 5: chips de salud ───────────────────────────────────────────
+function chips(id,lista,key,ninguna){
+  $(id).innerHTML=[ninguna,...lista].map(v=>`<button class="chip${v===ninguna?' none':''}" type="button" aria-pressed="false" data-v="${esc(v)}">${esc(v)}</button>`).join('');
+  $(id).querySelectorAll('.chip').forEach(b=>b.onclick=()=>{
+    const v=b.dataset.v,arr=S.salud[key];
+    if(v===ninguna)S.salud[key]=arr.includes(v)?[]:[v];
+    else{S.salud[key]=arr.filter(x=>x!==ninguna);const i=S.salud[key].indexOf(v);i<0?S.salud[key].push(v):S.salud[key].splice(i,1);}
+    pintarChips();
+  });
+}
+function pintarChips(){
+  ['enf','cond','fob','ale','med'].forEach(k=>$(k).querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',(S.salud[k]||[]).includes(b.dataset.v))));
+}
+chips('enf',CFG.enfermedades,'enf','Ninguna');
+chips('cond',CFG.condiciones,'cond','Ninguna');
+chips('fob',CFG.fobias,'fob','Ninguno');
+chips('ale',CFG.alergias,'ale','Ninguna');
+chips('med',[],'med','Ninguno');
+$('meds').addEventListener('input',()=>{if($('meds').value.trim()&&S.salud.med.length){S.salud.med=[];pintarChips();}});
+
+// ── Paso 6: permisos ─────────────────────────────────────────────────
+// Indicaciones y material: vienen del servidor (consent_config). Esto es solo para la demo.
+$('textoConsent').innerHTML=`<b>Indicaciones previas</b><ul>
+<li>No estar bajo los efectos de drogas o alcohol al momento del procedimiento.</li>
+<li>No haber consumido alcohol, drogas o sustancias anticoagulantes (como aspirina, ibuprofeno, entre otros) en las últimas 6 horas previas al procedimiento.</li>
+<li>En caso de que la persona que se realizará la perforación sea menor de edad, el consentimiento deberá ser llenado y firmado por su madre, padre o tutor legal, quien otorgará su autorización, confirmará y supervisará que el procedimiento se llevó a cabo de manera adecuada.</li>
+<li>Acudir a la cita en óptimas condiciones de salud, habiendo ingerido alimentos previamente para evitar mareos, desmayos u otros malestares durante el procedimiento.</li>
+<li>No se podrá realizar el procedimiento si se padece alguna enfermedad infecciosa, fiebre, gripe o alguna condición que comprometa el sistema inmunológico.</li>
+<li>Informar si padece alguna condición médica preexistente (diabetes, problemas de coagulación, enfermedades de la piel, etc.).</li>
+<li>En caso de estar bajo tratamiento médico, informar previamente a la perforadora para revisar si se puede realizar el procedimiento.</li></ul>
+<b>Identificación de los productos a utilizar en el procedimiento</b><ul><li>Cánula o catéter nuevo, sellado y estéril.</li><li>Pieza desinfectada y estéril.</li><li>Guantes nuevos y estériles.</li><li>Paquete de limpieza nuevo, sellado y estéril.</li><li>Instrumental quirúrgico desinfectado y estéril.</li></ul>`;
+// Texto para tatuaje (en la demo; ya conectado viene del servidor)
+CFG.textoP=$('textoConsent').innerHTML;
+CFG.textoT=CFG.textoP.replace(/la perforación/g,'el tatuaje').replace(/a la perforadora/g,'a la tatuadora').replace(/<b>Identificación[\s\S]*$/,
+  '<b>Identificación de los productos a utilizar en el procedimiento</b><ul><li>Cartucho para tatuaje cerrado, nuevo y estéril.</li><li>Guantes de nitrilo nuevos.</li><li>Tinta vigente y de uso personal.</li><li>Material protegido con playo.</li><li>Máquina protegida con playo y venda elástica.</li></ul>');
+const DATOS_TXT='Los datos personales proporcionados en este documento serán tratados de manera confidencial y utilizados exclusivamente para los fines relacionados con la realización del procedimiento, según el aviso de privacidad de Yiyi Pash. No serán compartidos con terceros sin el consentimiento del titular, salvo en los casos previstos por la ley. Al firmar este documento, el titular o su tutor legal acepta el tratamiento de sus datos bajo estas condiciones.';
+// Declaración para mayores o para menores (aprobada por Luis el 27/10). Copia de consTextos() en Consentimiento.gs: si cambias una, cambia la otra.
+// Sin casillas (Luis, 19/11): lo de los datos de salud va dentro de la declaración. Igual en consTextoSalud() de Consentimiento.gs.
+function declaracion(){const d=declaracionBase(),e=edad($('fn').value),menor=e!==null&&e<18;
+  d.d2+=' '+(menor?`Autorizo que YiyiPash use los datos de salud de ${$('nombre').value.trim()} solo para su seguridad, como dice su aviso de privacidad.`
+    :'Autorizo que YiyiPash use mis datos de salud solo para mi seguridad, como dice su aviso de privacidad.');
+  return d;}
+function declaracionBase(){
+  const e=edad($('fn').value),menor=e!==null&&e<18,tat=esTat();
+  const nom=a=>(CFG.perforadoras.find(x=>x.alias===a)||{}).nombre||a;
+  const al=$('perforadora').value;
+  const ps=tat?[...new Set(S.tats.map(t=>t.tatuadora).filter(Boolean))].map(nom):(al&&al!=='Otra persona'?[nom(al)]:[]);
+  return textosDeclaracion({nombre:$('nombre').value.trim(),apodo:$('apodo').value.trim(),edad:e,menor,perforadoras:ps,fotos:S.fotos==='si',servicio:tat?'Tatuaje':'Perforación',
+    tutor:{nombre:$('tnombre').value.trim(),parentesco:$('tpar').value.trim()}});
+}
+// Redacción del formato de siempre (Luis, 19/11). Copia de consTextos() en Consentimiento.gs: si cambias una, cambia la otra.
+function textosDeclaracion(x){
+  const ps=x.perforadoras||[],tat=x.servicio==='Tatuaje';
+  const rol=tat?['la tatuadora','las tatuadoras']:['la perforadora','las perforadoras'];
+  const quien=ps.length>1?rol[1]+' '+ps.slice(0,-1).join(', ')+' y '+ps[ps.length-1]:(ps.length?rol[0]+' '+ps[0]:rol[0]);
+  const riesgos=tat?'como infección, reacción alérgica a la tinta o cicatrización irregular':'como infección, rechazo o cicatrización irregular';
+  const material=tat?'el material nuevo y de uso personal (cartucho cerrado, nuevo y estéril; tinta vigente; guantes de nitrilo nuevos; material y máquina protegidos con playo)'
+    :'el material nuevo, sellado y estéril, de uso personal';
+  const dudas=`He expresado todas mis dudas, las cuales me han sido aclaradas, y se me ha explicado detalladamente el proceso, los cuidados necesarios y los posibles riesgos asociados, ${riesgos}.`;
+  const mat=`Asimismo, confirmo que se me ha mostrado ${material}, el cuál será desechado posteriormente.`;
+  const resp=`Entiendo y acepto que YiyiPash ni ${quien} serán responsables de complicaciones posteriores. En caso de dudas o inconvenientes durante el proceso de curación, asumo la responsabilidad de contactar a YiyiPash para recibir la orientación necesaria.`;
+  const doy=x.fotos?'Doy':'No doy';
+  if(x.menor){const t=x.tutor||{};
+    return{d1:`Yo, ${t.nombre}, en mi calidad de ${String(t.parentesco||'').toLowerCase()} y tutor(a) legal de ${x.nombre}, de ${x.edad} años, en pleno uso de mis facultades mentales, declaro ser consciente del procedimiento al que se someterá y autorizo que se le realice ${tat?'el tatuaje descrito':'la perforación descrita'} en este documento. ${dudas}`,
+      d2:`${mat} Estaré presente durante el procedimiento y me comprometo a vigilar que ${x.apodo||x.nombre} siga todas las indicaciones de higiene y cuidados posteriores proporcionadas por el profesional. ${resp}`,
+      fotos:`${doy} el consentimiento para que YiyiPash haga uso de las imágenes y videos de ${x.nombre} para publicación y promoción en sus redes sociales.`};}
+  return{d1:`Yo, ${x.nombre}, en pleno uso de mis facultades mentales, declaro ser consciente del procedimiento al que me someteré. ${dudas}`,
+    d2:`${mat} Me comprometo a seguir todas las indicaciones de higiene y cuidados posteriores proporcionadas por el profesional. ${resp}`,
+    fotos:`${doy} el consentimiento para que YiyiPash haga uso de mis imágenes y videos para publicación y promoción en sus redes sociales.`};
+}
+// Zonas como se leen: "Helix izquierdo y derecho, Septum". Copia de consZonasLegibles() en Consentimiento.gs.
+function zonasLegibles(lista){
+  const out=[],idx={};
+  (lista||[]).forEach(p=>{const z=String(p.zona||'').trim();if(!z)return;
+    const lados=p.lado==='Ambos'?['Izquierdo','Derecho']:(p.lado&&p.lado!=='Centro'?[p.lado]:[]);const k=z.toLowerCase();
+    if(idx[k]===undefined){idx[k]=out.length;out.push({z,l:[]});}
+    lados.forEach(l=>{if(!out[idx[k]].l.includes(l))out[idx[k]].l.push(l);});});
+  return out.map(o=>o.z+(o.l.length?' '+o.l.map(l=>l.toLowerCase()).join(' y '):'')).join(', ');
+}
+function consentHTML(){const d=declaracion();
+  return `${$('textoConsent').innerHTML}<b>Declaración</b><p>${esc(d.d1)}</p><p>${esc(d.d2)}</p>${S.fotos?`<p><b>${esc(d.fotos)}</b></p>`:''}<p><i>${esc(DATOS_TXT)}</i></p>`;}
+// Lector dentro del formulario. El aviso y los términos se leen de la página pública del Pink Club (mismo sitio).
+const LECTOR={consent:['Consentimiento',null],aviso:['Aviso de privacidad','/pink/aviso.html'],terminos:['Términos del Pink Club','/pink/terminos.html']};
+async function abrirLector(k){
+  const [tit,url]=LECTOR[k];
+  $('lectorTit').textContent=tit;$('lector').hidden=false;$('lectorTxt').scrollTop=0;
+  if(!url){$('lectorTxt').innerHTML=consentHTML();return;}
+  $('lectorTxt').innerHTML='<p class="hint">Cargando…</p>';
+  try{
+    const r=await fetch(url);if(!r.ok)throw new Error(r.status);
+    const doc=new DOMParser().parseFromString(await r.text(),'text/html'),sec=doc.querySelector('.legal')||doc.querySelector('main')||doc.body;
+    sec.querySelectorAll('.volver,script,style,link').forEach(x=>x.remove());
+    $('lectorTxt').innerHTML=sec.innerHTML;
+  }catch(x){
+    $('lectorTxt').innerHTML=`<p>No pude cargarlo aquí. <a href="${url}" target="_blank" rel="noopener">Ábrelo en otra pestaña</a>.</p>`;
+  }
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-leer]');if(!b)return;e.preventDefault();abrirLector(b.dataset.leer);});
+const cerrarLector=()=>$('lector').hidden=true;
+$('lectorCerrar').onclick=cerrarLector;$('lectorListo').onclick=cerrarLector;
+function seg(id,key){$(id).querySelectorAll('.chip').forEach(b=>b.onclick=()=>{S[key]=b.dataset.v;$(id).querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));if(key==='pink')renderPinkExtra();});}
+seg('segManual','manual');
+function renderPink(){
+  const p=S.persona;
+  if(p&&p.pink){
+    $('pinkCard').innerHTML=`<h2>Pink Club 💗</h2><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span>Ya es Pink: <b>${esc(p.id)}</b></span><span class="pill ${p.pink.estado==='Activa'?'ok':'warn'}">${esc(p.pink.estado)}</span></div><p class="hint" style="margin:0">Lo que compre hoy suma puntos.</p>`;
+    return;
+  }
+  const e=edad($('fn').value);
+  $('pinkCard').innerHTML=`<h2>¿Quiere unirse al Pink Club? 💗</h2>
+    <p class="hint" style="margin:0">Es gratis. Al juntar sus primeros $999 en compras entra al club y desde ahí gana 1 punto por cada $20 para cambiar por joyería.${e!==null&&e<12?' Como es menor de 12, sus compras suman en la cuenta de su tutor.':''}</p>
+    <div class="seg" id="segPink"><button class="chip" type="button" data-v="si" aria-pressed="${S.pink==='si'}">Sí</button><button class="chip" type="button" data-v="no" aria-pressed="${S.pink==='no'}">No</button></div>
+    <div id="pinkExtra"></div>`;
+  seg('segPink','pink');renderPinkExtra();
+}
+function renderPinkExtra(){
+  const box=$('pinkExtra');if(!box)return;
+  box.innerHTML=S.pink==='si'?'<p class="hint" style="margin:0">Al firmar, ella marca que acepta el aviso de privacidad y los términos.</p>':'';
+}
+// En la firma: la casilla del aviso del Pink Club (y promociones si es mayor de edad) la marca ella
+function renderPinkFirma(){
+  const yaPink=S.persona&&S.persona.pink,e=edad($('fn').value),box=$('pinkFirma');
+  const a=$('pAviso')&&$('pAviso').checked,m=$('pMkt')&&$('pMkt').checked;
+  box.innerHTML=!yaPink&&S.pink==='si'?`<label class="check grande"><input type="checkbox" id="pAviso"${a?' checked':''}><span><span class="req">*</span> Me uno al Pink Club y acepto el <a href="#" data-leer="aviso">aviso de privacidad</a> y los <a href="#" data-leer="terminos">términos</a>.</span></label>
+    ${e!==null&&e>=18?`<label class="check grande"><input type="checkbox" id="pMkt"${m?' checked':''}><span>Quiero recibir promociones por WhatsApp. <span style="color:var(--mu)">(opcional)</span></span></label>`:''}`:'';
+}
+
+// ── Paso 7: firma ────────────────────────────────────────────────────
+const cv=$('sig'),ctx=cv.getContext('2d');let drawing=false,last=null;   // drawing = id del dedo o pluma que firma
+const trazos=[];let tamCv='';   // trazos: cómo estaba antes de cada trazo (para quitar el último)
+function sizeCanvas(){
+  const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  if(!r.width)return;
+  const tam=r.width+'x'+r.height+'x'+dpr;if(tam===tamCv)return;   // en el celular, el scroll también "cambia el tamaño": se ignora
+  tamCv=tam;trazos.length=0;
+  const img=S.firmaVacia?null:cv.toDataURL();
+  cv.width=r.width*dpr;cv.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.lineWidth=2.4;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#111827';
+  if(img){const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,r.width,r.height);im.src=img;}
+}
+function pos(e){const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+// Dedo o pluma (iPad): con pluma el trazo sigue la presión y la palma apoyada no pinta
+let conPluma=false;
+const grosor=e=>e.pointerType==='pen'?Math.max(1.1,(e.pressure||.5)*3.6):2.4;
+cv.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='pen')conPluma=true;else if(conPluma&&e.pointerType==='touch')return;
+  e.preventDefault();drawing=e.pointerId;last=pos(e);cv.setPointerCapture(e.pointerId);
+  try{trazos.push(ctx.getImageData(0,0,cv.width,cv.height));if(trazos.length>40)trazos.shift();}catch(x){}
+  ctx.beginPath();ctx.arc(last.x,last.y,grosor(e)/2,0,7);ctx.fillStyle='#111827';ctx.fill();marcar();});
+cv.addEventListener('pointermove',e=>{
+  if(drawing===false||e.pointerId!==drawing)return;
+  (e.getCoalescedEvents?e.getCoalescedEvents():[e]).forEach(ev=>{const p=pos(ev);ctx.lineWidth=grosor(ev);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;});});
+['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,e=>{if(e.pointerId===drawing)drawing=false;}));
+function marcar(){S.firmaVacia=false;$('sigph').hidden=true;}
+// La firma se manda a 600 px de ancho para que pese poco
+function firmaPNG(){
+  const w=Math.min(600,cv.width),h=Math.round(cv.height*w/cv.width),c=document.createElement('canvas');
+  c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(cv,0,0,w,h);
+  return c.toDataURL('image/png');
+}
+$('limpiar').onclick=()=>{ctx.clearRect(0,0,cv.width,cv.height);trazos.length=0;S.firmaVacia=true;$('sigph').hidden=false;};
+$('deshacer').onclick=()=>{
+  const im=trazos.pop();if(!im)return;
+  ctx.putImageData(im,0,0);
+  if(!trazos.length){S.firmaVacia=true;$('sigph').hidden=false;}
+};
+window.addEventListener('resize',()=>{if(S.step===7)sizeCanvas();});
+function firmante(){const e=edad($('fn').value);return e!==null&&e<18?{quien:'Tutor',nombre:$('tnombre').value.trim()}:{quien:'Clienta',nombre:$('nombre').value.trim()};}
+const perfTxt=()=>esTat()?S.tats.map(t=>`Tatuaje en ${t.zona}${t.dimensiones?' ('+t.dimensiones+')':''}`).join(', '):zonasLegibles(S.perfos);
+// Material e indicaciones: salen del texto del consentimiento (perforación o tatuaje)
+function partesTexto(){
+  const t=document.createElement('div');t.innerHTML=$('textoConsent').innerHTML;
+  let mat='',ind='';
+  t.querySelectorAll('b,strong').forEach(b=>{let ul=b.nextElementSibling;while(ul&&!/^(UL|OL)$/.test(ul.tagName))ul=ul.nextElementSibling;if(!ul)return;
+    if(/identificaci|material|producto/i.test(b.textContent))mat=ul.outerHTML;else if(/indicaci/i.test(b.textContent))ind=ul.outerHTML;});
+  return {mat,ind};
+}
+function pintarIndicaciones(){const {ind}=partesTexto();$('indForm').innerHTML=ind||$('textoConsent').innerHTML;}
+function renderResumen(){
+  const f=firmante();
+  $('firmante').textContent=`Firma: ${f.nombre}${f.quien==='Tutor'?' (tutor)':''}`;
+  $('firmaHint').textContent=(f.quien==='Tutor'?'Es menor de edad: firma su mamá, papá o tutor. ':'')+'Léelo con ella en este orden. Al firmar acepta todo lo de la declaración; si no está de acuerdo, no firma y no se hace el procedimiento.';
+  const e=edad($('fn').value),fnTxt=$('fn').value.split('-').reverse().join('/');
+  const filas=[['Nombre',$('nombre').value],['Te decimos',$('apodo').value],['Nacimiento',`${fnTxt} (${e} años)`],
+    ['WhatsApp',$('wa').value],['Correo',$('email').value||'—'],[esTat()?'Tatuaje':'Perforación',perfTxt()]];
+  if(!esTat())filas.push(['Perfora',$('perforadora').value]);
+  $('btnCorregir').hidden=S.modo==='firmar';   // al firmar un "Por firmar" solo se pueden cambiar las zonas
+  if(e<18)filas.push(['Tutor',`${$('tnombre').value} (${$('tpar').value}) · ${$('twa').value}`]);
+  $('resumen').innerHTML=filas.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('');
+  // Todo lo que aceptó o no, para que lo vea antes de firmar
+  const si=t=>`<div><span class="si">✓</span><span>${t}</span></div>`,no=t=>`<div><span class="no">✗</span><span>${t}</span></div>`;
+  const yaPink=S.persona&&S.persona.pink,wa=e<18?$('twa').value:$('wa').value;
+  const a=[S.manual==='si'?si(`Te mandamos el manual de cuidados por WhatsApp al <b>${esc(wa)}</b>.`):no('Sin manual de cuidados por WhatsApp.')];
+  if(yaPink)a.push(si('Ya eres del Pink Club: lo que compres hoy suma puntos.'));
+  $('aceptas').innerHTML=a.join('');
+  const {mat,ind}=partesTexto();
+  $('matTxt').innerHTML=mat||'<p class="hint" style="margin:0">Material nuevo, cerrado y estéril.</p>';
+  $('indTxt').innerHTML=ind||$('textoConsent').innerHTML;
+  const d=declaracion();
+  $('declTxt').innerHTML=`<p>${esc(d.d1)}</p><p>${esc(d.d2)}</p><p class="datos">${esc(DATOS_TXT)} ${esc(d.fotos)}</p><p style="font-weight:600;font-size:13px">En caso de que el solicitante sea menor de edad, la firma será emitida por el tutor.</p>`;
+}
+
+// ── Guardar ──────────────────────────────────────────────────────────
+function payload(){
+  const e=edad($('fn').value),f=firmante();
+  const at=$('atiende').selectedOptions[0];
+  return{action:'consent_guardar',lugar:$('lugar').value==='Otro'?($('lugarOtro').value.trim()||'Otro'):$('lugar').value,atiende:at?{id:at.value,alias:at.textContent}:{id:store.get('yp_elaboro_id')||'',alias:atiende()},
+    perforadora:$('perforadora').value,notas_equipo:$('notasEquipo').value.trim(),
+    persona:{id_clienta:S.persona?S.persona.id:'',apodo:$('apodo').value.trim(),nombre_completo:$('nombre').value.trim(),fecha_nacimiento:$('fn').value,
+      whatsapp:dig($('wa').value),email:$('email').value.trim(),
+      tutor:e<18?{id:S.persona&&S.persona.tutor?S.persona.tutor.id||'':'',nombre:$('tnombre').value.trim(),parentesco:$('tpar').value.trim(),whatsapp:dig($('twa').value),fecha_nacimiento:$('tfn').value}:null},
+    salud:{tipo_sangre:$('sangre').value,enfermedades:[...S.salud.enf,$('enfOtra').value.trim()].filter(Boolean),condiciones:[...S.salud.cond,$('condOtra').value.trim()].filter(Boolean),
+      fobias:S.salud.fob,alergias:[...(S.salud.ale||[]),$('alergias').value.trim()].filter(Boolean).join(', '),medicamentos:$('meds').value.trim()||(S.salud.med.length?'Ninguno':''),comentarios:$('coment').value.trim()},
+    servicio:S.servicio,
+    perforaciones:esTat()?[]:perfosPorLado().map(p=>({zona:p.zona.trim(),lado:p.lado||'Centro',sku_serv:p.serv||'',perforadora:$('perforadora').value})),
+    tatuajes:esTat()?S.tats.map(t=>({zona:t.zona.trim(),dimensiones:t.dimensiones.trim(),sku_serv:t.sku,tamano:servNom(t.sku),color:t.color,prueba:t.prueba,tipo:t.tipo,tatuadora:t.tatuadora})):[],
+    autorizaciones:{consentimiento:true,datos_salud:true,fotos:true,manual_whatsapp:S.manual==='si',
+      pink:S.persona&&S.persona.pink?'ya_es':'nota',aviso:false,marketing_wa:false},
+    firma:S.sinFirma?null:{firmante:f.quien,nombre:f.nombre,png:firmaPNG()},sin_firma:!!S.sinFirma,reemplaza:S.reemplaza||''};
+}
+// Se guarda con pantalla de espera; si falla, se queda en la misma pantalla y se puede volver a tocar
+async function guardar(){
+  if(S.modo==='firmar')return firmarYa();
+  S.sinFirma=false;S.payload=payload();S.res=null;S.errGuardar=null;
+  await enviarYEsperar('Guardando el consentimiento firmado…');
+}
+async function enviarYEsperar(txt){
+  cargando(txt);
+  try{enviar();await S.guardando;}catch(x){S.errGuardar=x;}
+  finally{sinCarga();}
+  if(S.errGuardar||!S.res){
+    const m=(S.errGuardar&&S.errGuardar.message)||'sin respuesta';S.errGuardar=null;
+    $('err').textContent='No se guardó: '+m+'. Revisa el internet y vuelve a tocar.';toast('No se guardó: '+m,true);return;
+  }
+  borrarBorrador();show(9);
+}
+// Guarda datos y salud sin firma: queda en "Por firmar" y firma después, con su artista
+async function guardarDespues(){
+  const e=validarForm();if(e)return falta(e);
+  S.trasDup='despues';
+  if(!S.persona&&!S.dupVisto&&revisarParecidas())return;
+  if(!(await esperarDetalle()))return;
+  recordarAtencion();
+  S.sinFirma=true;S.payload=payload();S.res=null;S.errGuardar=null;
+  enviarYEsperar('Guardando sin firma…');
+}
+$('btnDespues').onclick=$('despuesNav').onclick=()=>guardarDespues().catch(x=>{sinCarga();toast('Algo falló: '+x.message,true);});
+function enviar(){
+  if(S.modo==='firmar')return enviarFirma();
+  const data=S.payload;
+  if(!S.idEnvio)S.idEnvio=Date.now().toString(36)+Math.random().toString(36).slice(2);   // el reintento lleva el mismo: no duplica
+  data.id_envio=S.idEnvio;
+  const p=DEMO?new Promise(ok=>setTimeout(()=>{const id=data.persona.id_clienta||'NUE-0001';
+      ok({id_clienta:id,id_consent:'CON-000001',nueva:!data.persona.id_clienta,pink_id:data.autorizaciones.pink==='si'?id:'',por_firmar:!!data.sin_firma,
+        perforaciones:data.sin_firma?[]:data.perforaciones.map((p,i)=>({...p,id_perfo:'PER-00000'+(i+1)})),
+        tatuajes:data.sin_firma?[]:data.tatuajes.map((t,i)=>({...t,id_tatuaje:'TTO-00000'+(i+1)}))});},600))
+    :api('consent_guardar',data);
+  S.guardando=p.then(r=>{
+    if(data.servicio==='Tatuaje')r.perforaciones=(r.tatuajes||[]).map(t=>({id_perfo:t.id_tatuaje,sku_serv:t.sku_serv,zona:'Tatuaje en '+t.zona,lado:'Centro',perforadora:t.tatuadora,tipo:t.tipo}));
+    // Sin firma: lo que va a la nota sale de las zonas elegidas (todavía sin número de perforación)
+    if(r.por_firmar)r.perforaciones=data.servicio==='Tatuaje'?data.tatuajes.map(t=>({id_perfo:'',sku_serv:t.sku_serv,zona:'Tatuaje en '+t.zona,lado:'Centro',perforadora:t.tatuadora,tipo:t.tipo}))
+      :data.perforaciones.map(p=>({...p,id_perfo:''}));
+    S.res={d:data,r};agregarALista(data,r);if(!r.por_firmar)pedirPdf(r.id_consent,data.firma.png);},x=>{S.errGuardar=x;});
+}
+async function terminarGuardado(){   // ya no se usa (era la pantalla de "regresa el celular")
+  const b=$('next');
+  if(S.errGuardar){S.errGuardar=null;enviar();}            // reintento
+  if(!S.res){b.disabled=true;b.textContent='Guardando…';await S.guardando;b.disabled=false;}
+  if(S.errGuardar){b.textContent='Reintentar guardar';$('err').textContent='No se guardó: '+S.errGuardar.message+'. Revisa el internet y vuelve a tocar.';return;}
+  show(9);
+}
+// La clienta nueva entra a la lista para la próxima búsqueda
+function agregarALista(d,r){
+  if(!LISTA||DEMO||LISTA.some(x=>x.id===r.id_clienta))return;
+  LISTA.push({id:r.id_clienta,apodo:d.persona.apodo,nombre:d.persona.nombre_completo,wa:d.persona.whatsapp,pink:r.pink_id?{estado:'Registrada'}:null});
+}
+// PDF: se pide aparte. Queda anotado en el celular hasta que el servidor confirma, y se reintenta al abrir el formulario.
+const PDF_PEND='yp_pdf_pend';
+const pdfPend=()=>{try{return JSON.parse(store.get(PDF_PEND)||'[]')}catch(e){return []}};
+const quitarPend=id=>store.set(PDF_PEND,JSON.stringify(pdfPend().filter(x=>x.id!==id)));
+function pedirPdf(id,png){
+  if(DEMO){S.pdf={id,estado:'demo'};return pintarPdf();}
+  store.set(PDF_PEND,JSON.stringify([...pdfPend().filter(x=>x.id!==id),{id,png}].slice(-10)));
+  S.pdf={id,estado:'armando'};pintarPdf();
+  api('consent_pdf',{id_consent:id,firma:png}).then(r=>{quitarPend(id);if(S.pdf&&S.pdf.id===id){S.pdf={id,estado:'ok',url:r.url_pdf};pintarPdf();}},
+    x=>{if(S.pdf&&S.pdf.id===id){S.pdf={id,estado:'error',png,msg:x.message};pintarPdf();}});
+}
+function reintentarPdfs(){pdfPend().forEach(x=>api('consent_pdf',{id_consent:x.id,firma:x.png}).then(()=>quitarPend(x.id),()=>{}));}
+function pintarPdf(){
+  const b=$('pdfBtn'),p=S.pdf;if(!b)return;
+  b.hidden=!p||p.estado==='demo';b.classList.toggle('pdfwait',!!p&&p.estado==='armando');b.onclick=null;b.removeAttribute('href');
+  if(!p)return;
+  if(p.estado==='armando')b.textContent='Armando el PDF firmado…';
+  if(p.estado==='ok'){b.textContent='Ver el PDF firmado';b.href=p.url;}
+  if(p.estado==='error'){b.textContent='No se armó el PDF. Tocar para reintentar';b.onclick=e=>{e.preventDefault();pedirPdf(p.id,p.png);};}
+}
+// Pantalla final del equipo
+function listo(){
+  const {d,r}=S.res,p=d.persona,hoy=new Date();
+  $('listoHint').textContent=`${p.apodo} · ${r.id_clienta}${DEMO?' · (demo: no se guardó nada)':''}`;
+  $('listoTit').textContent=r.por_firmar?'Guardado: falta la firma':(S.modo==='firmar'?'Consentimiento firmado':'Consentimiento guardado');
+  $('btnFirmarYa').hidden=!r.por_firmar||DEMO;
+  $('btnFirmarYa').onclick=()=>{const id=r.id_consent;reiniciar(true);abrirFirma(id);};
+  $('docCard').hidden=!!r.por_firmar||S.modo==='firmar';
+  const alertas=[...d.salud.enfermedades,...d.salud.condiciones].filter(x=>!/^Ninguna$/.test(x));
+  if(d.salud.alergias&&!/^Ninguna$/.test(d.salud.alergias))alertas.push('Alergia: '+d.salud.alergias);
+  $('alertaSalud').hidden=!alertas.length;
+  $('alertaSalud').innerHTML=`<b>Revisa antes de perforar:</b> ${esc(alertas.join(' · '))}`;
+  // Vista previa de lo que llega a la nota
+  const cuenta={};r.perforaciones.forEach(x=>cuenta[x.sku_serv]=(cuenta[x.sku_serv]||0)+1);
+  $('notaPrev').innerHTML=`<div class="ln"><span>Nombre en la nota</span><span>${esc(p.apodo)}</span></div>
+    <div class="ln"><span>ID de la clienta</span><span>${esc(r.id_clienta)}</span></div>
+    <div class="ln"><span>Correo para la nota</span><span>${esc(p.email||'—')}</span></div>
+    ${r.perforaciones.map(x=>`<div class="ln"><span>${esc(x.zona)}${x.lado==='Centro'?'':' '+esc(x.lado.toLowerCase())}<br><small style="color:var(--mu)">${esc(servNom(x.sku_serv))}</small></span><span>${servPrecio(x.sku_serv)!==''?'$'+servPrecio(x.sku_serv):'—'}</span></div>`).join('')}
+    <div class="pend">${d.servicio==='Tatuaje'?'Se cobra cada tatuaje con su tamaño.':'Falta elegir la pieza de cada perforación (del inventario).'}</div>`;
+  $('notaDemo').hidden=!DEMO;
+  $('guardado').innerHTML=[
+    [S.modo==='firmar'?'Clienta':(r.nueva?'Clienta nueva':'Clienta actualizada'),r.id_clienta],
+    ['Consentimiento',r.id_consent],
+    [d.servicio==='Tatuaje'?(r.perforaciones.length>1?`${r.perforaciones.length} tatuajes`:'1 tatuaje'):(r.perforaciones.length>1?`${r.perforaciones.length} perforaciones`:'1 perforación'),'Expediente'],
+    ['PDF firmado',r.por_firmar?'Se arma al firmar':'Drive · '+d.lugar],
+    ...(d.autorizaciones.pink==='si'?[['Alta en el Pink Club',r.pink_id||'Al firmar']]:[]),
+  ].map(([a,b])=>`<div><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join('');
+  const rec=[];
+  r.perforaciones.forEach(x=>{const lado=x.lado==='Centro'?'':' '+x.lado.toLowerCase();
+    rec.push([`Seguimiento · ${x.zona}${lado}`,sumaDias(CFG.dias.seguimiento)]);});
+  rec.sort((a,b)=>a[1]-b[1]);
+  $('recordatorios').innerHTML=rec.map(([a,b])=>`<div><span>${esc(a)}</span><b>${fmt(b)}</b></div>`).join('')+
+    `<p class="hint" style="margin:4px 0 0">Esa mañana aparece el WhatsApp listo para enviar. Si le ponen aros de silicón, el recordatorio de retiro (≈${CFG.dias.retiro} días) se programa solo desde la nota.</p>`;
+  const wa=p.tutor?p.tutor.whatsapp:p.whatsapp;
+  const msg=`Hola ${p.apodo} 💗 Gracias por tu visita a Yiyi Pash. Aquí está tu manual de cuidados: ${d.servicio==='Tatuaje'&&CFG.manual_tatuaje?CFG.manual_tatuaje:CFG.manual} Cualquier duda escríbenos por aquí.`;
+  $('waBtn').href=`https://wa.me/52${wa}?text=${encodeURIComponent(msg)}`;
+  $('waBtn').hidden=!d.autorizaciones.manual_whatsapp;
+  pintarPdf();
+  $('doc').innerHTML=d.firma?documento(d,hoy):'';   // sin firma todavía no hay PDF
+}
+// Lo que se le pasa a la nota (mismo sitio: se comparte por localStorage, sin datos en la liga)
+$('btnNota').onclick=()=>{
+  const {d,r}=S.res;
+  store.set('yp_handoff',JSON.stringify({desde:'consentimiento',id_consent:r.id_consent,id_clienta:r.id_clienta,
+    apodo:d.persona.apodo,email:d.persona.email,servicio:d.servicio,perforaciones:r.perforaciones.map(x=>({id_perfo:x.id_perfo,sku_serv:x.sku_serv,zona:x.zona,lado:x.lado,perforadora:x.perforadora,tipo:x.tipo}))}));
+  if(!DEMO)location.href=CFG.notas+'?desde=consentimiento';
+  else $('notaDemo').scrollIntoView({behavior:'smooth',block:'center'});
+};
+function documento(d,hoy){
+  const p=d.persona,s=d.salud,t=p.tutor;
+  const perf=perfTxt();
+  const fnTxt=p.fecha_nacimiento.split('-').reverse().join('/');
+  return `<h3>Consentimiento informado</h3><h4>para procedimiento de perforación</h4>
+  <div>Fecha: <b>${fmt(hoy)}</b> · Lugar: <b>${esc(d.lugar)}</b> · Atendió: <b>${esc(d.atiende.alias)}</b></div>
+  <table>
+    <tr><td class="sec" colspan="3">Datos personales</td></tr>
+    <tr><td>Nombre: ${esc(p.nombre_completo)}</td><td>Fecha de nacimiento: ${esc(fnTxt)}</td><td>WhatsApp: ${esc(p.whatsapp)}</td></tr>
+    <tr><td colspan="2">Perforación: ${esc(perf)}</td><td>Tipo de sangre: ${esc(s.tipo_sangre)}</td></tr>
+    <tr><td>Enfermedades: ${esc(s.enfermedades.join(', '))}</td><td>Condiciones: ${esc(s.condiciones.join(', '))}</td><td>Fobias: ${esc(s.fobias.join(', '))}</td></tr>
+    <tr><td>Alergias: ${esc(s.alergias||'Ninguna')}</td><td colspan="2">Medicamentos: ${esc(s.medicamentos||'Ninguno')}</td></tr>
+    <tr><td class="sec" colspan="3">En caso de ser menor de edad</td></tr>
+    <tr><td>Tutor: ${esc(t?t.nombre:'-')}</td><td>Parentesco: ${esc(t?t.parentesco:'-')}</td><td>Teléfono: ${esc(t?t.whatsapp:'-')}</td></tr>
+  </table>
+  ${consentHTML()}
+  <div class="firma"><img src="${d.firma.png}" alt="Firma"><div class="ln">${esc(d.firma.nombre)}${d.firma.firmante==='Tutor'?` · ${esc(t.parentesco)} y tutor(a) de ${esc(p.nombre_completo)}`:''}</div></div>`;
+}
+const _show=show;
+show=function(n){_show(n);if(n===9)listo();};
+function reiniciar(sinMostrar){
+  S.modo='';S.sinFirma=false;S.reemplaza='';S.firmaId='';S.envioFirma='';S.idEnvio='';S.dupVisto=false;$('reemplazoBox').hidden=true;
+  S.persona=null;S.detalle=null;S.salud={enf:[],cond:[],fob:[],ale:[],med:[]};S.perfos=[];S.tats=[];S.servicio='Perforación';S.manual=S.pink=null;S.fotos='si';S.firmaVacia=true;S.res=null;S.pdf=null;
+  document.querySelectorAll('input[type=text],input[type=tel],input[type=email],input[type=date],input[type=search],textarea').forEach(i=>i.value='');
+  document.querySelectorAll('input[type=checkbox]').forEach(i=>i.checked=false);
+  $('sangre').value='';$('saludPrev').hidden=true;$('results').innerHTML='';
+  document.querySelectorAll('#segManual .chip').forEach(b=>b.setAttribute('aria-pressed','false'));
+  $('perforadora').value=S.perfoAuto||'';
+  $('lugarOtro').value=store.get('yp_lugar_otro')||'';   // el lugar y quién atiende se quedan como en este celular
+  {const al=store.get('yp_elaboro_alias');if(al)[...$('atiende').options].forEach(o=>{if(o.textContent===al)o.selected=true;});}
+  pintarChips();ctx.clearRect(0,0,cv.width,cv.height);trazos.length=0;$('sigph').hidden=false;pintarClienta();if(!sinMostrar)show(2);
+}
+
+// ── Firma en dos tiempos (punto 5) ─────────────────────────────────
+// Cambió la zona después de firmar: el consentimiento nuevo reemplaza al firmado (nunca se modifica lo firmado)
+function pintarReemplazo(hoy){
+  const box=$('reemplazoBox');S.reemplaza='';
+  if(!hoy.length){box.hidden=true;return;}
+  const c=hoy[hoy.length-1];
+  box.hidden=false;
+  box.innerHTML=`<b>Ya firmó hoy</b> (${esc(c.id_consent)}: ${esc(c.zonas||'sin zonas')}). Si cambió la zona después de firmar, este consentimiento nuevo reemplaza al anterior.
+    <div class="seg" style="margin-top:8px"><button class="chip" type="button" data-rz="${esc(c.id_consent)}" aria-pressed="false">Sí, lo reemplaza</button><button class="chip" type="button" data-rz="" aria-pressed="false">No, es otro servicio</button></div>`;
+  box.querySelectorAll('[data-rz]').forEach(b=>b.onclick=()=>{S.reemplaza=b.dataset.rz;box.querySelectorAll('[data-rz]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
+}
+// "Es nueva": si su WhatsApp o su nombre ya están, se pregunta antes de crear otro ID
+function revisarParecidas(){
+  if(!LISTA)return false;
+  const wa=dig($('wa').value),t=norm($('nombre').value).split(/\s+/).filter(x=>x.length>2);
+  const otros=t.slice(1);
+  const hits=LISTA.filter(p=>{
+    if(wa.length===10&&String(p.wa)===wa)return true;
+    const pt=norm(p.nombre).split(/\s+/);
+    return t.length>1&&pt.includes(t[0])&&otros.some(x=>pt.includes(x));
+  }).slice(0,3);
+  if(!hits.length)return false;
+  const corto=n=>{const w=String(n||'').trim().split(/\s+/);return w[0]+(w[1]?' '+w[1][0]+'.':'');};
+  $('dupLista').innerHTML=hits.map((p,i)=>`<button class="result" type="button" data-d="${i}"><span><b>Sí, es ${esc(p.apodo||corto(p.nombre))}</b><small>${esc(corto(p.nombre))} · WhatsApp …${esc(String(p.wa).slice(-4))} · ${p.fn?'nació el '+esc(p.fn.split('-').reverse().join('/')):'sin fecha de nacimiento'}</small></span></button>`).join('');
+  $('dupLista').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>usarExistente(hits[+b.dataset.d]));
+  $('dupSheet').hidden=false;
+  return true;
+}
+$('dupNo').onclick=()=>{S.dupVisto=true;$('dupSheet').hidden=true;(S.trasDup==='despues'?guardarDespues:irAFirmar)();};
+function usarExistente(p){
+  $('dupSheet').hidden=true;S.dupVisto=true;
+  S.persona=Object.assign({},p);                 // sus datos escritos hoy se quedan; el servidor actualiza su registro
+  const id=p.id;
+  S.detalle=(DEMO?Promise.resolve(DEMO_PERSONAS.find(x=>x.id===id)):api('consent_detalle',{id})).then(d=>{
+    if(!S.persona||S.persona.id!==d.id)return;
+    S.persona=d;S.detalle=null;
+    if(d.ultima&&!$('sangre').value){const fn=$('fn').value,nom=$('nombre').value,ap=$('apodo').value,wa=$('wa').value,em=$('email').value;
+      llenarDetalle(d);$('fn').value=fn||d.fn;$('nombre').value=nom;$('apodo').value=ap;$('wa').value=wa;$('email').value=em||d.email||'';revisarEdad();}
+  });
+  S.detalle.catch(()=>{S.detalle=null;});
+  pintarClienta();
+  toast('Listo: usamos su registro de antes. Revisa y vuelve a tocar "Revisar con la clienta".');
+}
+// Lista Por firmar
+async function cargarPorFirmar(){
+  const el=$('pfLista');
+  if(DEMO){el.innerHTML='<p class="hint" style="margin:0">En la demo no hay consentimientos por firmar.</p>';return;}
+  el.innerHTML='<p class="hint" style="margin:0">Cargando…</p>';
+  try{
+    const d=await api('consent_por_firmar');S.porFirmar=d.consentimientos||[];
+    const hoy=new Date(),iso=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
+    el.innerHTML=S.porFirmar.length?S.porFirmar.map((c,i)=>`<div class="perfo">
+      <div class="perfo-h"><b>${esc(c.apodo||c.nombre)}</b>${c.salud?'<span class="pill warn">⚠️ Revisar salud en Fichas</span>':''}</div>
+      <span class="pf-z">${esc(c.servicio==='Tatuaje'?'🖋️ ':'')}${esc(c.zonas.join(' · ')||'Sin zonas')}</span>
+      <span class="hint" style="margin:0">${esc([(c.fecha===iso?'Hoy':c.fecha.split('-').reverse().join('/'))+(c.hora?' '+c.hora:''),c.lugar,c.atendio?'atendió '+c.atendio:''].filter(Boolean).join(' · '))}</span>
+      <div class="pf-acc"><button class="btn" type="button" data-pf="${i}">Firmar</button><button class="btn sec" type="button" data-nf="${i}">Se fue sin firmar</button></div>
+    </div>`).join(''):`<p class="hint" style="margin:0">Nadie espera firma en los últimos ${d.dias||7} días.</p>`;
+    el.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>abrirFirma(S.porFirmar[+b.dataset.pf].id_consent));
+    el.querySelectorAll('[data-nf]').forEach(b=>b.onclick=()=>abrirNoFirma(S.porFirmar[+b.dataset.nf]));
+  }catch(x){el.innerHTML=`<p class="err">No se pudo cargar: ${esc(x.message)}</p>`;}
+}
+$('pfNuevo').onclick=()=>{reiniciar(true);show(DEMO||store.get('yp_pink_clave')?2:0);};
+// Abre un consentimiento "Por firmar": se llenan sus datos, se revisan zonas y la clienta firma
+async function abrirFirma(id){
+  cargando('Abriendo el consentimiento…');
+  try{
+    const d=await api('consent_firma_detalle',{id});
+    reiniciar(true);
+    S.modo='firmar';S.firmaId=d.id_consent;
+    const p=d.persona;S.persona=p;
+    $('apodo').value=p.apodo;$('nombre').value=p.nombre;$('fn').value=p.fn;$('wa').value=p.wa;$('email').value=p.email||'';
+    if(p.tutor){$('tnombre').value=p.tutor.nombre;$('tpar').value=p.tutor.par;$('twa').value=p.tutor.wa;}
+    revisarEdad();
+    S.servicio=d.servicio==='Tatuaje'?'Tatuaje':'Perforación';
+    S.perfos=(d.perforaciones||[]).map(x=>({zona:x.zona,lado:x.lado,serv:x.sku_serv||'',custom:!zona(x.zona)}));
+    S.tats=(d.tatuajes||[]).map(t=>({zona:t.zona||'',dimensiones:t.dimensiones||'',sku:t.sku_serv||'',color:t.color||'',prueba:t.prueba||'',tipo:t.tipo||'Nuevo',tatuadora:t.tatuadora||''}));
+    if(d.perforadora&&[...$('perforadora').options].some(o=>o.value===d.perforadora))$('perforadora').value=d.perforadora;
+    $('notasEquipo').value=d.notas_equipo||'';
+    S.fotos='si';S.manual=d.aut.manual?'si':'no';S.pink=null;
+    sinCarga();show(7);
+    toast(`Revísalo con ${p.apodo} y que firme`);
+  }catch(x){sinCarga();toast(x.message,true);cargarPorFirmar();}
+}
+function firmarYa(){
+  S.payload=payload();S.res=null;S.errGuardar=null;
+  return enviarYEsperar('Guardando la firma…');
+}
+function enviarFirma(){
+  const data=S.payload,png=data.firma.png;
+  if(!S.envioFirma)S.envioFirma=Date.now().toString(36)+Math.random().toString(36).slice(2);   // el reintento no duplica
+  const body={id_consent:S.firmaId,firma:{png},id_envio:S.envioFirma,perforadora:data.perforadora,
+    aut:{consentimiento:true,datos_salud:true,fotos:true,aviso:false,marketing_wa:false}};
+  if(data.servicio==='Tatuaje')body.tatuajes=data.tatuajes;else body.perforaciones=data.perforaciones;
+  S.guardando=api('consent_firmar',body).then(r=>{
+    if(r.servicio==='Tatuaje')r.perforaciones=(r.tatuajes||[]).map(t=>({id_perfo:t.id_tatuaje,sku_serv:t.sku_serv,zona:'Tatuaje en '+t.zona,lado:'Centro',perforadora:t.tatuadora,tipo:t.tipo}));
+    data.persona.email=data.persona.email||r.email||'';
+    S.res={d:data,r};pedirPdf(r.id_consent,png);},x=>{S.errGuardar=x;});
+}
+// Se fue sin firmar: motivo de una lista y, si quieren, texto libre
+const MOTIVOS=['Se arrepintió','No tenía tiempo','Presupuesto','No era apta por salud','Otro'];
+function abrirNoFirma(c){
+  S.nf={c,motivo:''};$('nfTxt').value='';$('nfErr').textContent='';
+  $('nfQuien').textContent=`${c.apodo||c.nombre} · ${c.zonas.join(', ')}`;
+  $('nfChips').innerHTML=MOTIVOS.map(m=>`<button class="chip" type="button" data-m="${esc(m)}" aria-pressed="false">${esc(m)}</button>`).join('');
+  $('nfChips').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{S.nf.motivo=b.dataset.m;$('nfChips').querySelectorAll('[data-m]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+    const otro=b.dataset.m==='Otro';$('nfLbl').innerHTML=otro?'¿Cuál es el motivo? <span class="req">*</span>':'Comentario <span class="opc">(opcional)</span>';
+    $('nfTxt').placeholder=otro?'Escribe el motivo':'Ej. regresa el sábado';if(otro)$('nfTxt').focus();});
+  $('nfLbl').innerHTML='Comentario <span class="opc">(opcional)</span>';
+  $('nfSheet').hidden=false;
+}
+$('nfCancel').onclick=()=>$('nfSheet').hidden=true;
+$('nfOk').onclick=async()=>{
+  const det=$('nfTxt').value.trim();
+  if(!S.nf.motivo&&!det){$('nfErr').textContent='Elige un motivo o escríbelo.';return;}
+  if(S.nf.motivo==='Otro'&&!det){$('nfErr').textContent='Escribe cuál es el motivo.';$('nfTxt').focus();return;}
+  const b=$('nfOk');b.disabled=true;
+  cargando('Guardando…');
+  try{await api('consent_no_firmado',{id_consent:S.nf.c.id_consent,motivo:S.nf.motivo,detalle:det});$('nfSheet').hidden=true;toast('Guardado como no firmado');cargarPorFirmar();}
+  catch(x){$('nfErr').textContent=x.message;}
+  finally{b.disabled=false;sinCarga();}
+};
+
+// ── Cambiar zonas antes de firmar (Luis, 19/11): solo las elegidas, cada una se puede cambiar ──
+let zTmp=[];
+$('btnZonas').onclick=()=>{
+  if(esTat()){show(2);return $('secServicio').scrollIntoView({block:'start'});}   // tatuaje: su sección del formulario; "Listo" regresa a la firma
+  zTmp=S.perfos.map(p=>({...p}));$('zErr').textContent='';pintarZLista();$('zSheet').hidden=false;
+};
+function zOpts(sel){
+  const g=[...new Set(CFG.zonas.map(z=>z.g))];
+  return `<option value="">Elegir zona…</option>`+g.map(x=>`<optgroup label="${esc(x)}">${CFG.zonas.filter(z=>z.g===x).map(z=>`<option${z.z===sel?' selected':''}>${esc(z.z)}</option>`).join('')}</optgroup>`).join('')
+    +`<option value="__otra"${sel==='__otra'?' selected':''}>Otra zona (escribirla)…</option>`;
+}
+function pintarZLista(){
+  $('zLista').innerHTML=zTmp.length?zTmp.map((p,i)=>{const lados=p.zona||p.custom?ladosDe(p):[];return `<div class="perfo" id="zp${i}">
+    <div class="perfo-h"><select data-zs="${i}" style="flex:1">${zOpts(p.custom?'__otra':p.zona)}</select><button class="x" type="button" data-zd="${i}">Quitar</button></div>
+    ${p.custom?`<input type="text" data-zx="${i}" value="${esc(p.zona)}" placeholder="Nombre de la zona">
+      <label class="f">Servicio para la nota<select data-zv="${i}"><option value="">Sin servicio</option>${Object.keys(CFG.servicios).map(k=>`<option value="${esc(k)}"${p.serv===k?' selected':''}>${esc(servNom(k))}</option>`).join('')}</select></label>`:''}
+    ${!lados.length?'':lados.length===1?`<span class="hint" style="margin:0">Solo se hace al ${esc(lados[0].toLowerCase())}.</span>`
+      :`<div class="chips">${lados.map(l=>`<button class="chip" type="button" data-zi="${i}" data-zl="${l}" aria-pressed="${p.lado===l}">${l}</button>`).join('')}</div>`}
+  </div>`;}).join(''):'<p class="hint" style="margin:0">No hay zonas. Agrega una.</p>';
+  $('zLista').querySelectorAll('[data-zs]').forEach(s=>s.onchange=()=>{
+    const i=+s.dataset.zs,v=s.value,ant=zTmp[i];
+    if(v==='__otra')zTmp[i]={zona:'',lado:'',serv:'',custom:true};
+    else if(!v)zTmp[i]={zona:'',lado:'',serv:'',custom:false};
+    else{const z=zona(v),l=z.lados||CFG.ladosDefault;zTmp[i]={zona:v,lado:l.includes(ant.lado)?ant.lado:(l.length===1?l[0]:''),serv:z.serv,custom:false};}
+    pintarZLista();});
+  $('zLista').querySelectorAll('[data-zd]').forEach(b=>b.onclick=()=>{zTmp.splice(+b.dataset.zd,1);pintarZLista();});
+  $('zLista').querySelectorAll('[data-zi]').forEach(b=>b.onclick=()=>{zTmp[+b.dataset.zi].lado=b.dataset.zl;pintarZLista();});
+  $('zLista').querySelectorAll('[data-zx]').forEach(t=>t.oninput=()=>{zTmp[+t.dataset.zx].zona=t.value;});
+  $('zLista').querySelectorAll('[data-zv]').forEach(t=>t.onchange=()=>{zTmp[+t.dataset.zv].serv=t.value;});
+}
+$('zAgregar').onclick=()=>{zTmp.push({zona:'',lado:'',serv:'',custom:false});pintarZLista();const s=[...$('zLista').querySelectorAll('[data-zs]')].pop();if(s)s.focus();};
+$('zOk').onclick=()=>{
+  if(!zTmp.length)return $('zErr').textContent='Debe quedar al menos una zona.';
+  const i=zTmp.findIndex(p=>!p.zona.trim()),j=-1;   // el lado es opcional
+  if(i>=0)return $('zErr').textContent='Elige o escribe la zona '+(i+1)+'.';
+  if(j>=0)return $('zErr').textContent='Elige el lado de: '+zTmp[j].zona+'.';
+  S.perfos=zTmp;$('zSheet').hidden=true;renderResumen();guardarBorrador();toast('Zonas confirmadas');
+};
+$('zSheet').onclick=e=>{if(e.target===$('zSheet'))$('zSheet').hidden=true;};
+
+// ── Consentimiento a medias: se puede ir al Inicio y regresar sin perder lo capturado ──
+// Vive solo en esta pestaña (sessionStorage) y se borra al guardar o al descartarlo.
+const BORR='yp_consent_borrador';
+const ses={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}},del(k){try{sessionStorage.removeItem(k)}catch(e){}}};
+const CAMPOS=['lugar','lugarOtro','atiende','apodo','nombre','fn','wa','email','tnombre','tpar','twa','tfn','sangre','enfOtra','condOtra','alergias','meds','coment','notasEquipo','perforadora'];
+function guardarBorrador(){
+  if(S.step<2||S.step>7||S.res||S.restaurando)return;
+  if(!$('apodo').value.trim()&&!$('nombre').value.trim()&&!S.persona&&!S.perfos.some(p=>p.zona))return;   // vacío: no borra uno a medias
+  ses.set(BORR,JSON.stringify({step:S.step,modo:S.modo||'',firmaId:S.firmaId||'',persona:S.persona,salud:S.salud,perfos:S.perfos,servicio:S.servicio,tats:S.tats,
+    manual:S.manual,pink:S.pink,reemplaza:S.reemplaza||'',dupVisto:!!S.dupVisto,campos:Object.fromEntries(CAMPOS.map(k=>[k,$(k).value]))}));
+}
+let tBorr=null;
+['input','change','click'].forEach(t=>document.addEventListener(t,()=>{clearTimeout(tBorr);tBorr=setTimeout(guardarBorrador,400);}));
+const leerBorrador=()=>{try{return JSON.parse(ses.get(BORR)||'null')}catch(e){return null}};
+function borrarBorrador(){ses.del(BORR);pintarBorrador();}
+function pintarBorrador(){
+  const vacio=!$('apodo').value.trim()&&!$('nombre').value.trim()&&!S.persona;
+  const b=vacio||S.step===10?leerBorrador():null;   // solo se ofrece al empezar uno nuevo
+  ['borr1','borr10'].forEach(id=>{const x=$(id);x.hidden=!b;if(!b)return;
+    const quien=b.campos.apodo||b.campos.nombre||'una clienta sin nombre todavía',paso=(steps[b.step]&&steps[b.step].dataset.name)||'';
+    x.innerHTML=`<b>Tienes un consentimiento a medias</b> de ${esc(quien)} (${esc(paso)}).
+      <div class="seg" style="margin-top:8px"><button class="chip" type="button" data-bc="1">Continuar</button><button class="chip" type="button" data-bc="0">Descartar</button></div>`;
+    x.querySelector('[data-bc="1"]').onclick=retomarBorrador;
+    x.querySelector('[data-bc="0"]').onclick=()=>{if(confirm(`¿Descartar lo que se capturó de ${quien}?`))borrarBorrador();};
+  });
+}
+function retomarBorrador(){
+  const b=leerBorrador();if(!b)return;
+  S.restaurando=true;reiniciar(true);
+  Object.assign(S,{modo:b.modo,firmaId:b.firmaId,persona:b.persona,salud:Object.assign({enf:[],cond:[],fob:[],ale:[],med:[]},b.salud),perfos:b.perfos||[],
+    servicio:b.servicio||'Perforación',tats:b.tats||[],manual:b.manual,pink:b.pink,dupVisto:b.dupVisto});
+  CAMPOS.forEach(k=>{if(b.campos[k]!==undefined)$(k).value=b.campos[k];});
+  S.fotos='si';
+  revisarEdad();pintarChips();
+  document.querySelectorAll('#segManual .chip').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===S.manual));
+  pintarClienta();if(S.persona)pintarReemplazo(S.persona.hoy||[]);
+  const sinSalud=!$('sangre').value&&!S.salud.enf.length;
+  if(S.persona&&sinSalud)setTimeout(()=>pedirDetalle(S.persona.id,true),0);   // se salió antes de que llegaran sus datos
+  if(b.reemplaza){S.reemplaza=b.reemplaza;const r=$('reemplazoBox').querySelector(`[data-rz="${b.reemplaza}"]`);if(r)r.setAttribute('aria-pressed','true');}
+  ponerServicio(S.servicio);
+  S.restaurando=false;show(b.step);
+  toast('Seguimos donde te quedaste');
+}
+
+// ── Inicio ───────────────────────────────────────────────────────────
+(async function iniciar(){
+  $('demoTag').hidden=!DEMO;
+  if(!DEMO){
+    try{await cargarConfig();}
+    catch(x){$('loading').textContent='No pude cargar el formulario: '+x.message+'. Revisa el internet y recarga.';return;}
+  }
+  llenarListas();
+  if(DEMO){if(!store.get('yp_lugar'))store.set('yp_lugar','Yiyipash Studio');if(!store.get('yp_elaboro_alias')){store.set('yp_elaboro_id','ART-001');store.set('yp_elaboro_alias','Yiyi');}}
+  const lg=store.get('yp_lugar'),enLista=[...$('lugar').options].some(o=>o.value===lg);
+  if(lg){$('lugar').value=enLista?lg:'Otro';$('lugarOtro').value=store.get('yp_lugar_otro')||(enLista?'':lg);$('lugar').onchange();}
+  const al=store.get('yp_elaboro_alias');
+  if(al)[...$('atiende').options].forEach(o=>{if(o.textContent===al)o.selected=true;});
+  S.perfoAuto=CFG.perforadoras.some(p=>p.alias===al)?al:((CFG.perforadoras[0]||{}).alias||'');
+  $('perforadora').value=S.perfoAuto;
+  if(DEMO||store.get('yp_pink_clave')){cargarLista().catch(()=>{});if(!DEMO)reintentarPdfs();}
+  where();
+  $('loading').hidden=true;
+  const conClave=DEMO||!!store.get('yp_pink_clave');
+  if(/[?&]ver=firmar/.test(location.search)&&conClave){history.replaceState(null,'',location.pathname);return show(10);}
+  show(conClave?2:0);
+})();
+// Fechas de nacimiento: el calendario no deja elegir días después de hoy ni de hace más de 110 años
+(function(){const h=new Date(),d=h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
+  document.querySelectorAll('input[data-nac]').forEach(x=>{x.max=d;x.min=(h.getFullYear()-110)+'-01-01';});})();
+</script>

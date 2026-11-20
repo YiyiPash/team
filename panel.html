@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="sesion.js" data-pagina="panel"></script>
+<title>Panel de notas · Yiyi Pash</title><link rel="icon" type="image/png" sizes="32x32" href="https://yiyipash.com/team/icono-32.png"><link rel="icon" type="image/png" sizes="192x192" href="https://yiyipash.com/team/icono-192.png"><link rel="apple-touch-icon" href="https://yiyipash.com/team/icono-180.png">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Titan+One&display=swap">
+<style>
+/* Panel de notas: buscar y corregir sin entrar a Sheets. Misma marca que Fichas. */
+:root{
+  --bg:#ffe1ee; --surface:#ffffff; --fg:#3b1f2e; --mu:#7d5468; --line:#f8c4dc;
+  --accent:#d6347f; --accent2:#ff74af; --on-accent:#ffffff; --bad:#c0262d; --bad-bg:#fde8e8; --ok:#15803d; --ok-bg:#dcfce7;
+  --font:'Montserrat',system-ui,sans-serif; --title:'Titan One','Montserrat',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.45;
+  padding:14px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.app{max-width:560px;margin:0 auto;display:grid;gap:12px}
+.logo{height:42px;width:auto;display:block}
+.volver{font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;background:none;border:none;padding:0;font-family:inherit;cursor:pointer;justify-self:start}
+h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:#b82a6c;margin:0;letter-spacing:-.2px;text-wrap:balance}   /* misma letra que el Inicio (Luis, 19/11) */
+h2{font-size:15px;margin:0}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px}
+input,textarea{width:100%;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--fg)}
+label{display:grid;gap:4px;font-size:13px;font-weight:600}
+.btn{border:none;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--on-accent);font-family:inherit;font-weight:700;font-size:14px;padding:11px 14px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--accent);border:1.5px solid var(--line)}
+.btn.mal{background:var(--bad);color:#fff}
+.btn:disabled{opacity:.6;cursor:default}
+.btn:focus-visible,.nota:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+.nota{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;font:inherit;color:var(--fg);cursor:pointer}
+.nota b{display:block}
+.nota small,.mu{font-size:13px;color:var(--mu)}
+.der{text-align:right;flex:none;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--bad-bg);color:var(--bad)}
+.fila{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+.fila span:last-child{font-variant-numeric:tabular-nums;flex:none}
+.err{color:var(--bad);font-size:13px;margin:0}
+.ok{background:var(--ok-bg);color:var(--ok);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;margin:0}
+.lista{display:grid;gap:8px}
+.ev{font-size:13px;border-top:1px solid var(--line);padding-top:6px}
+</style>
+</head>
+<body>
+<div class="app">
+  <img class="logo" alt="Yiyi Pash" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAB1CAMAAABH9pzLAAAAkFBMVEX0m7LvjLjvjbjwjLjxb675zeH3qt3+fn//fv3/AP/61t752ef7AAGyZrL52+jzo8fseaz0psn3o8jgCm5/f3+wsLDufrC4cXHtfq5/AAAAAP///wD//3+qqlUA//8AAADvjLj+/f7+/v7xkbv4mMP76PDzp8n1t9L51+b3xtv+/v7+/f7+/f7+/v7+/v7+/v7oRiHdAAAAMHRSTlMUoF3PD/YOAgIBDaABA2ZgWaHeCAID/wOaAgEBAgMBAP79BP3+/v7+/v4uz69OkG506MzxAAAXnklEQVR42t1diXajuLYVGNuxMydV3fe+e98DJBBgY/v//+6dQQJNJHa6qodi9epK2Y7R5sz7HKlE+Q+6JPx3Oo/H43g+Sfrr7Zf4R+GVl2NtruNFfgmx+CfhPTDctqU/Rlludr8wYMCLMAet4NIDCvlQlnfz+3D92YDlfP0kvL2qzNWAmNtcWADSLOBPBSwXfv5Bz3Ks63VVGcSqUoB4vcrLwtzucDjIKyCLH4r3cAEXCj70cvjxAj6BRKv5UlUDLzQqLx/pXTTv4/ngadrPBWxuaq5LubmLlP0PfTsIWFfKRTzQK2J3J8uzve/ZvU/qjuIPGav30sW4UPahZ3AoMrjx1zFDCDp6Asarq+uuarJyj9Kvz5fzke9bHiBYs5rJHwI49QiNT9ENPvsGllI/FeZ+9CHJJvZV2wbA4KADwBoBq0qQeV9estUK73s4jK64/zhgSfnOBS7XSRDg3n34bZWJkvOhw5mVfcRkQf5YwFWTl3v4+lWjm+YN7ku3Oo70x1j+ccC4/ukRjqcpIKDO1Wqyrx7sq8mK7U46H4eFnMqt/Crg3oOrWKUR8OaI1pzleVaxA5FC5K9rFHeEWNx+Z2f9APkwIb7gXX37gofP6ULdD8PQs5qVjw9fMaNxfp7mAmfREGB0aMMLfqxYYwb2klUNvAP3Oz2EzlJc6Z/89K7tNFwDuadTKQV97kQP3OYFKBBVbQhv2/FSG8yPzsVXLJme5+B4aRIwyhwBw3vt+92mEHi7LAO0q2yFgO/pVi5k8QnS8K+0/kmQGiE/UYJHb3Xzilp0qk0OmojpAixQKTa7uoP86NuXdBofqDJw6as0/iT+h1Z1wMVuytemala5KP5PbPAD7yXnIxMcsYh2+gH96yThIz9WZe6KsbB+y8v3ADAZMdw6O7vpEfyJy2zYm30h83D81lDz7SAsPVKQJgclZN7g10+ZyjMa4HkyZZkGbALJBUtP620wfzodzoTXrl9runFfwU03gYQpK0B8re9p4PWuWW3udrcjPrMxKdWwNSF6+CoUzsk4KLnbrFYbyADgOuInWnDY9B6gwcgsxULcuXiuyb0aNyxoch3gjyOVZhc6eK+ZXxpQLHdfM2PnQofRVAK+idGZGCSKcms/rHR9fF41fT2aVOwUSxjhnizatu179K/rvm+n20zr7+mmHSEAz3Hy3uQg2UeuFXJ+9GYCV3V7wXS2GtcODWY4K/4eUT45MWhn86ABHniP/osIg6d7wBBJeIbbDrpxFwuK1K3b1nmJASvUadCs0vPSE+A2BRgfUPGllGcSMjh+tcoLlpgsixbjkXXJxrlW1RtkJAWGrft8RUt9EuFXcphtO6O57Fz5/9ZROYD17I8R8ByHMS4NHwDOsMi5Fa7D8MD1KmDxWyune46Q5pMUPHW12mNk2sjDWlXgukENGhF854myBF1dc3Wsry2CAgSXJGDH5mcbxo/fnuFxNdYOXddRDgPFgVWTrSzgpaNk8TIKSnzG+vgOWvCiwebA6/WV8GPR2YZZdQVgRR54ElkKcBc4LWXU4kOvlSpnQbxnZnjMFyHk5zm8yfKZilL8Nf4k4F0JzIYOkG1tIP/cklcVnnzPdZyif3D1a67DEfAKf7mJVBdd5YxYcVXh2HCqzoySAUt41H3DZmYMaqhy+9x2ErPKmkIUKcIbfAyeB7hv9t4Cf2w5RntuX1+PF+PwlMJnpZ/sGm88IC1BToCW2dk7kHdN1Jmkk5jrcLIj3eqz1a7m0YOend8kYhLv+Aq3zAElajd4b7kh56SrZxGkMvoqZU6k8Ai4TTinkT0qr7Gf06OtdTAhtin0HB22nRY3+GujkKfEw9aI+H2N1Rj98v2qQvLnd2ZKRsqJiRLL5jjMwbu7ES/liiaFPyYBy6N1NFwtcXokdpuSKTCLjfsK0q/Fjrb85FRahTlb47h7SbGYfusVIzTLnlTjxG5sjY9HeArd3yxf5A45hZdpwOXm7CAgh4jpwvfSo8CoztzsTPrYD/h4Wsu2P8TVp3EHmhzThIC/EMWLtiomMmxEPYfHAFKZEg8WcFPdevVGwMAs+RX6JGHh5Edo7I2ixZguQr/GQhmxHUGKW4nPxBYgLttuqk8VAsac7Zvrg8bXlUJ1nghreSAWZCS8E4/NRrJeFLCaUw/3ISNezCzwtgffwU+AUXMnAQ9qlcFiDC3Qa+XUmUfIm1hNrIsjtr1+xnRKlsuAbYDbyfWgjXi337y68ni/Qr0SpQP4vOihO5IA5NVd48OlYKhNEb4AuDycPavcg8C2ZKo2xjA4uEUHdnd2/SY/0R5W+phQabJhF7AoM4UalJdOzEPBtz2I1yi5+IAGNV6pnZerw0zL4DVUqScBA/gy5eUNqei4wTKdCTAVOr8mP3jOmPsLTYVUUSQQU5g4gKVgg+GEk0OdFI8lUCDwLNm7CSfOJVMOTQvuuVxyE4uuZSeEQUbs9pEECDDpgGV4WEXXsCJafheGtxZEDXxcHzN1jZBlxGm1nKfPgMvdQ45xdm/DnGRqeCMyrDJk6QE+pWMSPmFKrRt7g3kh8IhQr4nAiEyCAfemblWzHKE9IowBeLczUWYMyg3OL1bFPtRAZbiIkC/a2ySNSo3jfc7qXficVmQijtoSpaNy4T/7gR+EQn1DiwglwJmWybP8VBpzviRgzZxQQpCqkIYb86sQiLfFziFPHsWUkUoTGtAFbKbYNQM+p4PSmsMsOALpe3HjMpBtv5MJH2ABB8u37ZFTpNIMeBWtg8mxPOWkOaXduDk3VPMYgy77d6Ru9RvlkxuHQvsMMHsGjGDBEnvrI0uR9AGs0kOIi9sj6t+xQjHg6j7hjI3kdfwgkBcVcy7usEBrrB+yd8klxmMMeEGlDa5N9AEq7QGwENPv+4VgbaolP7hz1aiKSHNRl/BO94mECiu9Y0glsEvB6sFWwZbY0W/3IxEeaoNdmOENtCAGnHRaihmrqiqp2Gj8+7HLeJjSutDZDAZ2AHiNy4yDIPMIIeCpgxR2WhrrsyhD5QaIZNYFa32k7ZFaxBrY45P8sJTw0tQm6aGJFDxiMlGogndT/hYtKAXYEB6vUVpnNGKVAjxY2KHgYQG22Dg97AWhQJPdg4keX5t8x7EjCXgh8eDwg5VmkCrXJpGSC3kar1CH/RHT4oxs2z6JVWRarBNDqOnG1joSCCams9hyCX7sQb5PqaqIndYHqWU3ZVpDWH4j4G9TeZ7qZXYJwWherkq2ArMIMD/a6BdaviEXa/j2KyTphtWYqT00VDDh72UCcKSUMz/bUBLvLd3YYsaVDBp4l2jPh4KxL6j4XsbpvsTOs+b41sdyV8ZkWN4NVirkOzc09/GwoQqQmI8EYMoclup/FWXSHmDq3lWJKBMT8czb6thhsMSaIg1Yh4mvYQfNF6naulDsjWtDCpgKcOV1pIU/s9CkEJPJ+Zm0aYc2ma3cgiBua5k2zgdbq9ihBZDTfY/jFb7ThWkHD7TYPxi3gpyKWmjYIychYonvC7gUfrOqTSDmAaGAUmcn3BBPdqgjhTZWGoVhI5GQrp5MeFVG8ZYAr5M+y+adRp2abPedFLVVL2WxswJ+WGiIGz6pCzlpLtG6ALBxquAQgzamp6JdMpjEgp9MOJOxdeMrrX936/W0iXqtzQcLZm5a/VL+V6QEXIpomoFqI6XmzgoWxH0VrNGodF7uMJnrU1VWb7KnBK7oN5Shq4tE/oMfjrqu/M09a7T5PkWdRK4auuyRic6V/LY442E5+5l5wTUgvw2Ptw3WSPHgLaeJlUQhzWtoE/ngPG8UqbpS74ngiBOWYamEqrI2rL6J6mTCcpZbVoyRiw5HHibaHtgcGAJqgKMgarVXcVuMIn4fhSu/DRxK0qhgGKzmKCxjd4+AdewkcJWWRzcandlWIpUQbccClh9N8WDZfApb4W3HXEUgrLV5O915IwRhZ8m+EKcdxuu8xHQ7QhsilTAEBOuWocYnYU5yg9I7D7uUif6wQ6siHnQywBTdR+ECU7B2qdFICIZ0SZfwWWySjRhjjW4YcNQS0X3bdk5/TkEjeBcMV6kqmiYR6fkOGLU736+BD4cJIHBg2XOyXk5xt64X7RPsRZXMswhwUz0l/B8C7pJpr5rspK2CljP39YEUltcMptkPPRQvOV5Y8srTbX0YhKaSJZ3iGB7Zh2LD1Alv0OmPml69MXDhdmCpRC6EuGoST2yE2O/dZwMzOvKmRkwz5YMqngbtYosckBDk+KfSgBef9izg7eK4+scqLe07cisKuMSdNKn29a1UwtolaShrc+EDYgeZpCC0/qBt3RpeVIRYAMnddgmwvLu7m4b0NnmW5a4ySJqIXaqmeC4udtK/DUm2hhLVhbK7V8k8XqvFSo7nxKZC9bpNHlaod2JLLcyWZlqm5rozQNulawtIxrpEphj5LBbUOvk9TdcPesHfN6YJne7W8jviyskvwUJ9B82lAsM2gqi5fudN9tSpTJtaTOsUQZWIPuSUuoTiftKfNIOk6bLGdtivHINChlo+3a9hog/6ehtEtj5daGqvsvPd3B5i5mNQQaZdqSEWPbvjNtLDYZ6hW4oyWqfIPW5DR8+a+iLccd7urt2oJW2aATkEPkgc5OLh5JyKXZ7s6cg7uBNcpodLuWdyN0LK8KYhgOUGu65ihoeHYVRA+1Grivsi1w/2Ce5IjDR7MKBMoHie6E5h1Hkwj5pdC2TamGprM8SQCJ5Mnqd4UD0M+mMFbqoEl0MdiRCxtm49qhA+AoxspKaBizMvXey21G6Hn0reP2GmZ6B84NopuvoqyTGnid8PJ0a61CBbZ2dFeILMGBRNyJBbb27AWwpKGQX1K3AKAb55y52xBlsyhNc8WE6EVyc3026HoY4dqCHJo5ruU7xNnaJCeJCNVNGm7saU1tznu2VuEwEratDQuPsF4y9cNbGdgtg5xmubPCui3U9P98MAes1sSCjHbp46XUpMhhRe/LJEHcUtJBNB2rWZCbETMrfos1FpbSpJ6e7XwBbUg8PrTU2ezZRpF3n+2qZQuVOnS6bapX1uXUefpBYSNtHnuR/YH6WpVuuw4X/TXK4gOlpt5HfOMAppBno0DAT7zK1hHIWzG8LuCIjonbZKUHV+MRtFGSa/22qh7b2lYp3sqZ0jHIzZ7W/bP0xMl8285UTn9tgRDvY39jyhKilDEWZoNZFEcEKlsNhLtqt4jKLWyZ7OEHlictJFaTuEUu6flZpaQPXhtq1fgtC5js4KWPwnrBcorcEBFpYvufVeLRT/oPyyTomYXVNrk5ipnCeyIXIIU9tbuJVN1pjeQHr32ccS5jaJEvOUJkYqM4jURkLoNX3uwEzQsFALM2maaEhM6QKTZR1N3RufOyT46rV10o48YEjFAVzfdhaA4dE1lVc7R8Ab06eJ1Q72t5gRyVYvloaYzsv96G2CsYUG2/0w7avg/ag4EFSnu8ZBpC1Qws0E+HAb4GlqGIx2Z7eDrCmtHGONdIe25mmklI8GisnsOHW3LfEzY7t/dgf6qdzqIhO2vKebOsLeo8qxYTv4f/2hBzzRCTfMvxFzX1M7SpQy6YFpLA+n8vTinLwdARfhRraKSA3+VrQZSRt9j227hojexEXg3IEBCmbyTWKXNyYr/5KELeKeB67w5wGSrM3STADNh36cHVJDj9sAdqZSVXZ7Fe83UpSyEwiI5xleL/eLTdTMX7Jnwl8BzFrd6jfQ5INJsmRisui2gXEzZjJ6G8fNcNcK5Y912jifFkC+I6ktULk+nWHzMQHbBhp9vDUsOcz1oGiCHTrKMMi7NNfzOZvVOwn93p+LHniWLStQvvwozgfOHPajzY1V2GzkQsEYqyhRo2dfchH7zQ1HDAivrdTqhgX8vfwqYO5vYWo0V+S0i7Ht1x1N5a1yHhQ72DNXjrAp8IAeLEpiLN03OLorUaN17USlj844WGQt7baglrLoB/FVwDNpKmhTnADjvD/jCQTvL/AjBt03CGrH8cJDJZ3r9rFMgYJ5qphtmFKO7v5vKZSaYhrkHUCeP59OsBH0uuOIRLQpjQrh7VcBT6z4jm5eQDuhm2f8MzOES383rW+9RpdPfZvOis5snbJhSjspFbus1tlyqXu7KeQa9yWivV/H15y3K37FaQWs+G7nqh9MabtxfOLl1JyFdNrd02nDVO+kVDux8jRa9/VNDnsCDBwt8JYQGQ+fjKp9LmA1seKPZa6ckKm6OtoQG8ygr51ZdG1GdDonwwCXxUM7U57mzdvLa4+mmYYzkYffyPS5Clft6WEBy20qKWoDaki7xVNwDZN5NG4ACoNwcH2eddm9LtxuwGnyibyNZ9Cv3NODAn5MZoGBTFiBkniRP2vXneqGdevBEavwC93rfB1gDsNriMIFcvJEyZep4uETAc9tD6M4nCQMrtKBYxpmUK4AQ8DK329Bbmvj20ikOONVgHmfG2w8fa6yw/2bpqlvmZon/FSha97Ts9vab88rb31H+S9XIxvv3bbrXcCu7I1vPz3EGt27Ej9fCfhYZ9W/D/X5nu/1ZvYGjjftRbR8njOtWwRZEbhRL6joyllsW7kfXVcuMMOIj2URavTZKxUv1wI+Zg01+fvXPWyrOmcVRCaaCW5v36S2Kn63R7H8joCdoAkC8Nan/Yjqul/ta64R/qHwfHSNWqluqpxstfSkYEtVfXp5h7/Xx9WKQ/F4Q9t/MJvUJo9l00DHSA9y40XRzpWW8mSqfOPu9SRPT6Mvq8b9Dnm1DZ9XjXiQZta7522nJOLrlFpNO4ODNoCHD/a1Yl64dgC3rpdyPrquPF9Ho1rG6l2vPvoPYLwy8UBW5xmLTilogycO4G6tow47Oh8Trw77BNR1EJUuZeBzdOOnXZ5GO6Z/hKKyt+HZfRBPfhA4XQvYiFhyyY7TqHKeKb4GcWf7tCtxN9/zOwFeuxrtL7DRnlueDbr1wtWpmCqm1jPtQMDX8HliYmZRxJImFbtscycdyrbVn4iXFjMwXnfyICxdQ5Ou1eAlmp5Gazf8zpaqXMk/+RY8Xl08oIjhaQlqqK1Xm4kys6OaH8JV/UTciOCsR18CMghSrZ9CtK7HdoPr3rGMxnlgRz+vviIolfOw3gj2sCLGMvMpwnnE9gN1ZryrcJJG+pXNvau19cROJy4vQI+gKBMwrZdi8HXslrONZ/xXg2HopfS66XbkYYIcTEI6m0xDvN+ixLLtg2ppCfDwm/I0d3Z9rtmf/ed5lDecXIoihjyrfS1CpkRaIg42AYcNP8NDTptM/T7eY+nzqYmDmxbfHPzCuUuWmIEJn29hPHjjwn1exs1H6tqZVgMcR6DNZY8lcDaZbsPv/rCUw7xsue6pl2qKzjURT4HOt0lYni9AH8rtwqGzp/QBWy0SULwvOzzO8AES32ah+HNq/Nuu9W/dYhQey/LWw3ileFg+ulN6ww6TksNsMRxklBhijGtD/xoDn33Vpd1n9BQU2yd5A8XzyfnMtgOOww54EgVMFms6pnSFU4plKeLfjUql4DoUlbpVp/0a6hBq0HH81FGL2w6kNVCKF7h4spim9UTKEO7CNCNkY4JSKhJmrO+jXxudYh8hfyDghVOEt0IsHIAlPpIgJAmPwqfU28ZLvJrol8cgVTsVKvjQlRTPzYd53dFcMcxnFtsPvjnBxjiH7EiM0y7i0UubTttMBawunmwr3Eh0hls0Tq5Op738ZWfER0FpbjLYE/zhKDs4qo6ZZXgE+ZtqDGI6GVu84txqPdPscIojPKM5mJ2Q02vmYbnxJqf1oy+59RW2zl+en/DQYqcpgmNDz3mxP+FrCB8+Awcb07FSeGyUyF+y1yc6kdL8Dr2YZ8/mlErwIMC2whb4EeYSDreHpR96xnlIqKZORXtw9z4+Bh943CZ2Ysg7Lz+4Sx98/RcAjhPpfWH7mu66duDo7Ws7cA3fvbN/RbHZh78DZylvNvNLQpRldOTuXwA4TjsOpfw5t3p4eLj+NPY/EfDpZwH+e/xLHnEYvvzygIPE71hK+QsDhjZQmPj9LXT65wGGE6yCTOso/wYi/on/Gs82Kh7+DiL+iYClDKx4/MUljH4rc3q8Z/lr2zDnPzkUAMPR+zcw/trr/wFJan1WyYcYdwAAAABJRU5ErkJggg==">
+  <a class="yp-casita" id="aInicio" href="./">⌂ Inicio</a>
+  <button class="volver" type="button" id="aLista" hidden>← Volver a la lista</button>
+  <h1 id="titulo">Panel de notas</h1>
+
+  <section id="vAviso" class="card" hidden>
+    <h2>Antes de entrar</h2>
+    <p style="margin:0">Aquí puedes cambiar notas de días pasados que ya se mandaron, se cobraron o ya cuentan en finanzas y en el Pink Club. <b>Un cambio aquí modifica datos ya guardados.</b></p>
+    <p class="mu" style="margin:0">Todo cambio queda anotado con tu nombre, la fecha y lo que decía antes.</p>
+    <button class="btn" type="button" id="bEntiendo">Entiendo, entrar</button>
+    <a class="btn sec" href="./" style="text-align:center;text-decoration:none">Regresar al Inicio</a>
+  </section>
+
+  <section id="vLista" class="lista">
+    <label for="q" id="lQ">Buscar en las notas de hoy<input type="search" id="q" placeholder="Número, nombre o correo" autocomplete="off"></label>
+    <label for="fecha" id="lFecha" hidden>Del día (opcional)<input type="date" id="fecha"></label>
+    <p class="err" id="eLista" hidden></p>
+    <p class="mu" id="estado"></p>
+    <div class="lista" id="notas"></div>
+  </section>
+
+  <section id="vNota" class="lista" hidden>
+    <p class="ok" id="aviso" hidden></p>
+    <div class="card" id="resumen"></div>
+    <form class="card" id="fCorregir">
+      <h2>Corregir</h2>
+      <label for="nombre">Nombre<input id="nombre" autocomplete="off"></label>
+      <label for="correos">Correos de la nota<input id="correos" autocomplete="off" inputmode="email" placeholder="Si son varios, sepáralos con coma"></label>
+      <label for="manual">Correos del manual<input id="manual" autocomplete="off" inputmode="email" placeholder="Si son varios, sepáralos con coma"></label>
+      <label for="por" id="lPor">¿Quién hace el cambio?<input id="por" autocomplete="off"></label>
+      <p class="err" id="eCorregir" hidden></p>
+      <button class="btn" type="submit" id="bGuardar">Guardar cambios</button>
+      <button class="btn sec" type="button" id="bReenviar">Reenviar correo</button>
+    </form>
+    <form class="card" id="fAnular">
+      <h2>Anular nota</h2>
+      <p class="mu" style="margin:0">Solo Luis o Yoltic. La nota conserva su número, deja de contar en ventas, se regresan sus puntos y su consentimiento vuelve a Por cobrar. Para cambiar un monto, anula y haz la nota correcta.</p>
+      <label for="motivo">Motivo<textarea id="motivo" rows="2"></textarea></label>
+      <label for="claveD">Clave de Luis y Yoltic<input type="password" id="claveD" autocomplete="off"></label>
+      <p class="err" id="eAnular" hidden></p>
+      <button class="btn mal" type="submit" id="bAnular">Anular nota</button>
+    </form>
+    <div class="card" id="historial" hidden></div>
+  </section>
+</div>
+<script>
+const AS_URL='https://script.google.com/macros/s/AKfycbwJhAO5anQhZ_tzZ7f6jSE133AxFzSLU2rXkVH1vdtH9SlkMlbnvdjbez3786HIEhAf/exec';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dinero=n=>'$'+Number(n||0).toLocaleString('es-MX');
+const fechaTxt=f=>f?f.split('-').reverse().join('/'):'';
+const leer=k=>{try{return localStorage.getItem(k)||'';}catch(e){return '';}};
+let actual=null,tBuscar=0,turno=0;
+// Notas anteriores (fase 2): solo dueños, después de aceptar la advertencia. El servidor lo vuelve a revisar.
+const ANT=new URLSearchParams(location.search).get('ver')==='anteriores';
+async function api(action,data){
+  const res=await fetch(AS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({action,clave:leer('yp_pink_clave')},ANT?{anteriores:true}:{},data||{})),redirect:'follow'});
+  const j=await res.json();
+  if(!j.ok)throw new Error(j.error||'Error del servidor');
+  return j.data;
+}
+function error(id,msg){$(id).textContent=msg||'';$(id).hidden=!msg;}
+async function buscar(){
+  const mio=++turno;
+  if(!leer('yp_pink_clave')){error('eLista','Este dispositivo no tiene la clave. Ponla en Inicio.');return;}
+  error('eLista','');$('estado').textContent='Buscando…';
+  try{
+    const d=await api('consent_nota_buscar',{q:$('q').value.trim(),fecha:ANT?$('fecha').value:''});
+    if(mio!==turno)return;
+    const filtro=$('q').value.trim()||(ANT&&$('fecha').value);
+    $('estado').textContent=ANT?(d.notas.length?(filtro?'':'Las 30 más recientes'):'No encontré notas con esa búsqueda.')
+      :d.notas.length?($('q').value.trim()?'':'Notas de hoy'):($('q').value.trim()?'No encontré notas de hoy con esa búsqueda.':'Hoy todavía no hay notas.');
+    $('notas').innerHTML=d.notas.map(n=>'<button class="nota" type="button" data-id="'+esc(n.id)+'"><span><b>'+esc(n.id)+' · '+esc(n.nombre)+'</b><small>'+esc(fechaTxt(n.fecha))+' · '+esc(n.lugar)+'</small></span><span class="der">'+(n.estado==='Anulada'?'<span class="pill">Anulada</span>':esc(dinero(n.total)))+'</span></button>').join('');
+  }catch(x){if(mio===turno){$('estado').textContent='';error('eLista',x.message);}}
+}
+function pintar(n,msg){
+  actual=n;
+  $('vLista').hidden=true;$('vNota').hidden=false;$('aLista').hidden=false;
+  $('aviso').textContent=msg||'';$('aviso').hidden=!msg;
+  const anulada=n.estado==='Anulada';
+  $('resumen').innerHTML='<div class="fila"><h2>'+esc(n.id)+' · '+esc(n.nombre)+'</h2>'+(anulada?'<span class="pill">Anulada</span>':'')+'</div>'
+    +'<p class="mu" style="margin:0">'+esc([fechaTxt(n.fecha),n.lugar,n.elaboro?'elaboró '+n.elaboro:'',n.id_clienta].filter(Boolean).join(' · '))+'</p>'
+    +n.items.map(i=>'<div class="fila"><span>'+esc(i.cantidad)+' × '+esc(i.descripcion)+(i.artista&&i.artista!=='-'?' <small class="mu">('+esc(i.artista)+')</small>':'')+'</span><span>'+esc(dinero(i.importe))+'</span></div>').join('')
+    +'<div class="fila"><b>Total</b><b>'+esc(dinero(n.total))+'</b></div>'
+    +(n.anticipo?'<div class="fila"><span>Anticipo</span><span>'+esc(dinero(n.anticipo))+'</span></div>':'')
+    +n.pagos.map(p=>'<div class="fila"><span>'+esc(p.tipo)+'</span><span>'+esc(dinero(p.monto))+'</span></div>').join('')
+    +(n.comentarios&&n.comentarios!=='-'?'<p class="mu" style="margin:0">'+esc(n.comentarios)+'</p>':'');
+  $('fCorregir').hidden=anulada;$('fAnular').hidden=anulada||!/^D-/.test(n.id);
+  $('nombre').value=n.nombre;$('correos').value=n.emails_nota;$('manual').value=n.emails_manual;
+  if(!$('por').value)$('por').value=leer('yp_elaboro_alias');
+  $('motivo').value='';$('claveD').value='';error('eCorregir','');error('eAnular','');
+  AV=window.YP&&YP.avance?YP.avance($('fCorregir'),n.id):null;   // avance guardado de la corrección
+  if(!msg&&AV&&AV.restaurar()){$('aviso').textContent='Seguiste donde te quedaste: todavía no está guardado.';$('aviso').hidden=false;}
+  $('historial').hidden=!n.cambios.length;
+  $('historial').innerHTML='<h2>Cambios</h2>'+n.cambios.map(c=>'<div class="ev"><b>'+esc(c.accion)+'</b>'+(c.campo?' '+esc(({Nombre_Clienta:'nombre',Email_Clienta:'correo de la nota','Correos manual':'correo del manual'})[c.campo]||c.campo):'')+' · '+esc(c.por)+' · '+esc(c.fecha)+(c.despues?'<br>'+esc(c.despues):'')+(c.motivo?'<br>'+esc(c.motivo):'')+'</div>').join('');
+  scrollTo(0,0);
+}
+let AV=null;
+function aLista(){$('vNota').hidden=true;$('vLista').hidden=false;$('aLista').hidden=true;actual=null;buscar();}
+$('aLista').onclick=aLista;
+$('notas').onclick=async e=>{
+  const b=e.target.closest('[data-id]');if(!b)return;
+  error('eLista','');$('estado').textContent='Abriendo…';
+  try{pintar(await api('consent_nota_detalle',{id:b.dataset.id}));$('estado').textContent='';}
+  catch(x){$('estado').textContent='';error('eLista',x.message);}
+};
+$('q').oninput=()=>{clearTimeout(tBuscar);tBuscar=setTimeout(buscar,450);};
+const quien=()=>(window.YP_SESION&&YP_SESION.nombre)||$('por').value.trim();   // con perfil, el nombre sale de la sesión
+$('fCorregir').onsubmit=async e=>{
+  e.preventDefault();error('eCorregir','');
+  if(!quien())return error('eCorregir','Escribe quién hace el cambio.');
+  $('bGuardar').disabled=true;
+  try{
+    const r=await api('consent_nota_corregir',{id:actual.id,nombre:$('nombre').value,emails_nota:$('correos').value,emails_manual:$('manual').value,por:quien()});
+    if(AV)AV.borrar();
+    pintar(r.nota,r.cambios?'Cambios guardados. Si corregiste un correo, toca Reenviar correo.':'No había nada que cambiar.');
+  }catch(x){error('eCorregir',x.message);}
+  $('bGuardar').disabled=false;
+};
+$('bReenviar').onclick=async()=>{
+  error('eCorregir','');
+  if(!quien())return error('eCorregir','Escribe quién hace el cambio.');
+  if($('correos').value.trim()!==actual.emails_nota||$('manual').value.trim()!==actual.emails_manual||$('nombre').value.trim()!==actual.nombre)
+    return error('eCorregir','Primero toca Guardar cambios.');
+  $('bReenviar').disabled=true;
+  try{const r=await api('consent_nota_reenviar',{id:actual.id,por:quien()});pintar(r.nota,'Correo enviado a '+r.enviada.join(', '));}
+  catch(x){error('eCorregir',x.message);}
+  $('bReenviar').disabled=false;
+};
+$('fAnular').onsubmit=async e=>{
+  e.preventDefault();error('eAnular','');
+  if(!quien())return error('eAnular','Escribe quién hace el cambio arriba, en Corregir.');
+  if(!$('motivo').value.trim())return error('eAnular','Escribe el motivo.');
+  if(!$('claveD').value)return error('eAnular','Escribe la clave de Luis y Yoltic.');
+  if(!confirm('¿Anular la nota '+actual.id+'? Esto no se puede deshacer.'))return;
+  $('bAnular').disabled=true;
+  try{
+    const r=await api('consent_nota_anular',{id:actual.id,motivo:$('motivo').value,clave_duenos:$('claveD').value,por:quien()});
+    pintar(r.nota,'Nota anulada.'+(r.desligadas?' Su consentimiento volvió a Por cobrar.':'')+(r.regalo?' Ojo: el regalo de cumpleaños sigue contando como usado.':''));
+  }catch(x){error('eAnular',x.message);$('claveD').value='';}
+  $('bAnular').disabled=false;
+};
+function iniciar(){
+  $('lPor').hidden=!!window.YP_SESION;
+  if(!ANT)return buscar();
+  document.title='Notas anteriores · Yiyi Pash';
+  $('titulo').textContent='Notas anteriores';
+  $('lQ').firstChild.textContent='Buscar en notas de otros días';
+  $('lFecha').hidden=false;
+  $('vLista').hidden=true;$('vAviso').hidden=false;   // la advertencia sale cada vez que se entra
+}
+$('bEntiendo').onclick=()=>{$('vAviso').hidden=true;$('vLista').hidden=false;buscar();};
+$('fecha').onchange=buscar;
+if(window.YP_SESION)iniciar();else document.addEventListener('yp-sesion',iniciar,{once:true});
+</script>
+</body>
+</html>

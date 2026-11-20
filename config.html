@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="sesion.js" data-pagina="config"></script>
+<title>Configuración · Yiyi Pash</title><link rel="icon" type="image/png" sizes="32x32" href="https://yiyipash.com/team/icono-32.png"><link rel="icon" type="image/png" sizes="192x192" href="https://yiyipash.com/team/icono-192.png"><link rel="apple-touch-icon" href="https://yiyipash.com/team/icono-180.png">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<style>
+/* Configuración (fase 2, rehecha 20/11 con lo que pidió Luis): pestañas Zonas · Lugares · Mensajes · Equipo · Accesos.
+   Zonas y accesos se guardan solos al cambiarlos. Equipo y Accesos: solo dueños. Color del módulo: pizarra. */
+:root{
+  --bg:#ffe1ee; --surface:#ffffff; --fg:#3b1f2e; --mu:#7d5468; --line:#f8c4dc;
+  --accent:#d6347f; --accent2:#ff74af; --on-accent:#ffffff; --bad:#c0262d; --ok:#15803d; --ok-bg:#dcfce7;
+  --conf:#4b5a74; --conf2:#dde3ee; --soft:#fff7fb;
+  --font:'Montserrat',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.45;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+.app{max-width:560px;margin:0 auto;display:grid;gap:12px}
+.fija{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(8px + env(safe-area-inset-top,0px)) 0 8px;display:grid;gap:8px}
+.fija .yp-casita{position:static;margin:0}
+h1{font-weight:700;font-size:23px;line-height:1.2;color:#b82a6c;margin:0;letter-spacing:-.2px;text-wrap:balance}
+h2{font-size:15px;margin:0}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:1.5px solid var(--conf2);background:#fff;color:var(--conf);font:inherit;font-size:13.5px;font-weight:700;border-radius:999px;padding:7px 14px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--conf);border-color:var(--conf);color:#fff}
+.card{background:var(--surface);border:1.5px solid var(--conf2);border-radius:16px;padding:14px;display:grid;gap:10px;box-shadow:0 2px 0 var(--conf2)}
+.card.off{opacity:.75}
+input,select,textarea{width:100%;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--fg)}
+textarea{min-height:140px;resize:vertical}
+label{display:grid;gap:4px;font-size:13px;font-weight:600}
+.btn{border:none;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--on-accent);font-family:inherit;font-weight:700;font-size:14px;padding:11px 14px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--accent);border:1.5px solid var(--line)}
+.btn.mal{background:var(--bad)}
+.btn:disabled{opacity:.6;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.mini:focus-visible,.tab:focus-visible,.lado:focus-within{outline:3px solid var(--accent2);outline-offset:2px}
+.mu{font-size:13px;color:var(--mu);margin:0}
+.err{color:var(--bad);font-size:13px;margin:0}
+.ok{background:var(--ok-bg);color:var(--ok);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;margin:0}
+.estado{font-size:12.5px;font-weight:700;color:var(--ok);min-height:1.2em}
+.estado.mal{color:var(--bad)}
+.zona{display:grid;gap:6px;padding:9px 0;border-top:1px solid var(--line)}
+.zona:first-of-type{border-top:none}
+.zona .nom{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
+.lados{display:flex;flex-wrap:wrap;gap:6px}
+.lado{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:4px 11px;font-size:13px;font-weight:600;cursor:pointer;background:var(--soft)}
+.lado input{width:17px;height:17px;padding:0;margin:0;accent-color:var(--conf)}
+.lado:has(input:checked){border-color:var(--conf);background:var(--conf2)}
+.fila{display:flex;gap:8px;align-items:center}
+.fila>input{flex:1;min-width:0}
+.fila .btn{white-space:nowrap}
+.lug{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.lug:first-child{border-top:none}
+.lug small{display:block;color:var(--mu);font-size:12px}
+.lug.off b{color:var(--mu);text-decoration:line-through}
+.mini{border:1.5px solid var(--line);background:#fff;color:var(--accent);font:inherit;font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+.vista{background:var(--soft);border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;white-space:pre-wrap}
+.cab{display:flex;align-items:center;gap:12px}
+.av{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;background:var(--accent)}
+.off .av{background:var(--mu)}
+.cab b{display:block;font-size:16px}.cab small{display:block;color:var(--mu);font-size:12.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;border:1.5px solid var(--line);background:var(--soft)}
+.pill.ok2{border-color:#86c9a0;color:var(--ok);background:var(--ok-bg)}
+.pill.no{color:var(--mu)}
+.acc{display:flex;flex-wrap:wrap;gap:6px}
+.conf{background:#fff4dd;border:1.5px solid #f3d28c;color:#8a5a00;border-radius:12px;padding:10px 12px;font-size:13.5px;display:grid;gap:8px}
+.mods{display:grid;gap:7px}
+.mods label{display:flex;gap:9px;align-items:flex-start;font-weight:500;font-size:14px}
+.mods input{width:20px;height:20px;padding:0;margin:1px 0 0;flex:none;accent-color:var(--conf)}
+.giro{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--accent);animation:giro .8s linear infinite}
+@keyframes giro{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.giro{animation-duration:2.4s}}
+#cargador{position:fixed;inset:0;z-index:50;background:rgba(255,225,238,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--accent);text-align:center;padding:24px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="fija">
+    <a class="yp-casita" href="./">⌂ Inicio</a>
+    <h1>Configuración</h1>
+    <div class="tabs" role="tablist" aria-label="Qué configurar">
+      <button class="tab" role="tab" data-tab="zonas">Zonas</button>
+      <button class="tab" role="tab" data-tab="lugares">Lugares</button>
+      <button class="tab" role="tab" data-tab="mensajes">Mensajes</button>
+      <button class="tab" role="tab" data-tab="equipo" data-ver="dueno">Equipo</button>
+      <button class="tab" role="tab" data-tab="accesos" data-ver="dueno">Accesos</button>
+    </div>
+  </div>
+  <p class="ok" id="aviso" hidden></p>
+  <p class="err" id="eGeneral" hidden></p>
+
+  <!-- Zonas -->
+  <section id="p-zonas" class="app" style="gap:10px;width:100%" hidden>
+    <p class="mu">Cada zona va en el servicio que se cobra. Palomea los lados en que se hace cada zona: en el consentimiento solo salen esos. <b>Se guarda solo.</b></p>
+    <div id="servicios" class="app" style="gap:10px;width:100%"></div>
+  </section>
+
+  <!-- Lugares -->
+  <section id="p-lugares" class="app" style="gap:10px;width:100%" hidden>
+    <div class="card">
+      <div id="lugares"></div>
+      <h2 style="margin-top:6px">Agregar lugar</h2>
+      <label for="lugNombre">Nombre<input id="lugNombre" autocomplete="off" placeholder="Ej. Bazar Coyoacán"></label>
+      <label for="lugCat">Categoría (como en finanzas)<select id="lugCat"></select></label>
+      <p class="mu">Se crea su carpeta para los PDFs de los consentimientos.</p>
+      <button class="btn" type="button" id="bLugar">Agregar lugar</button>
+      <p class="err" id="eLugar" hidden></p>
+    </div>
+  </section>
+
+  <!-- Mensajes -->
+  <section id="p-mensajes" class="app" style="gap:10px;width:100%" hidden>
+    <div class="card">
+      <label for="msgSel">Mensaje<select id="msgSel"></select></label>
+      <label for="msgTxt">Texto<textarea id="msgTxt"></textarea></label>
+      <p class="mu" id="msgVars"></p>
+      <div><p class="mu" style="margin-bottom:4px">Así se vería:</p><div class="vista" id="msgVista"></div></div>
+      <button class="btn" type="button" id="bMsg">Guardar mensaje</button>
+      <p class="mu" id="msgBorr" hidden></p>
+      <p class="err" id="eMsg" hidden></p>
+    </div>
+  </section>
+
+  <!-- Equipo -->
+  <section id="p-equipo" class="app" style="gap:10px;width:100%" hidden>
+    <p class="mu">Quién entra al sistema. Cada quien entra con su <b>usuario</b> y su PIN; lo que ve depende de su <b>tipo de acceso</b> (pestaña Accesos).</p>
+    <div id="lista" class="app" style="gap:10px;width:100%"></div>
+    <form class="card" id="fNuevo">
+      <h2>Agregar persona</h2>
+      <label for="nUsuario">Usuario o apodo <span class="mu" style="font-weight:400">con esto entra (ej. kat)</span><input id="nUsuario" autocomplete="off" autocapitalize="none" placeholder="Ej. kat"></label>
+      <label for="nCompleto">Nombre completo <span class="mu" style="font-weight:400">opcional</span><input id="nCompleto" autocomplete="off"></label>
+      <label for="nRol">Tipo de acceso<select id="nRol"></select></label>
+      <label for="nColab">¿Quién es en las notas? <span class="mu" style="font-weight:400">opcional</span><select id="nColab"></select><small class="mu" style="font-weight:400">Su nombre en la lista de artistas (la misma de "Elaboró" y de los pagos). Al entrar, la nota y el consentimiento ya salen con su nombre. El iPad va en "Ninguna".</small></label>
+      <p class="mu">La primera vez que entre, crea su PIN contigo o con Yol presentes.</p>
+      <button class="btn" type="submit">Agregar</button>
+      <p class="err" id="eNuevo" hidden></p>
+    </form>
+  </section>
+
+  <!-- Accesos -->
+  <section id="p-accesos" class="app" style="gap:10px;width:100%" hidden>
+    <p class="mu">Qué ve cada tipo de perfil. <b>Se guarda solo.</b> Dueño siempre ve todo. Equipo, Accesos y Notas anteriores son solo de dueños.</p>
+    <div id="tipos" class="app" style="gap:10px;width:100%"></div>
+    <form class="card" id="fTipo">
+      <h2>Nuevo tipo de acceso</h2>
+      <label for="tNombre">Nombre<input id="tNombre" autocomplete="off" placeholder="Ej. Artista líder"></label>
+      <div class="mods" id="tMods"></div>
+      <button class="btn" type="submit">Crear tipo</button>
+      <p class="err" id="eTipo" hidden></p>
+    </form>
+  </section>
+</div>
+<div id="cargador" hidden><div class="giro" aria-hidden="true"></div><span id="cargaTxt">Cargando…</span></div>
+<script>
+const AS_URL='https://script.google.com/macros/s/AKfycbwJhAO5anQhZ_tzZ7f6jSE133AxFzSLU2rXkVH1vdtH9SlkMlbnvdjbez3786HIEhAf/exec';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const leer=k=>{try{return localStorage.getItem(k)||'';}catch(e){return '';}};
+let C=null,D=null;
+// silencioso: sin la pantalla de "Guardando…" (para lo que se guarda solo)
+async function api(action,data,texto,silencioso){
+  if(!silencioso){$('cargaTxt').textContent=texto||'Guardando…';$('cargador').hidden=false;}
+  try{
+    const res=await fetch(AS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({action,clave:leer('yp_pink_clave')},data||{})),redirect:'follow'});
+    const j=await res.json();
+    if(!j.ok)throw new Error(j.error||'Error del servidor');
+    return j.data;
+  }finally{if(!silencioso)$('cargador').hidden=true;}
+}
+function error(id,msg){$(id).textContent=msg||'';$(id).hidden=!msg;}
+function aviso(msg){$('aviso').textContent=msg;$('aviso').hidden=!msg;if(msg)setTimeout(()=>{if($('aviso').textContent===msg)$('aviso').hidden=true;},5000);}
+const esDueno=()=>window.YP_SESION&&YP_SESION.clave_rol==='dueno';
+
+// ── Pestañas (se recuerda en la liga: config.html#lugares) ──
+const TABS=['zonas','lugares','mensajes','equipo','accesos'];
+function abrirTab(t){
+  if(!TABS.includes(t)||((t==='equipo'||t==='accesos')&&!esDueno()))t='zonas';
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
+  TABS.forEach(x=>$('p-'+x).hidden=x!==t);
+  if(location.hash!=='#'+t)history.replaceState(null,'','#'+t);
+  error('eGeneral','');
+  if(t==='equipo'||t==='accesos'){if(!D)cargarEquipo();}else if(!C)cargarConfig();
+}
+document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(b)abrirTab(b.dataset.tab);};
+async function cargarConfig(){try{pintar(await api('consent_cfg_leer',{},'Cargando la configuración…'));}catch(x){error('eGeneral',x.message);}}
+async function cargarEquipo(){try{pintarEq(await api('consent_perf_admin',{},'Cargando el equipo…'));}catch(x){error('eGeneral',x.message);}}
+
+function pintar(c){C=c;pintarServicios();pintarLugares();pintarMensajes();}
+
+// ── Zonas: cada zona con sus lados; se guarda solo ──
+const ladosDe=z=>z.lados&&z.lados.length?z.lados:C.lados;
+const tarjeta=s=>`<div class="card" data-sku="${esc(s.sku)}">
+    <h2>${esc(s.nombre)} <span class="mu" style="font-weight:500">${esc(s.sku)}</span></h2>
+    <div>${s.zonas.map((z,i)=>`<div class="zona" data-nombre="${esc(z.z)}"><div class="nom"><span>${esc(z.z)}</span><button class="mini" type="button" data-quitar="${i}" aria-label="Quitar ${esc(z.z)}">Quitar</button></div>
+      <div class="lados">${C.lados.map(l=>`<label class="lado"><input type="checkbox" data-z="${i}" value="${esc(l)}"${ladosDe(z).includes(l)?' checked':''}>${esc(l)}</label>`).join('')}</div></div>`).join('')||'<p class="mu">Sin zonas</p>'}</div>
+    <div class="fila"><input placeholder="Zona nueva" autocomplete="off" data-nueva aria-label="Zona nueva para ${esc(s.nombre)}"><button class="btn sec" type="button" data-agregar>Agregar</button></div>
+    <p class="estado" data-estado aria-live="polite"></p></div>`;
+function pintarServicios(){$('servicios').innerHTML=C.servicios.map(tarjeta).join('');}
+// Vuelve a pintar solo una tarjeta (las demás conservan lo que se está palomeando)
+function pintarServicio(sku){
+  const s=C.servicios.find(x=>x.sku===sku),el=$('servicios').querySelector(`[data-sku="${CSS.escape(sku)}"]`);
+  if(s&&el)el.outerHTML=tarjeta(s);
+}
+function estadoZona(sku,msg,mal){const e=$('servicios').querySelector(`[data-sku="${CSS.escape(sku)}"] [data-estado]`);if(e){e.textContent=msg;e.classList.toggle('mal',!!mal);}}
+// Fila de guardado: uno a la vez, y varios clics seguidos en el mismo servicio se juntan en uno.
+// Antes cada clic mandaba lo que había al abrir y el segundo chocaba con el primero ("Alguien más cambió…").
+const cola=[];let guardando=false;
+const pendiente=sku=>cola.some(t=>t.sku===sku);
+function encolar(sku,armar,listo){
+  if(armar==='palomitas'&&cola.some(t=>t.sku===sku&&t.armar==='palomitas'))return;   // ya va a leer las palomitas al mandarse
+  cola.push({sku,armar,listo});estadoZona(sku,'Guardando…');siguiente();
+}
+// Lo que se ve en la tarjeta: cada zona con sus palomitas
+const zonasDeTarjeta=sku=>[...$('servicios').querySelectorAll(`[data-sku="${CSS.escape(sku)}"] .zona`)].map(el=>({z:el.dataset.nombre,lados:[...el.querySelectorAll('input:checked')].map(x=>x.value)}));
+async function siguiente(){
+  if(guardando||!cola.length)return;
+  guardando=true;const t=cola.shift();
+  try{
+    const s=C.servicios.find(x=>x.sku===t.sku),zonas=t.armar==='palomitas'?zonasDeTarjeta(t.sku):t.armar(s);
+    const c=await api('consent_cfg_zonas',{sku:t.sku,zonas,antes:s.texto},'',true);
+    C.servicios=c.servicios;C.lados=c.lados;
+    if(!pendiente(t.sku)){pintarServicio(t.sku);estadoZona(t.sku,t.listo||'Guardado ✓');}
+  }catch(x){
+    for(let i=cola.length-1;i>=0;i--)if(cola[i].sku===t.sku)cola.splice(i,1);
+    try{const c=await api('consent_cfg_leer',{},'',true);C.servicios=c.servicios;C.lados=c.lados;}catch(e){}
+    pintarServicio(t.sku);estadoZona(t.sku,x.message+' (ya te enseño cómo quedó guardado)',true);
+  }finally{guardando=false;siguiente();}
+}
+const copiaZonas=s=>s.zonas.map(z=>({z:z.z,lados:ladosDe(z).slice()}));
+// Quitar o agregar cambia la lista: la tarjeta se congela hasta que se guarda
+const congelar=card=>{card.inert=true;card.style.opacity='.6';};
+$('servicios').addEventListener('change',e=>{
+  const cb=e.target.closest('[data-z]');if(!cb)return;
+  const card=cb.closest('[data-sku]'),sku=card.dataset.sku,zona=cb.closest('.zona');
+  if(!zona.querySelector('input:checked')){cb.checked=true;return estadoZona(sku,'Deja al menos un lado en '+zona.dataset.nombre+'.',true);}
+  encolar(sku,'palomitas');
+});
+$('servicios').onclick=e=>{
+  const card=e.target.closest('[data-sku]'),b=e.target.closest('button');if(!card||!b)return;
+  const sku=card.dataset.sku,s=C.servicios.find(x=>x.sku===sku);
+  if(b.dataset.quitar!==undefined){
+    const nom=b.closest('.zona').dataset.nombre;
+    if(!confirm('¿Quitar la zona '+nom+' de '+s.nombre+'? Ya no saldrá en el consentimiento.'))return;
+    congelar(card);return encolar(sku,s2=>copiaZonas(s2).filter(z=>z.z!==nom),'Zona quitada ✓');
+  }
+  if(b.hasAttribute('data-agregar')){
+    const inp=card.querySelector('[data-nueva]'),z=inp.value.replace(/[(),/]/g,' ').replace(/\s+/g,' ').trim();
+    if(!z)return inp.focus();
+    if(s.zonas.some(x=>x.z.toLowerCase()===z.toLowerCase()))return estadoZona(sku,'Esa zona ya está.',true);
+    congelar(card);encolar(sku,s2=>copiaZonas(s2).concat({z,lados:C.lados.slice()}),z+' agregada ✓ — palomea sus lados');
+  }
+};
+$('servicios').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('[data-nueva]')){e.preventDefault();e.target.closest('[data-sku]').querySelector('[data-agregar]').click();}});
+
+// ── Lugares ──
+function pintarLugares(){
+  $('lugares').innerHTML=C.lugares.map(l=>`<div class="lug${l.activo?'':' off'}"><span><b>${esc(l.lugar)}</b><small>${esc(l.categoria||'Sin categoría')}${l.activo?'':' · oculto'}</small></span>
+    <button class="mini" type="button" data-lugar="${esc(l.lugar)}" data-activo="${l.activo?0:1}">${l.activo?'Ocultar':'Mostrar'}</button></div>`).join('');
+  const cat=$('lugCat').value;
+  $('lugCat').innerHTML='<option value="">Elige…</option>'+C.categorias.map(c=>`<option>${esc(c)}</option>`).join('');
+  if(cat)$('lugCat').value=cat;
+}
+$('lugares').onclick=async e=>{
+  const b=e.target.closest('[data-lugar]');if(!b)return;error('eLugar','');
+  const mostrar=b.dataset.activo==='1';
+  if(!mostrar&&!confirm('¿Ocultar '+b.dataset.lugar+'? Ya no saldrá en el consentimiento ni en la nota (las notas viejas lo conservan).'))return;
+  try{pintar(await api('consent_cfg_lugar_activo',{lugar:b.dataset.lugar,activo:mostrar}));aviso(mostrar?'Lugar visible otra vez.':'Lugar oculto.');}
+  catch(x){error('eLugar',x.message);}
+};
+$('bLugar').onclick=async()=>{
+  error('eLugar','');const lugar=$('lugNombre').value.trim(),categoria=$('lugCat').value;
+  if(!lugar)return error('eLugar','Escribe el nombre del lugar.');
+  if(!categoria)return error('eLugar','Elige la categoría.');
+  try{pintar(await api('consent_cfg_lugar',{lugar,categoria},'Agregando lugar y su carpeta…'));$('lugNombre').value='';aviso(lugar+' agregado.');}
+  catch(x){error('eLugar',x.message);}
+};
+
+// ── Mensajes (lo que vas escribiendo se guarda en este aparato hasta que lo guardas) ──
+const EJEMPLO={nombre:'Ana',apodo:'Anita',tutor:'Rosa',id:'ANA-0001',puntos:'120',fecha:'15/12/2026',zonas:'Helix izquierdo',url:'https://…',liga:'https://yiyipash.com/pink/',accion:'retirar los aros de silicón'};
+const kBorr=()=>'yp_borr_msg_'+((window.YP_SESION&&YP_SESION.id)||'')+'_'+$('msgSel').value;
+const borr={get:k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}},del:k=>{try{sessionStorage.removeItem(k)}catch(e){}}};
+function pintarMensajes(){
+  const sel=$('msgSel').value;
+  $('msgSel').innerHTML=C.mensajes.map(m=>`<option value="${esc(m.clave)}">${esc(m.nombre)}</option>`).join('');
+  if(sel&&C.mensajes.some(m=>m.clave===sel))$('msgSel').value=sel;
+  cargarMsg();
+}
+const msgActual=()=>C.mensajes.find(m=>m.clave===$('msgSel').value);
+function cargarMsg(){const m=msgActual();if(!m)return;const b=borr.get(kBorr());$('msgTxt').value=b!==null?b:m.texto;$('msgBorr').hidden=b===null;$('msgBorr').textContent='Seguiste donde te quedaste (todavía no está guardado).';vistaMsg();error('eMsg','');}
+function vistaMsg(){
+  const m=msgActual();if(!m)return;
+  $('msgVars').innerHTML=m.variables.length?'Se llenan solas: '+m.variables.map(v=>'<b>'+esc(v)+'</b>').join(', '):'Este mensaje no lleva datos que se llenen solos.';
+  $('msgVista').textContent=$('msgTxt').value.replace(/\{([a-z_]+)\}/gi,(t,k)=>EJEMPLO[k]||t);
+  $('bMsg').disabled=$('msgTxt').value.trim()===m.texto.trim();
+}
+$('msgSel').onchange=cargarMsg;
+$('msgTxt').oninput=()=>{const m=msgActual();if(m){if($('msgTxt').value.trim()===m.texto.trim())borr.del(kBorr());else borr.set(kBorr(),$('msgTxt').value);}vistaMsg();};
+$('bMsg').onclick=async()=>{
+  const m=msgActual();error('eMsg','');
+  if(!confirm('¿Guardar el texto nuevo de "'+m.nombre+'"? Desde ahora así se manda.'))return;
+  try{const k=kBorr();pintar(await api('consent_cfg_mensaje',{msg:m.clave,texto:$('msgTxt').value,antes:m.texto},'Guardando mensaje…'));borr.del(k);cargarMsg();aviso('Mensaje guardado.');}
+  catch(x){error('eMsg',x.message);}
+};
+
+// ── Equipo ──
+let editando=null,confirmando=null;
+const ROL=r=>r==='iPad'?'iPad del estudio':r;
+const opcionesRol=sel=>D.tipos.map(t=>`<option value="${esc(t.tipo)}"${t.tipo===sel?' selected':''}>${esc(ROL(t.tipo))}</option>`).join('');
+const opcionesColab=sel=>'<option value="">Ninguna</option>'+D.colaboradores.map(c=>`<option value="${esc(c.id)}"${c.id===sel?' selected':''}>${esc(c.alias)} · ${esc(c.id)}</option>`).join('');
+function pintarEq(d){if(d)D=d;pintarLista();pintarTipos();}
+function pintarLista(){
+  const yo=window.YP_SESION&&YP_SESION.id;
+  $('lista').innerHTML=D.perfiles.map(p=>{
+    const c=D.colaboradores.find(x=>x.id===p.id_colaborador);
+    if(editando===p.id)return `<form class="card" data-editar="${esc(p.id)}">
+      <h2>Editar a ${esc(p.usuario)}</h2>
+      <label>Usuario o apodo<input name="usuario" value="${esc(p.usuario)}" autocomplete="off" autocapitalize="none"></label>
+      <label>Nombre completo <span class="mu" style="font-weight:400">opcional</span><input name="completo" value="${esc(p.nombre_completo)}" autocomplete="off"></label>
+      <label>Tipo de acceso<select name="rol">${opcionesRol(p.rol)}</select></label>
+      <label>¿Quién es en las notas? <span class="mu" style="font-weight:400">su nombre en "Elaboró"</span><select name="colab">${opcionesColab(p.id_colaborador)}</select></label>
+      <button class="btn" type="submit">Guardar</button><button class="btn sec" type="button" data-cancelar>Cancelar</button>
+      <p class="err" data-err hidden></p></form>`;
+    return `<div class="card${p.activo?'':' off'}" data-id="${esc(p.id)}">
+      <div class="cab"><span class="av">${esc(p.usuario.charAt(0).toUpperCase())}</span><span><b>${esc(p.usuario)}${p.id===yo?' <span class="mu">(tú)</span>':''}</b><small>${esc(ROL(p.rol))}${p.nombre_completo?' · '+esc(p.nombre_completo):''}${c?' · '+esc(c.alias)+' ('+esc(c.id)+')':p.id_colaborador?' · '+esc(p.id_colaborador):''}</small></span></div>
+      <div class="pills"><span class="pill ${p.activo?'ok2':'no'}">${p.activo?'Activo':'Desactivado'}</span><span class="pill ${p.tiene_pin?'ok2':'no'}">${p.tiene_pin?'Tiene PIN':'Sin PIN: lo crea al entrar'}</span>${p.ultimo?`<span class="pill">Entró ${esc(p.ultimo)}</span>`:''}</div>
+      ${confirmando&&confirmando.id===p.id?`<div class="conf"><span>${confirmando.que==='pin'?`¿Reiniciar el PIN de ${esc(p.usuario)}? Se cierra su sesión en todos los aparatos y la próxima vez que entre crea uno nuevo.`:`¿Desactivar a ${esc(p.usuario)}? Ya no podrá entrar. Todo lo que hizo se queda con su nombre.`}</span>
+        <button class="btn ${confirmando.que==='pin'?'':'mal'}" type="button" data-si>${confirmando.que==='pin'?'Sí, reiniciar PIN':'Sí, desactivar'}</button><button class="btn sec" type="button" data-no>Cancelar</button></div>`
+      :`<div class="acc"><button class="mini" type="button" data-accion="editar">Editar</button>${p.tiene_pin?'<button class="mini" type="button" data-accion="pin">Reiniciar PIN</button>':''}${p.id===yo?'':`<button class="mini" type="button" data-accion="${p.activo?'baja':'alta'}">${p.activo?'Desactivar':'Activar otra vez'}</button>`}</div>`}
+      <p class="err" data-err hidden></p></div>`;
+  }).join('');
+  const r=$('nRol').value,co=$('nColab').value;
+  $('nRol').innerHTML=opcionesRol(r||'Artista');$('nColab').innerHTML=opcionesColab(co||'');
+}
+const perfil=id=>D.perfiles.find(p=>p.id===id);
+async function guardarPerfil(p,cambios,msg){
+  try{editando=null;confirmando=null;pintarEq(await api('consent_perf_guardar',Object.assign({id:p.id,usuario:p.usuario,nombre_completo:p.nombre_completo,rol:p.rol,id_colaborador:p.id_colaborador,activo:p.activo},cambios)));aviso(msg);}
+  catch(x){pintarLista();const e=$('lista').querySelector(`[data-id="${CSS.escape(p.id)}"] [data-err]`);if(e){e.textContent=x.message;e.hidden=false;}}
+}
+$('lista').onclick=async e=>{
+  const card=e.target.closest('[data-id]'),b=e.target.closest('button');
+  if(e.target.closest('[data-cancelar]')){editando=null;return pintarLista();}
+  if(!card||!b)return;
+  const p=perfil(card.dataset.id);
+  if(b.hasAttribute('data-no')){confirmando=null;return pintarLista();}
+  if(b.hasAttribute('data-si')){
+    if(confirmando.que==='pin'){try{confirmando=null;pintarEq(await api('consent_perf_reiniciar',{id:p.id},'Reiniciando PIN…'));aviso('PIN de '+p.usuario+' reiniciado. La próxima vez que entre, crea uno nuevo.');}catch(x){pintarLista();error('eGeneral',x.message);}return;}
+    return guardarPerfil(p,{activo:false},p.usuario+' quedó desactivada.');
+  }
+  const a=b.dataset.accion;
+  if(a==='editar'){editando=p.id;confirmando=null;return pintarLista();}
+  if(a==='pin'||a==='baja'){confirmando={id:p.id,que:a};return pintarLista();}
+  if(a==='alta')return guardarPerfil(p,{activo:true},p.usuario+' puede entrar otra vez (con su mismo PIN).');
+};
+$('lista').addEventListener('submit',e=>{
+  const f=e.target.closest('[data-editar]');if(!f)return;e.preventDefault();
+  guardarPerfil(perfil(f.dataset.editar),{usuario:f.usuario.value.trim(),nombre_completo:f.completo.value.trim(),rol:f.rol.value,id_colaborador:f.colab.value},'Cambios guardados.');
+});
+$('fNuevo').onsubmit=async e=>{
+  e.preventDefault();error('eNuevo','');
+  const usuario=$('nUsuario').value.trim();if(!usuario)return error('eNuevo','Escribe el usuario o apodo.');
+  try{pintarEq(await api('consent_perf_guardar',{usuario,nombre_completo:$('nCompleto').value.trim(),rol:$('nRol').value,id_colaborador:$('nColab').value},'Agregando…'));
+    $('nUsuario').value='';$('nCompleto').value='';aviso(usuario+' ya está en el equipo. La primera vez que entre, escribe su usuario y crea su PIN.');}
+  catch(x){error('eNuevo',x.message);}
+};
+
+// ── Accesos: palomitas por tipo; se guarda solo ──
+const checks=(sel,pre)=>D.modulos.map(m=>`<label><input type="checkbox" value="${esc(m.clave)}"${sel.includes(m.clave)?' checked':''}${pre||''}> ${esc(m.nombre)}</label>`).join('');
+function pintarTipos(){
+  $('tipos').innerHTML=D.tipos.map(t=>`<div class="card" data-tipo="${esc(t.tipo)}">
+    <h2>${esc(ROL(t.tipo))}${t.tipo==='iPad'?' <span class="mu" style="font-weight:500">· se cierra tras 1 h sin uso</span>':''}</h2>
+    ${t.fijo?'<p class="mu">Ve todo, siempre. También Equipo, Accesos y Notas anteriores.</p>':`<div class="mods">${checks(t.modulos)}</div>`}
+    <p class="estado" data-estado aria-live="polite"></p></div>`).join('');
+  if(!$('tMods').children.length)$('tMods').innerHTML=checks([]);
+}
+$('tipos').addEventListener('change',async e=>{
+  const card=e.target.closest('[data-tipo]');if(!card)return;
+  const tipo=card.dataset.tipo,mods=[...card.querySelectorAll('input:checked')].map(x=>x.value),est=card.querySelector('[data-estado]');
+  est.textContent='Guardando…';est.classList.remove('mal');
+  try{D=await api('consent_perf_acceso',{tipo,modulos:mods},'',true);pintarTipos();
+    const e2=$('tipos').querySelector(`[data-tipo="${CSS.escape(tipo)}"] [data-estado]`);if(e2)e2.textContent='Guardado ✓ (cada quien lo ve al abrir otra página)';}
+  catch(x){est.textContent=x.message;est.classList.add('mal');}
+});
+$('fTipo').onsubmit=async e=>{
+  e.preventDefault();error('eTipo','');
+  const tipo=$('tNombre').value.trim();if(!tipo)return error('eTipo','Escribe el nombre.');
+  const mods=[...$('tMods').querySelectorAll('input:checked')].map(x=>x.value);
+  try{pintarEq(await api('consent_perf_acceso',{tipo,modulos:mods,nuevo:true},'Creando…'));$('tNombre').value='';$('tMods').innerHTML=checks([]);aviso('Tipo "'+tipo+'" creado. Asígnalo a alguien en la pestaña Equipo.');}
+  catch(x){error('eTipo',x.message);}
+};
+
+function iniciar(){abrirTab((location.hash||'#zonas').slice(1));}
+if(window.YP_SESION)iniciar();else document.addEventListener('yp-sesion',iniciar,{once:true});
+</script>
+</body>
+</html>

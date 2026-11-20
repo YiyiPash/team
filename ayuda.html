@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="sesion.js" data-pagina="ayuda"></script>
+<title>Ayuda del equipo · Yiyi Pash</title><link rel="icon" type="image/png" sizes="32x32" href="https://yiyipash.com/team/icono-32.png"><link rel="icon" type="image/png" sizes="192x192" href="https://yiyipash.com/team/icono-192.png"><link rel="apple-touch-icon" href="https://yiyipash.com/team/icono-180.png">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Titan+One&display=swap">
+<style>
+/* Ayuda del equipo: manual corto con links y reglamento. Misma marca que el Inicio. */
+:root{
+  --bg:#ffe1ee; --surface:#ffffff; --fg:#3b1f2e; --mu:#7d5468; --line:#f8c4dc;
+  --accent:#d6347f; --accent2:#ff74af; --soft:#fff4f9;
+  --font:'Montserrat',system-ui,sans-serif; --title:'Titan One','Montserrat',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.55;
+  padding:14px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+.app{max-width:620px;margin:0 auto;display:grid;gap:14px}
+.volver{font-size:13px;font-weight:600;color:var(--accent);text-decoration:none}
+h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:#b82a6c;margin:4px 0 0;letter-spacing:-.2px;text-wrap:balance}   /* misma letra que el Inicio (Luis, 19/11) */
+nav.indice{display:flex;flex-wrap:wrap;gap:8px}
+nav.indice a{background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--accent);text-decoration:none}
+section{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:10px}
+h2{margin:0;font-size:18px;color:var(--accent)}
+h3{margin:6px 0 0;font-size:15px;color:var(--fg)}
+p{margin:0}
+ol,ul{margin:0;padding-left:22px;display:grid;gap:6px}
+a.ir{color:var(--accent);font-weight:600}
+.nota{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.pend{border:1.5px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--mu)}
+.tabla{overflow-x:auto}
+table{border-collapse:collapse;font-size:13px;width:100%;min-width:440px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--soft);color:var(--accent)}
+a:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <a class="yp-casita" href="./">⌂ Inicio</a>
+  <h1>Ayuda del equipo</h1>
+  <nav class="indice" aria-label="Secciones">
+    <a href="#manual">Manual corto</a><a href="#reglamento">Reglamento</a><a href="#falla">Si algo falla</a><a href="#atencion">Atención a clientas</a>
+  </nav>
+
+  <section id="manual" aria-labelledby="tManual">
+    <h2 id="tManual">Manual corto: una clienta, de principio a fin</h2>
+    <ol>
+      <li><b>Atiéndela</b> y ayúdala a decidir el servicio y la pieza.</li>
+      <li><b>Consentimiento:</b> <a class="ir" href="consentimiento/">Consentimientos → Nuevo</a>. Búscala primero; si no sale, toca "Es nueva". Todo va en una sola página, como el formulario de Google: atención, clienta (búscala primero), zonas, salud y preguntas. <b>Tú lo llenas</b>, preguntándole cada punto. Si tienes que salir, toca "Inicio": lo capturado se queda y al volver sale "Continuar".</li>
+      <li><b>La artista revisa la salud</b> en <a class="ir" href="fichas.html">Fichas del día</a>. Ahí aparece sola en menos de un minuto, aunque todavía no firme.</li>
+      <li><b>Firma:</b> cuando ya están decididas las zonas y la clienta vio el material nuevo, cerrado y estéril. Toca "Revisar con la clienta y firmar" y enséñale en orden: sus datos, el material y la declaración. Al firmar acepta todo lo de la declaración; si no está de acuerdo, no firma y no se hace el procedimiento. Si todavía no está lista, toca "Guardar y firmar después" y luego ábrela en <a class="ir" href="consentimiento/?ver=firmar">Consentimientos → Por firmar</a>. Antes de firmar se pueden cambiar las zonas con "Cambiar zonas".</li>
+      <li><b>Servicio.</b></li>
+      <li><b>Nota:</b> en <a class="ir" href="nota/?ver=cobrar">Ventas → Por cobrar</a> elige a la clienta. Elige la pieza de cada zona y cobra. Aquí se le pregunta si quiere unirse al Pink Club.
+        <ul>
+          <li>Si la artista termina y no cobra ella: llena la nota y toca <b>"Guardar prenota"</b>. Recepción la ve en Por cobrar como "Prenota de …", revisa y cobra.</li>
+          <li>Si la artista está sola: llena la nota y cobra directo.</li>
+        </ul>
+      </li>
+      <li><b>Revisiones:</b> anótalas en <a class="ir" href="fichas.html#buscar">Clientas → Expediente</a> con "Anotar visita", se cobren o no.</li>
+    </ol>
+    <div class="nota"><b>Joyería sin servicio:</b> <a class="ir" href="nota/">Ventas → Nueva nota</a>. Si la clienta no quiere nota ni dar datos, usa "Público general": la venta queda registrada aunque no se le mande nada.</div>
+  </section>
+
+  <section id="reglamento" aria-labelledby="tRegl">
+    <h2 id="tRegl">Reglamento</h2>
+    <p>Reglas que decidieron Luis y Yoltic. Si una no funciona, díganlo y se cambia aquí y en el sistema.</p>
+
+    <h3>Consentimiento y firma</h3>
+    <ol>
+      <li>Toda perforación o tatuaje lleva consentimiento antes de hacerse.</li>
+      <li>Cualquiera del equipo puede tomar los datos del consentimiento.</li>
+      <li>La clienta firma solo cuando <b>ya están decididas las zonas</b> y <b>ya vio el material nuevo, cerrado y estéril</b>. Si tiene dudas, primero se prueba dónde y después firma.</li>
+      <li><b>Un consentimiento firmado nunca se modifica.</b> Si después cambia la zona, se hace uno nuevo y vuelve a firmar. Díselo desde el inicio. El anterior queda guardado como "Reemplazado".</li>
+      <li>Si la clienta se va sin firmar, márcalo en Por firmar con su motivo.</li>
+      <li>Si es menor de edad, firma su tutor.</li>
+      <li>Quien perfora o tatúa revisa las alertas de salud en Fichas y decide si se hace el servicio.</li>
+      <li>Con prueba de alergia positiva, el tatuaje no se hace y se anota en el expediente.</li>
+    </ol>
+
+    <h3>Nota y cobro</h3>
+    <ol>
+      <li><b>Siempre se hace la nota en el sistema</b>, aunque la clienta no la quiera. "No quiere nota" solo significa que no se le manda.</li>
+      <li>Cada servicio se cobra desde Por cobrar, para que la nota quede ligada a su consentimiento y a su zona.</li>
+      <li>Todo servicio lleva clienta con ID. Si de verdad no se puede, el sistema pregunta antes de guardar sin ID: no lo hagas por costumbre.</li>
+      <li>Público general es solo para productos.</li>
+      <li>Nunca se usa el nombre de alguien del equipo en una nota que no es suya.</li>
+      <li>La pieza se elige en la nota: la clienta puede cambiar de opinión a la mera hora.</li>
+      <li>Una prenota no cuenta como venta ni da puntos hasta que se cobra.</li>
+    </ol>
+
+    <h3>Correcciones</h3>
+    <div class="tabla"><table>
+      <thead><tr><th>Qué se hace</th><th>Quién</th><th>Cómo</th></tr></thead>
+      <tbody>
+        <tr><td>Corregir nombre o correo de una nota de hoy</td><td>Cualquiera del equipo</td><td><a class="ir" href="panel.html">Notas del día</a>; queda registrado</td></tr>
+        <tr><td>Reenviar el correo de una nota de hoy</td><td>Cualquiera del equipo</td><td><a class="ir" href="panel.html">Notas del día</a>; queda registrado</td></tr>
+        <tr><td>Anular una nota de hoy</td><td>Luis o Yoltic</td><td>Notas del día, con motivo y su clave</td></tr>
+        <tr><td>Cambiar un monto</td><td>Luis o Yoltic</td><td>Se anula y se hace la nota correcta</td></tr>
+        <tr><td>Corregir datos de una clienta</td><td>Cualquiera del equipo</td><td><a class="ir" href="clientas.html">Clientas → Datos y Pink Club</a></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Datos de las clientas</h3>
+    <ol>
+      <li>Los datos de salud solo los ve quien atiende y nunca salen del expediente.</li>
+      <li>La salud nunca se usa para el Pink Club ni para marketing.</li>
+      <li>Las menores de edad nunca reciben promociones.</li>
+      <li>La clave del equipo es solo para el equipo. La de Luis y Yoltic no se comparte.</li>
+      <li>El equipo trabaja en estas pantallas. Sheets queda para Luis y Yoltic.</li>
+    </ol>
+    <div class="pend"><b>Pendiente con Yoltic:</b> casillas "zonas decididas" y "vi el material" al firmar.</div>
+  </section>
+
+  <section id="falla" aria-labelledby="tFalla">
+    <h2 id="tFalla">Si algo falla</h2>
+    <ul>
+      <li><b>No carga o no guarda:</b> revisa el internet y vuelve a tocar. El sistema no duplica si reintentas.</li>
+      <li><b>Plan B del consentimiento:</b> el Google Form de siempre. Avísale a Luis para pasarlo al sistema.</li>
+      <li><b>Plan B de la nota:</b> la nota de papel. Avísale a Luis para capturarla.</li>
+      <li>Una clienta, un solo camino por visita: o el sistema o el plan B, nunca los dos.</li>
+    </ul>
+  </section>
+
+  <section id="atencion" aria-labelledby="tAten">
+    <h2 id="tAten">Manual de atención a clientas</h2>
+    <div class="pend">Aquí irá cómo atender a una clienta en el estudio: recibirla, explicarle piezas y materiales y acompañarla. Lo escriben Luis y Yoltic para las nuevas vendedoras y vendedores.</div>
+  </section>
+</div>
+</body>
+</html>

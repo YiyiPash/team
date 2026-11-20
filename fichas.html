@@ -1,0 +1,529 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="sesion.js" data-pagina="fichas"></script>
+<title>Fichas del día · Yiyi Pash</title><link rel="icon" type="image/png" sizes="32x32" href="https://yiyipash.com/team/icono-32.png"><link rel="icon" type="image/png" sizes="192x192" href="https://yiyipash.com/team/icono-192.png"><link rel="apple-touch-icon" href="https://yiyipash.com/team/icono-180.png">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Titan+One&display=swap">
+<style>
+/* Fichas del día para la perforadora: una tarjeta por clienta, lo de salud en rojo. Misma marca que el consentimiento. */
+:root{
+  --bg:#ffe1ee; --surface:#ffffff; --fg:#3b1f2e; --mu:#7d5468; --line:#f8c4dc;
+  --accent:#d6347f; --accent2:#ff74af; --soft:#ffd3e6; --on-accent:#ffffff;
+  --bad:#c0262d; --bad-bg:#fde8e8; --warn-bg:#fef3c7; --warn-fg:#92400e; --ok:#15803d; --ok-bg:#dcfce7;
+  --font:'Montserrat',system-ui,sans-serif; --title:'Titan One','Montserrat',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.45;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.app{max-width:640px;margin:0 auto}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 10px}
+.brand{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.logo{height:42px;width:auto;display:block}
+h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:#b82a6c;margin:8px 0 4px;letter-spacing:-.2px;text-wrap:balance}   /* misma letra que el Inicio (Luis, 19/11) */
+.dia{display:flex;align-items:center;gap:8px;margin-top:6px}
+.dia b{flex:1;text-align:center;font-size:15px}
+.btn{border:none;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--on-accent);
+  font-family:inherit;font-weight:700;font-size:14px;padding:10px 14px;cursor:pointer}
+.btn.sec{background:var(--surface);color:var(--accent);border:1.5px solid var(--line)}
+.btn:focus-visible,.chip:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:6px 12px;font-family:inherit;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff;font-weight:600}
+.estado{font-size:12px;color:var(--mu);margin-top:6px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:20px;box-shadow:0 2px 0 #f8c4dc;padding:14px 16px;margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.nom b{font-size:20px;display:block;line-height:1.2}
+.nom small{color:var(--mu);font-size:12.5px}
+.hora{font-weight:700;color:var(--accent);white-space:nowrap;text-align:right}
+.hora small{display:block;font-weight:500;color:var(--mu);font-size:12px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--soft);color:var(--accent)}
+.pill.menor{background:var(--warn-bg);color:var(--warn-fg)}
+.pill.nueva{background:var(--ok-bg);color:var(--ok)}
+.perfos{display:flex;flex-direction:column;gap:4px;font-size:15px}
+.perfos div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding-bottom:4px}
+.perfos span:last-child{color:var(--mu);font-size:13px;white-space:nowrap}
+.salud{background:var(--bad-bg);border-left:5px solid var(--bad);border-radius:12px;padding:10px 12px;font-size:14px}
+.salud b{color:var(--bad)}
+.salud.ok{background:var(--ok-bg);border-left-color:var(--ok)}
+.salud.ok b{color:var(--ok)}
+.salud ul{margin:4px 0 0;padding-left:18px}
+.miedo{background:var(--warn-bg);color:var(--warn-fg);border-radius:12px;padding:8px 12px;font-size:14px}
+.nota{font-size:14px;border-left:4px solid var(--line);padding-left:10px;color:var(--fg)}
+.pie{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--mu)}
+.pie a{color:var(--accent);font-weight:600}
+.vacio{text-align:center;color:var(--mu);padding:40px 10px}
+.clave{background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:16px;margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.clave input{border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font-family:inherit;font-size:16px}
+.err{color:var(--bad);font-size:14px}
+/* Buscador de clientas */
+.buscar{position:relative;margin-top:8px}
+.buscar input,.campo input,.campo select,.campo textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font-family:inherit;font-size:16px;background:var(--surface);color:var(--fg)}
+.res{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;z-index:8;max-height:50vh;overflow:auto;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.res button{display:block;width:100%;text-align:left;border:none;border-bottom:1px solid var(--line);background:none;padding:10px 12px;font-family:inherit;font-size:14px;color:var(--fg);cursor:pointer}
+.res button small{color:var(--mu)}
+/* Expediente (pantalla completa) */
+.panel{position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:0 max(16px,env(safe-area-inset-right,0px)) 60px max(16px,env(safe-area-inset-left,0px))}
+.panel .app{padding-top:12px}
+.sec2{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.6px;margin:18px 0 6px}
+.perfo{display:flex;justify-content:space-between;gap:8px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:8px 12px;margin-bottom:6px;font-size:14px}
+.perfo small{display:block;color:var(--mu);font-size:12px}
+.est{font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.est.Curando{background:var(--warn-bg);color:var(--warn-fg)}.est.Sana{background:var(--ok-bg);color:var(--ok)}
+.est.Retirada,.est.Histórico{background:#eee;color:#555}
+.tl{border-left:3px solid var(--line);margin-left:6px;padding-left:14px;display:flex;flex-direction:column;gap:12px}
+.ev{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px;position:relative}
+.ev::before{content:"";position:absolute;left:-23px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--accent2);border:2px solid var(--bg)}
+.ev .f{font-size:12px;color:var(--mu)}
+.ev .prox{margin-top:6px;background:var(--soft);border-radius:10px;padding:6px 10px;font-size:13px}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.thumbs img{width:76px;height:76px;object-fit:cover;border-radius:10px;cursor:pointer;border:1.5px solid var(--line)}
+.campo{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:var(--mu);margin-top:10px}
+.checks{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--fg);font-weight:400}
+.checks label{display:flex;gap:8px;align-items:center}
+.checks input{width:20px;height:20px;accent-color:var(--accent)}
+.fila{display:flex;gap:8px;align-items:center}
+.visor{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.85);display:grid;place-items:center;padding:16px}
+.visor img{max-width:100%;max-height:90vh;border-radius:12px}
+/* Editar expediente (solo dueños) */
+.edbar{background:var(--warn-bg);color:var(--warn-fg);border-radius:14px;padding:10px 12px;margin-top:12px;font-size:13.5px;display:flex;flex-direction:column;gap:8px}
+.edbar .fila{flex-wrap:wrap}
+.mini{border:1.5px solid var(--line);background:var(--surface);color:var(--accent);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
+.aviso{background:var(--warn-bg);color:var(--warn-fg);border-radius:12px;padding:10px 12px;font-size:14px}
+.act{font-size:13px;border-left:4px solid var(--warn-fg);background:var(--warn-bg);border-radius:8px;padding:6px 10px;margin-top:6px}
+</style>
+
+<div class="app">
+  <header>
+    <div class="brand"><img class="logo" alt="Yiyi Pash" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAB1CAMAAABH9pzLAAAAkFBMVEX0m7LvjLjvjbjwjLjxb675zeH3qt3+fn//fv3/AP/61t752ef7AAGyZrL52+jzo8fseaz0psn3o8jgCm5/f3+wsLDufrC4cXHtfq5/AAAAAP///wD//3+qqlUA//8AAADvjLj+/f7+/v7xkbv4mMP76PDzp8n1t9L51+b3xtv+/v7+/f7+/f7+/v7+/v7+/v7oRiHdAAAAMHRSTlMUoF3PD/YOAgIBDaABA2ZgWaHeCAID/wOaAgEBAgMBAP79BP3+/v7+/v4uz69OkG506MzxAAAXnklEQVR42t1diXajuLYVGNuxMydV3fe+e98DJBBgY/v//+6dQQJNJHa6qodi9epK2Y7R5sz7HKlE+Q+6JPx3Oo/H43g+Sfrr7Zf4R+GVl2NtruNFfgmx+CfhPTDctqU/Rlludr8wYMCLMAet4NIDCvlQlnfz+3D92YDlfP0kvL2qzNWAmNtcWADSLOBPBSwXfv5Bz3Ks63VVGcSqUoB4vcrLwtzucDjIKyCLH4r3cAEXCj70cvjxAj6BRKv5UlUDLzQqLx/pXTTv4/ngadrPBWxuaq5LubmLlP0PfTsIWFfKRTzQK2J3J8uzve/ZvU/qjuIPGav30sW4UPahZ3AoMrjx1zFDCDp6Asarq+uuarJyj9Kvz5fzke9bHiBYs5rJHwI49QiNT9ENPvsGllI/FeZ+9CHJJvZV2wbA4KADwBoBq0qQeV9estUK73s4jK64/zhgSfnOBS7XSRDg3n34bZWJkvOhw5mVfcRkQf5YwFWTl3v4+lWjm+YN7ku3Oo70x1j+ccC4/ukRjqcpIKDO1Wqyrx7sq8mK7U46H4eFnMqt/Crg3oOrWKUR8OaI1pzleVaxA5FC5K9rFHeEWNx+Z2f9APkwIb7gXX37gofP6ULdD8PQs5qVjw9fMaNxfp7mAmfREGB0aMMLfqxYYwb2klUNvAP3Oz2EzlJc6Z/89K7tNFwDuadTKQV97kQP3OYFKBBVbQhv2/FSG8yPzsVXLJme5+B4aRIwyhwBw3vt+92mEHi7LAO0q2yFgO/pVi5k8QnS8K+0/kmQGiE/UYJHb3Xzilp0qk0OmojpAixQKTa7uoP86NuXdBofqDJw6as0/iT+h1Z1wMVuytemala5KP5PbPAD7yXnIxMcsYh2+gH96yThIz9WZe6KsbB+y8v3ADAZMdw6O7vpEfyJy2zYm30h83D81lDz7SAsPVKQJgclZN7g10+ZyjMa4HkyZZkGbALJBUtP620wfzodzoTXrl9runFfwU03gYQpK0B8re9p4PWuWW3udrcjPrMxKdWwNSF6+CoUzsk4KLnbrFYbyADgOuInWnDY9B6gwcgsxULcuXiuyb0aNyxoch3gjyOVZhc6eK+ZXxpQLHdfM2PnQofRVAK+idGZGCSKcms/rHR9fF41fT2aVOwUSxjhnizatu179K/rvm+n20zr7+mmHSEAz3Hy3uQg2UeuFXJ+9GYCV3V7wXS2GtcODWY4K/4eUT45MWhn86ABHniP/osIg6d7wBBJeIbbDrpxFwuK1K3b1nmJASvUadCs0vPSE+A2BRgfUPGllGcSMjh+tcoLlpgsixbjkXXJxrlW1RtkJAWGrft8RUt9EuFXcphtO6O57Fz5/9ZROYD17I8R8ByHMS4NHwDOsMi5Fa7D8MD1KmDxWyune46Q5pMUPHW12mNk2sjDWlXgukENGhF854myBF1dc3Wsry2CAgSXJGDH5mcbxo/fnuFxNdYOXddRDgPFgVWTrSzgpaNk8TIKSnzG+vgOWvCiwebA6/WV8GPR2YZZdQVgRR54ElkKcBc4LWXU4kOvlSpnQbxnZnjMFyHk5zm8yfKZilL8Nf4k4F0JzIYOkG1tIP/cklcVnnzPdZyif3D1a67DEfAKf7mJVBdd5YxYcVXh2HCqzoySAUt41H3DZmYMaqhy+9x2ErPKmkIUKcIbfAyeB7hv9t4Cf2w5RntuX1+PF+PwlMJnpZ/sGm88IC1BToCW2dk7kHdN1Jmkk5jrcLIj3eqz1a7m0YOend8kYhLv+Aq3zAElajd4b7kh56SrZxGkMvoqZU6k8Ai4TTinkT0qr7Gf06OtdTAhtin0HB22nRY3+GujkKfEw9aI+H2N1Rj98v2qQvLnd2ZKRsqJiRLL5jjMwbu7ES/liiaFPyYBy6N1NFwtcXokdpuSKTCLjfsK0q/Fjrb85FRahTlb47h7SbGYfusVIzTLnlTjxG5sjY9HeArd3yxf5A45hZdpwOXm7CAgh4jpwvfSo8CoztzsTPrYD/h4Wsu2P8TVp3EHmhzThIC/EMWLtiomMmxEPYfHAFKZEg8WcFPdevVGwMAs+RX6JGHh5Edo7I2ixZguQr/GQhmxHUGKW4nPxBYgLttuqk8VAsac7Zvrg8bXlUJ1nghreSAWZCS8E4/NRrJeFLCaUw/3ISNezCzwtgffwU+AUXMnAQ9qlcFiDC3Qa+XUmUfIm1hNrIsjtr1+xnRKlsuAbYDbyfWgjXi337y68ni/Qr0SpQP4vOihO5IA5NVd48OlYKhNEb4AuDycPavcg8C2ZKo2xjA4uEUHdnd2/SY/0R5W+phQabJhF7AoM4UalJdOzEPBtz2I1yi5+IAGNV6pnZerw0zL4DVUqScBA/gy5eUNqei4wTKdCTAVOr8mP3jOmPsLTYVUUSQQU5g4gKVgg+GEk0OdFI8lUCDwLNm7CSfOJVMOTQvuuVxyE4uuZSeEQUbs9pEECDDpgGV4WEXXsCJafheGtxZEDXxcHzN1jZBlxGm1nKfPgMvdQ45xdm/DnGRqeCMyrDJk6QE+pWMSPmFKrRt7g3kh8IhQr4nAiEyCAfemblWzHKE9IowBeLczUWYMyg3OL1bFPtRAZbiIkC/a2ySNSo3jfc7qXficVmQijtoSpaNy4T/7gR+EQn1DiwglwJmWybP8VBpzviRgzZxQQpCqkIYb86sQiLfFziFPHsWUkUoTGtAFbKbYNQM+p4PSmsMsOALpe3HjMpBtv5MJH2ABB8u37ZFTpNIMeBWtg8mxPOWkOaXduDk3VPMYgy77d6Ru9RvlkxuHQvsMMHsGjGDBEnvrI0uR9AGs0kOIi9sj6t+xQjHg6j7hjI3kdfwgkBcVcy7usEBrrB+yd8klxmMMeEGlDa5N9AEq7QGwENPv+4VgbaolP7hz1aiKSHNRl/BO94mECiu9Y0glsEvB6sFWwZbY0W/3IxEeaoNdmOENtCAGnHRaihmrqiqp2Gj8+7HLeJjSutDZDAZ2AHiNy4yDIPMIIeCpgxR2WhrrsyhD5QaIZNYFa32k7ZFaxBrY45P8sJTw0tQm6aGJFDxiMlGogndT/hYtKAXYEB6vUVpnNGKVAjxY2KHgYQG22Dg97AWhQJPdg4keX5t8x7EjCXgh8eDwg5VmkCrXJpGSC3kar1CH/RHT4oxs2z6JVWRarBNDqOnG1joSCCams9hyCX7sQb5PqaqIndYHqWU3ZVpDWH4j4G9TeZ7qZXYJwWherkq2ArMIMD/a6BdaviEXa/j2KyTphtWYqT00VDDh72UCcKSUMz/bUBLvLd3YYsaVDBp4l2jPh4KxL6j4XsbpvsTOs+b41sdyV8ZkWN4NVirkOzc09/GwoQqQmI8EYMoclup/FWXSHmDq3lWJKBMT8czb6thhsMSaIg1Yh4mvYQfNF6naulDsjWtDCpgKcOV1pIU/s9CkEJPJ+Zm0aYc2ma3cgiBua5k2zgdbq9ihBZDTfY/jFb7ThWkHD7TYPxi3gpyKWmjYIychYonvC7gUfrOqTSDmAaGAUmcn3BBPdqgjhTZWGoVhI5GQrp5MeFVG8ZYAr5M+y+adRp2abPedFLVVL2WxswJ+WGiIGz6pCzlpLtG6ALBxquAQgzamp6JdMpjEgp9MOJOxdeMrrX936/W0iXqtzQcLZm5a/VL+V6QEXIpomoFqI6XmzgoWxH0VrNGodF7uMJnrU1VWb7KnBK7oN5Shq4tE/oMfjrqu/M09a7T5PkWdRK4auuyRic6V/LY442E5+5l5wTUgvw2Ptw3WSPHgLaeJlUQhzWtoE/ngPG8UqbpS74ngiBOWYamEqrI2rL6J6mTCcpZbVoyRiw5HHibaHtgcGAJqgKMgarVXcVuMIn4fhSu/DRxK0qhgGKzmKCxjd4+AdewkcJWWRzcandlWIpUQbccClh9N8WDZfApb4W3HXEUgrLV5O915IwRhZ8m+EKcdxuu8xHQ7QhsilTAEBOuWocYnYU5yg9I7D7uUif6wQ6siHnQywBTdR+ECU7B2qdFICIZ0SZfwWWySjRhjjW4YcNQS0X3bdk5/TkEjeBcMV6kqmiYR6fkOGLU736+BD4cJIHBg2XOyXk5xt64X7RPsRZXMswhwUz0l/B8C7pJpr5rspK2CljP39YEUltcMptkPPRQvOV5Y8srTbX0YhKaSJZ3iGB7Zh2LD1Alv0OmPml69MXDhdmCpRC6EuGoST2yE2O/dZwMzOvKmRkwz5YMqngbtYosckBDk+KfSgBef9izg7eK4+scqLe07cisKuMSdNKn29a1UwtolaShrc+EDYgeZpCC0/qBt3RpeVIRYAMnddgmwvLu7m4b0NnmW5a4ySJqIXaqmeC4udtK/DUm2hhLVhbK7V8k8XqvFSo7nxKZC9bpNHlaod2JLLcyWZlqm5rozQNulawtIxrpEphj5LBbUOvk9TdcPesHfN6YJne7W8jviyskvwUJ9B82lAsM2gqi5fudN9tSpTJtaTOsUQZWIPuSUuoTiftKfNIOk6bLGdtivHINChlo+3a9hog/6ehtEtj5daGqvsvPd3B5i5mNQQaZdqSEWPbvjNtLDYZ6hW4oyWqfIPW5DR8+a+iLccd7urt2oJW2aATkEPkgc5OLh5JyKXZ7s6cg7uBNcpodLuWdyN0LK8KYhgOUGu65ihoeHYVRA+1Grivsi1w/2Ce5IjDR7MKBMoHie6E5h1Hkwj5pdC2TamGprM8SQCJ5Mnqd4UD0M+mMFbqoEl0MdiRCxtm49qhA+AoxspKaBizMvXey21G6Hn0reP2GmZ6B84NopuvoqyTGnid8PJ0a61CBbZ2dFeILMGBRNyJBbb27AWwpKGQX1K3AKAb55y52xBlsyhNc8WE6EVyc3026HoY4dqCHJo5ruU7xNnaJCeJCNVNGm7saU1tznu2VuEwEratDQuPsF4y9cNbGdgtg5xmubPCui3U9P98MAes1sSCjHbp46XUpMhhRe/LJEHcUtJBNB2rWZCbETMrfos1FpbSpJ6e7XwBbUg8PrTU2ezZRpF3n+2qZQuVOnS6bapX1uXUefpBYSNtHnuR/YH6WpVuuw4X/TXK4gOlpt5HfOMAppBno0DAT7zK1hHIWzG8LuCIjonbZKUHV+MRtFGSa/22qh7b2lYp3sqZ0jHIzZ7W/bP0xMl8285UTn9tgRDvY39jyhKilDEWZoNZFEcEKlsNhLtqt4jKLWyZ7OEHlictJFaTuEUu6flZpaQPXhtq1fgtC5js4KWPwnrBcorcEBFpYvufVeLRT/oPyyTomYXVNrk5ipnCeyIXIIU9tbuJVN1pjeQHr32ccS5jaJEvOUJkYqM4jURkLoNX3uwEzQsFALM2maaEhM6QKTZR1N3RufOyT46rV10o48YEjFAVzfdhaA4dE1lVc7R8Ab06eJ1Q72t5gRyVYvloaYzsv96G2CsYUG2/0w7avg/ag4EFSnu8ZBpC1Qws0E+HAb4GlqGIx2Z7eDrCmtHGONdIe25mmklI8GisnsOHW3LfEzY7t/dgf6qdzqIhO2vKebOsLeo8qxYTv4f/2hBzzRCTfMvxFzX1M7SpQy6YFpLA+n8vTinLwdARfhRraKSA3+VrQZSRt9j227hojexEXg3IEBCmbyTWKXNyYr/5KELeKeB67w5wGSrM3STADNh36cHVJDj9sAdqZSVXZ7Fe83UpSyEwiI5xleL/eLTdTMX7Jnwl8BzFrd6jfQ5INJsmRisui2gXEzZjJ6G8fNcNcK5Y912jifFkC+I6ktULk+nWHzMQHbBhp9vDUsOcz1oGiCHTrKMMi7NNfzOZvVOwn93p+LHniWLStQvvwozgfOHPajzY1V2GzkQsEYqyhRo2dfchH7zQ1HDAivrdTqhgX8vfwqYO5vYWo0V+S0i7Ht1x1N5a1yHhQ72DNXjrAp8IAeLEpiLN03OLorUaN17USlj844WGQt7baglrLoB/FVwDNpKmhTnADjvD/jCQTvL/AjBt03CGrH8cJDJZ3r9rFMgYJ5qphtmFKO7v5vKZSaYhrkHUCeP59OsBH0uuOIRLQpjQrh7VcBT6z4jm5eQDuhm2f8MzOES383rW+9RpdPfZvOis5snbJhSjspFbus1tlyqXu7KeQa9yWivV/H15y3K37FaQWs+G7nqh9MabtxfOLl1JyFdNrd02nDVO+kVDux8jRa9/VNDnsCDBwt8JYQGQ+fjKp9LmA1seKPZa6ckKm6OtoQG8ygr51ZdG1GdDonwwCXxUM7U57mzdvLa4+mmYYzkYffyPS5Clft6WEBy20qKWoDaki7xVNwDZN5NG4ACoNwcH2eddm9LtxuwGnyibyNZ9Cv3NODAn5MZoGBTFiBkniRP2vXneqGdevBEavwC93rfB1gDsNriMIFcvJEyZep4uETAc9tD6M4nCQMrtKBYxpmUK4AQ8DK329Bbmvj20ikOONVgHmfG2w8fa6yw/2bpqlvmZon/FSha97Ts9vab88rb31H+S9XIxvv3bbrXcCu7I1vPz3EGt27Ej9fCfhYZ9W/D/X5nu/1ZvYGjjftRbR8njOtWwRZEbhRL6joyllsW7kfXVcuMMOIj2URavTZKxUv1wI+Zg01+fvXPWyrOmcVRCaaCW5v36S2Kn63R7H8joCdoAkC8Nan/Yjqul/ta64R/qHwfHSNWqluqpxstfSkYEtVfXp5h7/Xx9WKQ/F4Q9t/MJvUJo9l00DHSA9y40XRzpWW8mSqfOPu9SRPT6Mvq8b9Dnm1DZ9XjXiQZta7522nJOLrlFpNO4ODNoCHD/a1Yl64dgC3rpdyPrquPF9Ho1rG6l2vPvoPYLwy8UBW5xmLTilogycO4G6tow47Oh8Trw77BNR1EJUuZeBzdOOnXZ5GO6Z/hKKyt+HZfRBPfhA4XQvYiFhyyY7TqHKeKb4GcWf7tCtxN9/zOwFeuxrtL7DRnlueDbr1wtWpmCqm1jPtQMDX8HliYmZRxJImFbtscycdyrbVn4iXFjMwXnfyICxdQ5Ou1eAlmp5Gazf8zpaqXMk/+RY8Xl08oIjhaQlqqK1Xm4kys6OaH8JV/UTciOCsR18CMghSrZ9CtK7HdoPr3rGMxnlgRz+vviIolfOw3gj2sCLGMvMpwnnE9gN1ZryrcJJG+pXNvau19cROJy4vQI+gKBMwrZdi8HXslrONZ/xXg2HopfS66XbkYYIcTEI6m0xDvN+ixLLtg2ppCfDwm/I0d3Z9rtmf/ed5lDecXIoihjyrfS1CpkRaIg42AYcNP8NDTptM/T7eY+nzqYmDmxbfHPzCuUuWmIEJn29hPHjjwn1exs1H6tqZVgMcR6DNZY8lcDaZbsPv/rCUw7xsue6pl2qKzjURT4HOt0lYni9AH8rtwqGzp/QBWy0SULwvOzzO8AES32ah+HNq/Nuu9W/dYhQey/LWw3ileFg+ulN6ww6TksNsMRxklBhijGtD/xoDn33Vpd1n9BQU2yd5A8XzyfnMtgOOww54EgVMFms6pnSFU4plKeLfjUql4DoUlbpVp/0a6hBq0HH81FGL2w6kNVCKF7h4spim9UTKEO7CNCNkY4JSKhJmrO+jXxudYh8hfyDghVOEt0IsHIAlPpIgJAmPwqfU28ZLvJrol8cgVTsVKvjQlRTPzYd53dFcMcxnFtsPvjnBxjiH7EiM0y7i0UubTttMBawunmwr3Eh0hls0Tq5Op738ZWfER0FpbjLYE/zhKDs4qo6ZZXgE+ZtqDGI6GVu84txqPdPscIojPKM5mJ2Q02vmYbnxJqf1oy+59RW2zl+en/DQYqcpgmNDz3mxP+FrCB8+Awcb07FSeGyUyF+y1yc6kdL8Dr2YZ8/mlErwIMC2whb4EeYSDreHpR96xnlIqKZORXtw9z4+Bh943CZ2Ysg7Lz+4Sx98/RcAjhPpfWH7mu66duDo7Ws7cA3fvbN/RbHZh78DZylvNvNLQpRldOTuXwA4TjsOpfw5t3p4eLj+NPY/EfDpZwH+e/xLHnEYvvzygIPE71hK+QsDhjZQmPj9LXT65wGGE6yCTOso/wYi/on/Gs82Kh7+DiL+iYClDKx4/MUljH4rc3q8Z/lr2zDnPzkUAMPR+zcw/trr/wFJan1WyYcYdwAAAABJRU5ErkJggg=="><a class="btn sec" href="consentimiento/">+ Consentimiento</a></div>
+    <a class="yp-casita" href="./">⌂ Inicio</a>
+    <h1>Fichas del día</h1>
+    <div class="buscar">
+      <input type="search" id="buscar" placeholder="🔎 Buscar clienta (nombre, apodo o WhatsApp)" autocomplete="off">
+      <div class="res" id="res" hidden></div>
+    </div>
+    <div class="dia">
+      <button class="btn sec" type="button" id="antes" aria-label="Día anterior">←</button>
+      <b id="fechaTxt"></b>
+      <button class="btn sec" type="button" id="despues" aria-label="Día siguiente">→</button>
+      <button class="btn" type="button" id="recargar">Actualizar</button>
+    </div>
+    <div class="chips" id="filtro"></div>
+    <div class="estado" id="estado"></div>
+  </header>
+
+  <div class="clave" id="claveBox" hidden>
+    <b>Clave del equipo</b>
+    <span class="estado" style="margin:0">La misma de la nota y del consentimiento.</span>
+    <input type="password" id="clave" autocomplete="off">
+    <button class="btn" type="button" id="entrar">Entrar</button>
+  </div>
+  <p class="err" id="err"></p>
+  <div id="lista"></div>
+</div>
+
+<!-- Expediente de una clienta: perforaciones, línea de tiempo y "Anotar visita" -->
+<div class="panel" id="panel" hidden><div class="app">
+  <div class="brand"><span class="fila"><a class="yp-casita" href="./" style="margin:0">⌂ Inicio</a><button class="btn sec" type="button" id="cerrarPanel">← Volver</button></span><span class="fila"><button class="btn sec" type="button" id="btnEditar">✏️ Editar</button><button class="btn" type="button" id="btnAnotar">+ Anotar visita</button></span></div>
+  <div id="expCont"></div>
+  <div class="card" id="formVisita" hidden>
+    <b style="font-size:17px">Anotar visita</b>
+    <label class="campo">Tipo de visita<select id="vTipo"></select></label>
+    <div class="campo">¿Qué revisaste?<div class="checks" id="vPerfos"></div></div>
+    <label class="campo">¿Qué se vio?<textarea id="vObs" rows="3" placeholder="Ej. Se colocan aros por inflamación"></textarea></label>
+    <div class="campo">¿Cómo quedan?<div class="chips" id="vEstado">
+      <button class="chip" type="button" data-e="" aria-pressed="true">No cambia</button><button class="chip" type="button" data-e="Curando" aria-pressed="false">Curando</button>
+      <button class="chip" type="button" data-e="Sana" aria-pressed="false">Sana</button><button class="chip" type="button" data-e="Retirada" aria-pressed="false">Retirada</button></div></div>
+    <label class="campo">Próxima acción <span style="font-weight:400">(opcional; ese día sale el recordatorio)</span><input type="text" id="vAccion" placeholder="Ej. Retiro de aros de silicón"></label>
+    <div class="campo">¿En cuántos días?<div class="fila"><input type="number" id="vDias" min="1" inputmode="numeric" style="max-width:110px">
+      <div class="chips" style="margin:0"><button class="chip" type="button" data-d="7">7</button><button class="chip" type="button" data-d="14">14</button><button class="chip" type="button" data-d="30">30</button></div></div></div>
+    <label class="campo">Fotos de evolución <span style="font-weight:400">(privadas, solo para el equipo)</span><input type="file" id="vFotos" accept="image/*" multiple></label>
+    <p class="err" id="vErr"></p>
+    <div class="fila"><button class="btn sec" type="button" id="vCancelar">Cancelar</button><button class="btn" type="button" id="vGuardar" style="flex:1">Guardar visita</button></div>
+  </div>
+  <div class="card" id="edAviso" hidden>
+    <b style="font-size:17px">Editar expediente</b>
+    <div class="aviso"><b>⚠️ Vas a cambiar la historia de salud de esta persona.</b> Úsalo para anotar lo que pasó en otras fechas o para corregir un error.
+      Cada cambio te pide confirmar y queda registrado: quién lo hizo, cuándo, qué había antes y qué quedó.
+      Los datos de salud de un consentimiento firmado no se cambian: se agrega una actualización con fecha.</div>
+    <label class="campo" id="edPorBox">¿Quién hace el cambio?<input type="text" id="edPor" autocomplete="off" placeholder="Ej. Yoltic"></label>
+    <label class="campo">Clave de dueños<input type="password" id="edClave" autocomplete="off"></label>
+    <p class="err" id="edErr"></p>
+    <div class="fila"><button class="btn sec" type="button" id="edCancelar">Cancelar</button><button class="btn" type="button" id="edEntrar" style="flex:1">Entiendo, editar</button></div>
+  </div>
+  <div class="card" id="edForm" hidden></div>
+</div></div>
+<div class="visor" id="visor" hidden><img id="visorImg" alt="Foto de evolución"></div>
+
+<script>
+const URL_API='https://script.google.com/macros/s/AKfycbwJhAO5anQhZ_tzZ7f6jSE133AxFzSLU2rXkVH1vdtH9SlkMlbnvdjbez3786HIEhAf/exec';
+// Demo fuera de GitHub (o con ?demo): datos inventados, no se conecta.
+const DEMO=!/(\.github\.io|(^|\.)yiyipash\.com)$/.test(location.hostname)||/[?&]demo/.test(location.search);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const hoyISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const S={fecha:hoyISO(),fichas:[],filtro:'Todas',cargando:false};
+
+async function api(action,data){
+  const r=await fetch(URL_API,{method:'POST',headers:{'Content-Type':'text/plain'},redirect:'follow',
+    body:JSON.stringify(Object.assign({action,clave:store.get('yp_pink_clave')||''},data||{}))});
+  const j=await r.json();
+  if(!j.ok){if(/Clave de equipo/i.test(j.error||''))store.del('yp_pink_clave');throw new Error(j.error||'Error del servidor');}
+  return j.data;
+}
+const DEMO_FICHAS=[
+  {id_consent:'CON-000999',id_clienta:'ANA-0001',hora:'12:40',lugar:'Yiyipash Studio',atendio:'Luis',apodo:'Ana (ejemplo)',nombre:'Ana Ejemplo Ficticia',edad:15,
+   tutor:{nombre:'María Ficticia',parentesco:'Madre'},visitas_antes:1,perforaciones:[{zona:'Helix',lado:'Izquierdo',perforadora:'Kat'}],
+   sangre:'O+',enfermedades:'Ansiedad',condiciones:'Ninguna',fobias:'Agujas (cánulas o catéteres)',alergias:'Níquel',medicamentos:'',comentarios:'',notas_equipo:'Quiere aro de titanio',url_pdf:''},
+  {id_consent:'CON-000998',id_clienta:'LUI-0001',hora:'11:05',lugar:'Yiyipash Studio',atendio:'Yiyi',apodo:'Luis',nombre:'Luis Enrique Lopez Pacheco',edad:24,
+   tutor:null,visitas_antes:0,perforaciones:[{zona:'Lóbulo',lado:'Izquierdo',perforadora:'Yiyi'},{zona:'Lóbulo',lado:'Derecho',perforadora:'Yiyi'}],
+   sangre:'A+',enfermedades:'Ninguna',condiciones:'Ninguna',fobias:'Ninguno',alergias:'',medicamentos:'',comentarios:'',notas_equipo:'',url_pdf:''},
+];
+
+async function cargar(){
+  if(S.cargando)return;
+  if(!DEMO&&!store.get('yp_pink_clave')){$('claveBox').hidden=false;$('lista').innerHTML='';return;}
+  S.cargando=true;$('estado').textContent='Cargando…';$('err').textContent='';
+  try{
+    const d=DEMO?{fecha:S.fecha,fichas:S.fecha===hoyISO()?DEMO_FICHAS:[]}:await api('consent_fichas',{fecha:S.fecha});
+    if(d.fecha!==S.fecha)return;
+    S.fichas=d.fichas;
+    $('estado').textContent=`${d.fichas.length} ${d.fichas.length===1?'clienta':'clientas'} · actualizado ${new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}${DEMO?' · DEMO':''}`;
+    pintar();
+  }catch(x){
+    $('estado').textContent='';$('err').textContent=x.message;
+    if(!store.get('yp_pink_clave'))$('claveBox').hidden=false;
+  }finally{S.cargando=false;}
+}
+const ningun=s=>!s||/^(ningun[oa]s?|no|-|n\/a)$/i.test(String(s).trim());
+const lista=s=>String(s||'').split(',').map(x=>x.trim()).filter(x=>x&&!ningun(x));
+function pintar(){
+  const d=new Date(S.fecha+'T12:00');
+  $('fechaTxt').textContent=(S.fecha===hoyISO()?'Hoy, ':'')+d.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'short'});
+  $('despues').disabled=S.fecha>=hoyISO();
+  // Filtro por perforadora: las que aparecen ese día
+  const perfs=[...new Set(S.fichas.flatMap(f=>f.perforaciones.map(p=>p.perforadora)).filter(Boolean))];
+  if(S.filtro!=='Todas'&&!perfs.includes(S.filtro))S.filtro='Todas';
+  $('filtro').innerHTML=perfs.length>1?['Todas',...perfs].map(p=>`<button class="chip" type="button" data-p="${esc(p)}" aria-pressed="${p===S.filtro}">${esc(p)}</button>`).join(''):'';
+  $('filtro').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{S.filtro=b.dataset.p;pintar();});
+  const ver=S.fichas.filter(f=>S.filtro==='Todas'||f.perforaciones.some(p=>p.perforadora===S.filtro));
+  $('lista').innerHTML=ver.length?ver.map(ficha).join(''):`<div class="vacio">${S.fecha===hoyISO()?'Todavía no hay consentimientos hoy.':'No hubo consentimientos este día.'}</div>`;
+}
+function ficha(f){
+  const alertas=[];
+  lista(f.enfermedades).forEach(x=>alertas.push(x));
+  lista(f.condiciones).forEach(x=>alertas.push(x));
+  if(!ningun(f.alergias))alertas.push('Alergia: '+f.alergias);
+  if(!ningun(f.medicamentos))alertas.push('Toma: '+f.medicamentos);
+  const miedos=lista(f.fobias);
+  const viejo=/^Migrado/.test(f.origen||'');                   // consentimientos del Form viejo: no preguntaba alergias ni medicamentos
+  const perfs=f.perforaciones.map(p=>`<div><span>${esc(p.zona)}${p.lado&&p.lado!=='Centro'?' '+esc(p.lado.toLowerCase()):''}${p.detalle?`<br><small style="color:var(--mu)">${esc(p.detalle)}</small>`:''}</span><span>${esc(p.perforadora||'')}</span></div>`).join('');
+  return `<article class="card">
+    <div class="top">
+      <div class="nom"><b>${esc(f.apodo||f.nombre)}</b><small>${esc(f.nombre)} · ${esc(f.id_clienta)}</small></div>
+      <div class="hora">${esc(f.hora)}<small>${esc(f.lugar)}</small></div>
+    </div>
+    <div class="pills">
+      <span class="pill">${f.edad!==''&&f.edad!=null?esc(f.edad)+' años':'Edad sin dato'}</span>
+      ${f.tutor?`<span class="pill menor">Menor · firmó ${esc((f.tutor.parentesco||'tutor').toLowerCase())}: ${esc(f.tutor.nombre)}</span>`:''}
+      <span class="pill ${f.visitas_antes?'':'nueva'}">${f.visitas_antes?`Ya vino ${f.visitas_antes} ${f.visitas_antes===1?'vez':'veces'}`:'Primera vez'}</span>
+      ${f.sangre?`<span class="pill">Sangre ${esc(f.sangre)}</span>`:''}
+      ${f.estado_firma==='Por firmar'?'<span class="pill menor">🖊️ Por firmar</span>':''}
+    </div>
+    <div class="perfos">${perfs||'<div><span>Sin zona registrada</span><span></span></div>'}</div>
+    ${alertas.length?`<div class="salud"><b>⚠️ Revisa antes de perforar</b><ul>${alertas.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div>`
+      :viejo?`<div class="miedo">Sin enfermedades registradas. <b>Formato anterior:</b> no se preguntó por alergias, medicamentos ni tipo de sangre; pregúntaselo.</div>`
+      :`<div class="salud ok"><b>✓ Sin enfermedades, alergias ni medicamentos</b></div>`}
+    ${alertas.length&&viejo?`<div class="miedo"><b>Formato anterior:</b> no se preguntó por alergias, medicamentos ni tipo de sangre; pregúntaselo.</div>`:''}
+    ${miedos.length?`<div class="miedo">😰 Le da miedo: ${esc(miedos.join(', '))}. Explícale cada paso con calma.</div>`:''}
+    ${f.comentarios?`<div class="nota"><b>Comentario:</b> ${esc(f.comentarios)}</div>`:''}
+    ${f.notas_equipo?`<div class="nota"><b>Nota del equipo:</b> ${esc(f.notas_equipo)}</div>`:''}
+    <div class="pie"><span>${esc(f.id_consent)}${f.atendio?' · atendió '+esc(f.atendio):''}</span>${f.url_pdf?`<a href="${esc(f.url_pdf)}" target="_blank" rel="noopener">Ver PDF</a>`:''}</div>
+    <button class="btn sec" type="button" data-exp="${esc(f.id_clienta)}">Ver expediente / anotar visita</button>
+  </article>`;
+}
+function moverDia(n){const d=new Date(S.fecha+'T12:00');d.setDate(d.getDate()+n);
+  S.fecha=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');S.fichas=[];pintar();cargar();}
+$('antes').onclick=()=>moverDia(-1);
+$('despues').onclick=()=>moverDia(1);
+$('recargar').onclick=cargar;
+$('entrar').onclick=async()=>{
+  const c=$('clave').value.trim();if(!c)return;
+  store.set('yp_pink_clave',c);
+  try{await api('pink_validar_clave');$('claveBox').hidden=true;$('clave').value='';cargar();}
+  catch(x){$('err').textContent=x.message;}
+};
+// Se actualiza sola cada minuto mientras la página está a la vista
+setInterval(()=>{if(!document.hidden&&S.fecha===hoyISO())cargar();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)cargar();});
+// ── Buscador: la lista de clientas (sin salud) se baja una vez y se busca en el celular ──
+const norm=s=>String(s||'').normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().trim();
+let LISTA=null,listaProm=null;
+function cargarLista(){
+  if(DEMO){LISTA=DEMO_FICHAS.map(f=>({id:f.id_clienta,apodo:f.apodo,nombre:f.nombre,wa:'5500000000'}));return Promise.resolve();}
+  if(!listaProm)listaProm=api('consent_lista').then(d=>{LISTA=d.personas;},x=>{listaProm=null;throw x;});
+  return listaProm;
+}
+$('buscar').addEventListener('input',async()=>{
+  const raw=$('buscar').value.trim(),q=norm(raw),qd=raw.replace(/\D/g,''),qu=raw.toUpperCase();
+  if(q.length<2){$('res').hidden=true;return;}
+  if(!LISTA){$('res').hidden=false;$('res').innerHTML='<button type="button" disabled>Cargando la lista…</button>';
+    try{await cargarLista();}catch(x){$('res').innerHTML=`<button type="button" disabled>${esc(x.message)}</button>`;return;}
+    if($('buscar').value.trim()!==raw)return;}
+  const hits=LISTA.filter(p=>p.id===qu||norm(p.nombre).includes(q)||norm(p.apodo).includes(q)||(qd.length>=4&&String(p.wa).includes(qd))).slice(0,12);
+  $('res').hidden=false;
+  $('res').innerHTML=hits.length?hits.map(p=>`<button type="button" data-exp="${esc(p.id)}"><b>${esc(p.apodo)}</b> · ${esc(p.nombre)}<br><small>${esc(p.id)} · WhatsApp …${esc(String(p.wa).slice(-4))}</small></button>`).join('')
+    :'<button type="button" disabled>No la encontré.</button>';
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-exp]');
+  if(b){e.preventDefault();$('res').hidden=true;$('buscar').value='';abrirExp(b.dataset.exp);return;}
+  if(!e.target.closest('.buscar'))$('res').hidden=true;
+});
+
+// ── Expediente de la clienta ──
+const E={id:'',d:null};
+async function abrirExp(id){
+  if(DEMO){alert('En la demo no hay expedientes. Ya conectado, aquí ves toda la historia de la clienta.');return;}
+  if(E.id!==id)ED.clave='';
+  E.id=id;E.d=null;$('panel').hidden=false;$('formVisita').hidden=true;$('btnAnotar').hidden=enEdicion();$('btnEditar').hidden=enEdicion();$('edAviso').hidden=true;$('edForm').hidden=true;window.scrollTo(0,0);$('panel').scrollTop=0;
+  $('expCont').innerHTML='<p class="estado">Cargando expediente…</p>';
+  try{E.d=await api('consent_expediente',{id});pintarExp();}
+  catch(x){$('expCont').innerHTML=`<p class="err">${esc(x.message)}</p>`;}
+}
+$('cerrarPanel').onclick=()=>{$('panel').hidden=true;salirEdicion();};
+const fmtF=iso=>iso?new Date(iso+'T12:00').toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'}):'';
+const zonaTxt=p=>p.zona+(p.lado&&p.lado!=='Centro'?' '+p.lado.toLowerCase():'');
+function pintarExp(){
+  const d=E.d,p=d.persona,ult=d.consentimientos[0];
+  // Salud de su último consentimiento
+  let salud='<p class="estado">Sin consentimientos.</p>';
+  if(ult){
+    const al=[...lista(ult.enfermedades),...lista(ult.condiciones)];
+    if(!ningun(ult.alergias))al.push('Alergia: '+ult.alergias);
+    if(!ningun(ult.medicamentos))al.push('Toma: '+ult.medicamentos);
+    const viejo=/^Migrado/.test(ult.origen),miedos=lista(ult.fobias);
+    salud=(al.length?`<div class="salud"><b>⚠️ Revisa antes de atender</b><ul>${al.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div>`
+      :viejo?'':`<div class="salud ok"><b>✓ Sin enfermedades, alergias ni medicamentos</b></div>`)
+      +(viejo?`<div class="miedo" style="margin-top:6px">${al.length?'':'Sin enfermedades registradas. '}<b>Formato anterior:</b> no se preguntó por alergias, medicamentos ni tipo de sangre.</div>`:'')
+      +(miedos.length?`<div class="miedo" style="margin-top:6px">😰 Le da miedo: ${esc(miedos.join(', '))}</div>`:'')
+      +`<p class="estado">Según su consentimiento del ${esc(fmtF(ult.fecha))}${ult.sangre?' · Sangre '+esc(ult.sangre):''}</p>`;
+  }
+  salud+=(d.actualizaciones||[]).map(a=>`<div class="act"><b>Actualización · ${esc(a.campo)}</b> <span class="estado">desde ${esc(fmtF(a.fecha))}${a.por?' · '+esc(a.por):''}</span><div>${esc(a.texto)}</div></div>`).join('')
+    +(enEdicion()?'<div><button class="mini" type="button" data-ed="salud">+ Actualización de salud</button></div>':'');
+  const tats=(d.tatuajes||[]).map(x=>`<div class="perfo"><span>🖋️ ${esc(x.zona)}<small>${esc(fmtF(x.fecha))}${x.tatuadora?' · '+esc(x.tatuadora):''} · ${esc([x.dimensiones,x.color,x.tipo].filter(Boolean).join(' · '))}${x.prueba?' · alergia: '+esc(x.prueba):''}${x.no_nota?' · Nota '+esc(x.no_nota):''}</small></span><span class="est ${esc(x.estado)}">${esc(x.estado||'—')}</span></div>`).join('');
+  const perfos=d.perforaciones.map(x=>`<div class="perfo"><span>${esc(zonaTxt(x))}<small>${esc(fmtF(x.fecha))}${x.perforadora?' · '+esc(x.perforadora):''}${x.origen?' · '+esc(x.origen):''}${x.no_nota?' · Nota '+esc(x.no_nota):''}</small>${x.notas?`<small>${esc(x.notas)}</small>`:''}</span><span class="fila"><span class="est ${esc(x.estado)}">${esc(x.estado||'—')}</span>${enEdicion()?`<button class="mini" type="button" data-ed="perfo|${esc(x.id)}">Editar</button>`:''}</span></div>`).join('')||'<p class="estado">Sin perforaciones registradas.</p>';
+  // Línea de tiempo: consentimientos y visitas, lo más nuevo arriba
+  const todos=[...d.perforaciones,...(d.tatuajes||[]).map(t=>({...t,zona:'Tatuaje en '+t.zona,lado:''}))];
+  const zonas=ids=>ids.split(',').map(s=>s.trim()).map(i=>todos.find(x=>x.id===i)).filter(Boolean).map(zonaTxt).join(', ');
+  const ev=[
+    ...d.consentimientos.map(c=>({k:c.fecha+c.hora,h:`<div class="ev"><b>📄 Consentimiento${c.estado_firma&&c.estado_firma!=='Firmado'?' · '+esc(c.estado_firma):''}</b> <span class="f">${esc(fmtF(c.fecha))} ${esc(c.hora)} · ${esc(c.lugar)}${c.atendio?' · atendió '+esc(c.atendio):''}</span>
+      ${todos.filter(x=>x.id_consent===c.id).length?`<div>${esc(todos.filter(x=>x.id_consent===c.id).map(zonaTxt).join(', '))}</div>`:''}
+      ${c.notas_equipo?`<div class="f">Nota del equipo: ${esc(c.notas_equipo)}</div>`:''}
+      ${c.motivo_no_firma?`<div class="f">${esc(c.motivo_no_firma)}</div>`:''}
+      ${c.url_pdf?`<a href="${esc(c.url_pdf)}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;font-size:13px">Ver PDF</a>`:''}</div>`})),
+    ...d.visitas.map(v=>({k:v.fecha+v.hora,h:`<div class="ev"><b>🩺 ${esc(v.tipo)}</b> <span class="f">${esc(fmtF(v.fecha))} ${esc(v.hora)}${v.atendio?' · '+esc(v.atendio):''}</span>
+      ${v.perfos?`<div class="f">${esc(zonas(v.perfos))}</div>`:''}
+      ${v.obs?`<div>${esc(v.obs)}</div>`:''}
+      ${v.estado?`<div class="f">Queda: <span class="est ${esc(v.estado)}">${esc(v.estado)}</span></div>`:''}
+      ${v.accion?`<div class="prox">⏰ ${esc(v.accion)} · ${esc(fmtF(v.fecha_accion))}</div>`:''}
+      ${enEdicion()?`<div style="margin-top:6px"><button class="mini" type="button" data-ed="visita|${esc(v.id)}">Editar visita</button></div>`:''}
+      ${v.fotos.length?`<div class="thumbs">${v.fotos.map(f=>f.mini?`<img src="${esc(f.mini)}" data-foto="${esc(f.id)}" alt="Foto de evolución">`
+        :`<button class="btn sec" type="button" data-foto="${esc(f.id)}" style="width:76px;height:76px;font-size:24px">📷</button>`).join('')}</div>`:''}</div>`})),
+  ].sort((a,b)=>a.k<b.k?1:-1);
+  $('expCont').innerHTML=`<div class="card">
+      <div class="top"><div class="nom"><b>${esc(p.apodo)}</b><small>${esc(p.nombre)} · ${esc(p.id)}</small></div></div>
+      <div class="pills"><span class="pill">${p.edad!==''?esc(p.edad)+' años':'Edad sin dato'}</span>
+        ${p.tipo!=='Titular'&&p.tutor?`<span class="pill menor">Menor · ${esc((p.tutor.parentesco||'tutor').toLowerCase())}: ${esc(p.tutor.nombre)}</span>`:''}
+        <span class="pill">WhatsApp …${esc(p.wa4)}</span></div>
+      ${salud}</div>
+    ${enEdicion()?`<div class="edbar"><b>✏️ Modo edición · ${esc(ED.por)}</b><span>Todo lo que guardes queda en la bitácora.</span>
+      <div class="fila"><button class="mini" type="button" data-ed="perfoNueva">+ Perforación de otro estudio</button><button class="mini" type="button" data-ed="visitaNueva">+ Visita de otra fecha</button><button class="mini" type="button" data-ed="salir">Terminar</button></div></div>`:''}
+    <div class="sec2">Perforaciones</div>${perfos}
+    ${tats?`<div class="sec2">Tatuajes</div>${tats}`:''}
+    <div class="sec2">Historia</div><div class="tl">${ev.map(x=>x.h).join('')||'<p class="estado">Sin historia.</p>'}</div>`;
+}
+// Ver una foto en grande (se pide al servidor; no se da acceso a Drive)
+document.addEventListener('click',async e=>{
+  const img=e.target.closest('[data-foto]');if(!img)return;
+  $('visor').hidden=false;$('visorImg').src=img.src||'';
+  try{const r=await api('consent_foto_ver',{id:img.dataset.foto});$('visorImg').src=r.foto;}catch(x){}
+});
+$('visor').onclick=()=>{$('visor').hidden=true;$('visorImg').src='';};
+
+// ── Anotar visita ──
+let vEstado='',AVV=null;
+$('btnAnotar').onclick=()=>{
+  const d=E.d;if(!d)return;
+  $('vTipo').innerHTML=d.tipos.map(t=>`<option>${esc(t)}</option>`).join('');
+  const items=[...d.perforaciones,...(d.tatuajes||[]).map(t=>({...t,zona:'🖋️ Tatuaje en '+t.zona,lado:''}))];
+  const activas=items.filter(x=>x.estado==='Curando');
+  $('vPerfos').innerHTML=items.length?items.map(x=>`<label><input type="checkbox" value="${esc(x.id)}"${activas.includes(x)?' checked':''}> ${esc(zonaTxt(x))} <small style="color:var(--mu)">(${esc(fmtF(x.fecha))})</small></label>`).join('')
+    :'<span class="estado">Sin perforaciones ni tatuajes registrados.</span>';
+  ['vObs','vAccion','vDias'].forEach(i=>$(i).value='');YP.fotosLimpiar($('vFotos'));$('vErr').textContent='';
+  vEstado='';$('vEstado').querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.e===''));
+  AVV=window.YP&&YP.avance?YP.avance($('formVisita'),E.id):null;   // avance guardado de la visita
+  if(AVV&&AVV.restaurar())$('vErr').textContent='Seguiste donde te quedaste: todavía no está guardada.';
+  $('formVisita').hidden=false;$('btnAnotar').hidden=true;$('formVisita').scrollIntoView({behavior:'smooth'});
+};
+$('vEstado').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{vEstado=c.dataset.e;$('vEstado').querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c));});
+document.querySelectorAll('[data-d]').forEach(c=>c.onclick=()=>{$('vDias').value=c.dataset.d;});
+$('vCancelar').onclick=()=>{$('formVisita').hidden=true;$('btnAnotar').hidden=false;};
+// Reduce la foto a 1600 px para que suba rápido
+function reducir(file){return new Promise((ok,no)=>{const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{const k=Math.min(1,1600/Math.max(img.width,img.height)),c=document.createElement('canvas');
+    c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.82));};
+  img.onerror=()=>no(new Error('No pude leer la foto '+file.name));img.src=u;});}
+$('vGuardar').onclick=async()=>{
+  const accion=$('vAccion').value.trim(),dias=+$('vDias').value||0;
+  if(accion&&dias<=0){$('vErr').textContent='Pon en cuántos días es la próxima acción.';$('vDias').focus();return;}
+  const b=$('vGuardar');b.disabled=true;b.textContent='Guardando…';$('vErr').textContent='';
+  try{
+    const r=await api('consent_visita',{id_clienta:E.id,tipo:$('vTipo').value,obs:$('vObs').value.trim(),estado:vEstado,accion,dias,
+      perfos:[...$('vPerfos').querySelectorAll('input:checked')].map(i=>i.value),
+      atiende:{id:store.get('yp_elaboro_id')||'',alias:store.get('yp_elaboro_alias')||''}});
+    const fotos=YP.fotos($('vFotos'));
+    for(let i=0;i<fotos.length;i++){b.textContent=`Subiendo foto ${i+1} de ${fotos.length}…`;
+      await api('consent_foto',{id_visita:r.id_visita,foto:await reducir(fotos[i])});}
+    if(AVV)AVV.borrar();
+    $('formVisita').hidden=true;$('btnAnotar').hidden=false;
+    await abrirExp(E.id);
+  }catch(x){$('vErr').textContent='No se guardó: '+x.message;}
+  finally{b.disabled=false;b.textContent='Guardar visita';}
+};
+
+// ── Editar expediente (solo Luis y Yoltic, 20/11) ──
+// Advertencia + clave de dueños antes de entrar. La clave vive solo en esta pantalla (no se guarda en el celular).
+// Cada cambio pide confirmar y queda en la bitácora del expediente con lo de antes y lo de después.
+const ED={clave:'',por:'',form:null};
+const LADOS=['','Izquierdo','Derecho','Centro'];
+const ESTADOS=['Curando','Sana','Retirada'];
+const enEdicion=()=>!!ED.clave;
+function salirEdicion(){ED.clave='';ED.por='';ED.form=null;$('edAviso').hidden=true;$('edForm').hidden=true;$('btnEditar').hidden=false;$('btnAnotar').hidden=false;if(E.d)pintarExp();}
+$('btnEditar').onclick=()=>{
+  if(!E.d)return;
+  $('formVisita').hidden=true;$('edForm').hidden=true;
+  $('edPorBox').hidden=!!(window.YP_SESION&&window.YP_SESION.nombre);
+  $('edClave').value='';$('edErr').textContent='';
+  $('edAviso').hidden=false;$('btnEditar').hidden=true;$('btnAnotar').hidden=true;
+  $('panel').scrollTop=0;window.scrollTo(0,0);setTimeout(()=>$('edAviso').scrollIntoView({behavior:'smooth',block:'start'}),50);
+};
+$('edCancelar').onclick=salirEdicion;
+$('edEntrar').onclick=async()=>{
+  const clave=$('edClave').value,por=(window.YP_SESION&&window.YP_SESION.nombre)||$('edPor').value.trim();
+  if(!por){$('edErr').textContent='Escribe quién hace el cambio.';$('edPor').focus();return;}
+  if(!clave){$('edErr').textContent='Escribe la clave de dueños.';$('edClave').focus();return;}
+  const b=$('edEntrar');b.disabled=true;b.textContent='Revisando…';$('edErr').textContent='';
+  try{await api('consent_exp_editar',{que:'probar',clave_duenos:clave,por});
+    ED.clave=clave;ED.por=por;$('edClave').value='';$('edAviso').hidden=true;pintarExp();$('panel').scrollTop=0;}
+  catch(x){$('edErr').textContent=x.message;}
+  finally{b.disabled=false;b.textContent='Entiendo, editar';}
+};
+// Formulario de edición: campos = [{k,t:'date'|'time'|'text'|'area'|'sel'|'checks'|'file',l,ops,v,ph,opc}]
+function abrirForm(titulo,campos,guardar){
+  ED.form={campos,guardar,inicial:{}};
+  const html=campos.map(c=>{const id='ef_'+c.k,lbl=`${esc(c.l)}${c.opc?' <span style="font-weight:400">(opcional)</span>':''}`;
+    if(c.t==='area')return `<label class="campo">${lbl}<textarea id="${id}" rows="3" placeholder="${esc(c.ph||'')}">${esc(c.v||'')}</textarea></label>`;
+    if(c.t==='sel')return `<label class="campo">${lbl}<select id="${id}">${c.ops.map(o=>{const [v,t]=Array.isArray(o)?o:[o,o||'—'];return `<option value="${esc(v)}"${String(c.v??'')===String(v)?' selected':''}>${esc(t)}</option>`;}).join('')}</select></label>`;
+    if(c.t==='checks')return `<div class="campo">${lbl}<div class="checks" id="${id}">${c.ops.length?c.ops.map(o=>`<label><input type="checkbox" value="${esc(o.id)}"${(c.v||[]).includes(o.id)?' checked':''}> ${esc(o.t)}</label>`).join(''):'<span class="estado">No hay perforaciones registradas.</span>'}</div></div>`;
+    if(c.t==='file')return `<label class="campo">${lbl}<input type="file" id="${id}" accept="image/*" multiple></label>`;
+    return `<label class="campo">${lbl}<input type="${c.t==='date'?'date':c.t==='time'?'time':'text'}" id="${id}" value="${esc(c.v||'')}"${c.t==='date'?` max="${hoyISO()}"`:''} placeholder="${esc(c.ph||'')}"></label>`;
+  }).join('');
+  $('edForm').innerHTML=`<b style="font-size:17px">${esc(titulo)}</b>${html}<p class="err" id="efErr"></p>
+    <div class="fila"><button class="btn sec" type="button" id="efCancelar">Cancelar</button><button class="btn" type="button" id="efGuardar" style="flex:1">Guardar</button></div>`;
+  campos.forEach(c=>{ED.form.inicial[c.k]=leerCampo(c);});
+  $('efCancelar').onclick=()=>{$('edForm').hidden=true;ED.form=null;};
+  $('efGuardar').onclick=guardarForm;
+  $('edForm').hidden=false;$('edForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function leerCampo(c){const el=$('ef_'+c.k);if(!el)return '';
+  if(c.t==='checks')return [...el.querySelectorAll('input:checked')].map(i=>i.value);
+  if(c.t==='file')return YP.fotos(el);
+  return el.value.trim();}
+const etiqueta=(c,v)=>{const o=c.ops.find(o=>(Array.isArray(o)?o[0]:o)===v);return (Array.isArray(o)?o[1]:o)||v||'(vacío)';};
+const mostrar=(c,v)=>c.t==='sel'?etiqueta(c,v):c.t==='date'?(v?fmtF(v):'(vacío)'):c.t==='checks'?(v.length?v.map(i=>(c.ops.find(o=>o.id===i)||{t:i}).t).join(', '):'(ninguna)'):(v||'(vacío)');
+async function guardarForm(){
+  const f=ED.form;if(!f)return;
+  const vals={},cambios=[];
+  f.campos.forEach(c=>{const v=leerCampo(c);vals[c.k]=v;
+    if(c.t==='file'){if(v.length)cambios.push(`${c.l}: ${v.length} foto(s)`);return;}
+    if(f.nuevo?(v&&v.length):JSON.stringify(v)!==JSON.stringify(f.inicial[c.k]))cambios.push(f.nuevo?`${c.l}: ${mostrar(c,v)}`:`${c.l}: ${mostrar(c,f.inicial[c.k])} → ${mostrar(c,v)}`);});
+  if(!cambios.length){$('efErr').textContent='No cambiaste nada.';return;}
+  if(!confirm('¿Seguro? Esto queda guardado en el expediente y en la bitácora:\n\n'+cambios.join('\n')))return;
+  const b=$('efGuardar');b.disabled=true;b.textContent='Guardando…';$('efErr').textContent='';
+  try{await f.guardar(vals);$('edForm').hidden=true;ED.form=null;}
+  catch(x){$('efErr').textContent='No se guardó: '+x.message;if(/clave/i.test(x.message)&&/incorrecta|intentos/i.test(x.message))ED.clave='';}
+  finally{b.disabled=false;b.textContent='Guardar';}
+}
+async function edApi(que,datos){
+  const r=await api('consent_exp_editar',Object.assign({que,clave_duenos:ED.clave,por:ED.por,id_clienta:E.id},datos));
+  if(r.expediente){E.d=r.expediente;pintarExp();}
+  return r;
+}
+const opsPerfos=()=>[...E.d.perforaciones,...(E.d.tatuajes||[]).map(t=>({...t,zona:'Tatuaje en '+t.zona,lado:''}))].map(x=>({id:x.id,t:zonaTxt(x)+' ('+fmtF(x.fecha)+')'}));
+function edPerfoNueva(){
+  abrirForm('Perforación de otro estudio',[
+    {k:'zona',t:'text',l:'Zona',ph:'Ej. Helix'},{k:'lado',t:'sel',l:'Lado',ops:LADOS},
+    {k:'fecha',t:'date',l:'¿Cuándo se la hizo? (aproximado está bien)'},{k:'estudio',t:'text',l:'¿Dónde?',ph:'Ej. Estudio en CDMX',opc:true},
+    {k:'estado',t:'sel',l:'¿Cómo está hoy?',ops:ESTADOS,v:'Curando'},{k:'notas',t:'area',l:'Notas',ph:'Ej. Llegó con pieza de mala calidad',opc:true}],
+    v=>edApi('perfo_nueva',v));
+  ED.form.nuevo=true;
+}
+function edPerfo(id){
+  const x=E.d.perforaciones.find(p=>p.id===id);if(!x)return;
+  abrirForm('Editar perforación · '+zonaTxt(x),[
+    {k:'fecha',t:'date',l:'Fecha',v:x.fecha},{k:'zona',t:'text',l:'Zona',v:x.zona},{k:'lado',t:'sel',l:'Lado',ops:LADOS,v:x.lado},
+    {k:'estado',t:'sel',l:'Estado',ops:ESTADOS,v:x.estado},{k:'notas',t:'area',l:'Notas',v:x.notas,opc:true}],
+    v=>edApi('perfo_editar',Object.assign({id},v)));
+  ED.form.nuevo=false;
+}
+function edVisitaNueva(){
+  abrirForm('Visita de otra fecha',[
+    {k:'fecha',t:'date',l:'Fecha de la visita'},{k:'hora',t:'time',l:'Hora',opc:true},
+    {k:'tipo',t:'sel',l:'Tipo de visita',ops:E.d.tipos,v:E.d.tipos[0]},{k:'perfos',t:'checks',l:'¿Qué se revisó?',ops:opsPerfos(),v:[]},
+    {k:'obs',t:'area',l:'¿Qué se vio o qué se hizo?',ph:'Ej. Se cambió la pieza por titanio'},
+    {k:'estado',t:'sel',l:'¿Cómo quedó?',ops:[['','No cambia'],...ESTADOS.map(e=>[e,e])],v:''},
+    {k:'fotos',t:'file',l:'Fotos de ese día',opc:true}],
+    async v=>{const fotos=v.fotos;delete v.fotos;
+      const r=await edApi('visita_nueva',Object.assign({atiende:{id:'',alias:ED.por}},v));
+      for(let i=0;i<fotos.length;i++){$('efGuardar').textContent=`Subiendo foto ${i+1} de ${fotos.length}…`;
+        await api('consent_foto',{id_visita:r.id_visita,foto:await reducir(fotos[i])});}
+      if(fotos.length)await abrirExp(E.id);});
+  ED.form.nuevo=true;
+}
+function edVisita(id){
+  const v=E.d.visitas.find(x=>x.id===id);if(!v)return;
+  const ids=String(v.id_perfos||'').split(',').concat(String(v.perfos||'').split(',')).map(s=>s.trim()).filter(Boolean);
+  const tipos=E.d.tipos.includes(v.tipo)?E.d.tipos:[v.tipo,...E.d.tipos];
+  abrirForm('Editar visita · '+fmtF(v.fecha),[
+    {k:'fecha',t:'date',l:'Fecha',v:v.fecha},{k:'tipo',t:'sel',l:'Tipo de visita',ops:tipos,v:v.tipo},
+    {k:'perfos',t:'checks',l:'¿Qué se revisó?',ops:opsPerfos(),v:[...new Set(ids)]},
+    {k:'obs',t:'area',l:'Observaciones',v:v.obs},
+    {k:'estado',t:'sel',l:'¿Cómo quedó?',ops:[['','Sin dato'],...ESTADOS.map(e=>[e,e])],v:v.estado}],
+    x=>edApi('visita_editar',Object.assign({id},x)));
+  ED.form.nuevo=false;
+}
+function edSalud(){
+  const ult=E.d.consentimientos[0];
+  abrirForm('Actualización de salud',[
+    {k:'campo',t:'sel',l:'¿Qué dato?',ops:['Alergias','Enfermedades','Condiciones','Medicamentos','Tipo de sangre','Otro'],v:'Alergias'},
+    {k:'fecha',t:'date',l:'¿Desde cuándo?',v:hoyISO()},
+    {k:'texto',t:'area',l:'Actualización',ph:'Ej. Ahora es alérgico a la penicilina'}],
+    v=>edApi('salud_nueva',Object.assign({id_consent:ult?ult.id:''},v)));
+  ED.form.nuevo=true;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-ed]');if(!b||!enEdicion())return;
+  const [k,id]=b.dataset.ed.split('|');
+  if(k==='perfo')edPerfo(id);else if(k==='visita')edVisita(id);else if(k==='perfoNueva')edPerfoNueva();
+  else if(k==='visitaNueva')edVisitaNueva();else if(k==='salud')edSalud();else if(k==='salir')salirEdicion();
+});
+
+pintar();cargar();
+if(!DEMO&&store.get('yp_pink_clave'))cargarLista().catch(()=>{});
+// Desde el Inicio (Clientas → Expediente) se llega directo al buscador
+if(location.hash==='#buscar')setTimeout(()=>{$('buscar').scrollIntoView({block:'center'});$('buscar').focus();},150);
+</script>

@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <script src="../sesion.js" data-pagina="nota"></script>
+<title>Yiyi Pash · Notas</title><link rel="icon" type="image/png" sizes="32x32" href="https://yiyipash.com/team/icono-32.png"><link rel="icon" type="image/png" sizes="192x192" href="https://yiyipash.com/team/icono-192.png"><link rel="apple-touch-icon" href="https://yiyipash.com/team/icono-180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--p:#be185d;--pm:#ec4899;--pl:#fdf2f8;--pb:#fce7f3;--tx:#1f2937;--mu:#6b7280;}
+    body{font-family:'Poppins',sans-serif;background:var(--pl);min-height:100vh;padding:10px 10px 40px;color:var(--tx);}
+    /* TAB BAR */
+    #tab-bar-wrap{max-width:480px;margin:0 auto 8px;display:flex;align-items:center;gap:6px;}
+    #tab-bar{flex:1;display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+    #tab-bar::-webkit-scrollbar{display:none;}
+    .tab{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;background:#fff;border:1.5px solid var(--pb);border-radius:10px;cursor:pointer;font-size:11px;font-weight:500;color:var(--mu);white-space:nowrap;flex-shrink:0;transition:all .15s;}
+    .tab.active{background:var(--p);border-color:var(--p);color:#fff;}
+    .tab-name{max-width:90px;overflow:hidden;text-overflow:ellipsis;}
+    .tab-x{font-size:14px;line-height:1;opacity:.6;}.tab-x:hover{opacity:1;}
+    #add-tab-btn{width:32px;height:32px;flex-shrink:0;border:1.5px dashed var(--pb);border-radius:10px;background:transparent;color:var(--p);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    /* CARD */
+    .card{max-width:480px;margin:0 auto;background:#fff;border-radius:20px;box-shadow:0 4px 32px rgba(190,24,93,.12);}
+    /* LOADING */
+    #loading-screen{max-width:480px;margin:0 auto;background:#fff;border-radius:20px;padding:64px 24px;text-align:center;box-shadow:0 4px 32px rgba(190,24,93,.12);}
+    .spinner{width:40px;height:40px;border:3px solid var(--pb);border-top-color:var(--p);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 16px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    /* HEADER */
+    .nota-header{background:linear-gradient(135deg,var(--p),var(--pm));padding:18px 20px;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center;}
+    .logo{color:#fff;font-size:20px;font-weight:700;letter-spacing:2px;line-height:1.2;}
+    .logo small{display:block;font-size:10px;font-weight:400;color:#fce7f3;margin-top:2px;}
+    .nota-ref{text-align:right;}.nota-ref .lbl{font-size:9px;color:#fce7f3;text-transform:uppercase;letter-spacing:.5px;}
+    .nota-ref .val{font-size:13px;font-weight:600;color:#fff;}
+    /* SECCIONES */
+    .section{padding:13px 16px;border-bottom:1px solid var(--pb);}
+    /* Cada parte de la nota con su color, como los módulos del Inicio (Luis, 19/11) */
+    .section.s-at{--sc:#7a6584;--sb:#f7f3fa}
+    .section.s-pk{--sc:#d6347f;--sb:#fff4f9}
+    .section.s-dt{--sc:#8a4fc7;--sb:#f8f3fe}
+    .section.s-it{--sc:#dd6a3a;--sb:#fff7f2}
+    .section.s-pg{--sc:#2a8f7e;--sb:#f0faf7}
+    .section.s-at,.section.s-pk,.section.s-dt,.section.s-it,.section.s-pg{background:var(--sb);border-left:5px solid var(--sc);border-bottom:6px solid #fff}
+    .sec-tit{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:var(--sc);text-transform:uppercase;letter-spacing:.9px;margin:0 0 10px}
+    .sec-tit::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--sc)}
+    /* FIELDS */
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .field{display:flex;flex-direction:column;gap:3px;}
+    .field label{font-size:10px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.8px;}
+    .field select,.field input[type=text],.field input[type=email],.field input[type=date]{border:1.5px solid var(--pb);border-radius:8px;padding:8px 10px;font-family:'Poppins',sans-serif;font-size:13px;color:var(--tx);background:#fff;outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none;width:100%;}
+    .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%239ca3af' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px;}
+    .field select:focus,.field input:focus{border-color:var(--p);}
+    /* SEARCH */
+    .items-lbl{font-size:10px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px;}
+    .search-wrap{position:relative;}
+    .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+    .search-input{width:100%;border:1.5px solid var(--pb);border-radius:10px;padding:9px 12px 9px 34px;font-family:'Poppins',sans-serif;font-size:13px;color:var(--tx);outline:none;transition:border-color .15s;}
+    .search-input:focus{border-color:var(--p);}
+    .search-results{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--pb);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.1);max-height:220px;overflow-y:auto;z-index:200;}
+    .search-results.open{display:block;}
+    .r-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--pb);transition:background .1s;}
+    .r-item:last-child{border-bottom:none;}.r-item:hover{background:var(--pl);}
+    .r-badge{font-size:9px;font-weight:700;padding:2px 5px;border-radius:5px;flex-shrink:0;min-width:30px;text-align:center;}
+    .r-info{flex:1;min-width:0;}.r-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .r-sku{font-size:10px;color:var(--mu);}.r-price{font-size:12px;font-weight:600;color:var(--p);flex-shrink:0;}
+    .no-r{padding:14px;text-align:center;font-size:13px;color:var(--mu);}
+    .c-TAT{background:#ede9fe;color:#7c3aed;}.c-PIR{background:#fce7f3;color:#be185d;}
+    .c-PAQ{background:#fff7ed;color:#c2410c;}.c-PTN{background:#f0fdf4;color:#15803d;}
+    .c-HUG{background:#fef9c3;color:#92400e;}.c-AFC{background:#ecfdf5;color:#065f46;}
+    .c-REP{background:#eff6ff;color:#1e40af;}.c-RET{background:#f3e8ff;color:#6d28d9;}
+    .c-SRV{background:#e0f2fe;color:#0369a1;}.c-DEF{background:#f3f4f6;color:#374151;}
+    /* ITEM CARDS */
+    #items-list{margin-top:9px;display:flex;flex-direction:column;gap:8px;}
+    .item-card{background:var(--pl);border:1px solid var(--pb);border-radius:10px;padding:9px 10px;}
+    .item-top{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+    .item-name-input{flex:1;border:none;border-bottom:1.5px solid transparent;border-radius:0;background:transparent;font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;color:var(--tx);outline:none;padding:2px 3px;min-width:0;transition:border-color .15s;}
+    .item-name-input:focus{border-bottom-color:var(--p);}
+    .item-name-input::placeholder{color:var(--mu);font-weight:400;}
+    .item-del{width:24px;height:24px;border-radius:50%;background:#fee2e2;color:#b91c1c;border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    /* perfo toggle */
+    .perfo-wrap{margin-bottom:7px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;}
+    .perfo-select{padding:4px 6px;border:1.5px solid var(--p);border-radius:7px;background:#fff;color:var(--p);font-size:11px;font-weight:500;font-family:'Poppins',sans-serif;max-width:100%;}
+    .perfo-toggle{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border:1.5px dashed var(--pb);border-radius:7px;background:transparent;cursor:pointer;font-size:11px;font-weight:500;color:var(--mu);transition:all .15s;font-family:'Poppins',sans-serif;}
+    .perfo-toggle.on{border-color:var(--p);background:var(--pl);color:var(--p);border-style:solid;}
+    .perfo-price{font-size:10px;}
+    /* item controls */
+    .item-controls{display:grid;grid-template-columns:auto auto auto;gap:7px;align-items:end;}
+    .ic-lbl{font-size:9px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+    .qty-row{display:flex;align-items:center;gap:4px;}
+    .qty-btn{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--pb);background:#fff;color:var(--p);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .qty-val{min-width:16px;text-align:center;font-size:13px;font-weight:600;}
+    .mini-wrap{position:relative;}
+    .mini-wrap .sym{position:absolute;top:50%;transform:translateY(-50%);font-size:11px;color:var(--mu);pointer-events:none;}
+    .sym-l{left:6px;}.sym-r{right:6px;}
+    .mini-in{border:1.5px solid var(--pb);border-radius:7px;font-family:'Poppins',sans-serif;font-size:12px;color:var(--tx);outline:none;background:#fff;padding:5px;transition:border-color .15s;-webkit-appearance:none;appearance:none;}
+    .mini-in:focus{border-color:var(--p);}
+    .mini-in.precio{width:70px;padding-left:15px;}.mini-in.importe{width:72px;padding-left:15px;font-weight:600;}
+    .mini-in.libre-sku{width:54px;font-size:11px;text-align:center;}.ic-importe{text-align:right;}
+    /* promo row */
+    .promo-row{display:flex;align-items:center;gap:7px;margin-top:7px;}
+    .promo-input{flex:1;border:1.5px solid var(--pb);border-radius:7px;padding:7px 10px;font-family:'Poppins',sans-serif;font-size:12px;color:var(--tx);outline:none;transition:border-color .15s;background:#fff;}
+    .promo-input:focus{border-color:var(--p);}.promo-input::placeholder{color:var(--mu);}
+    .descuento-badge{white-space:nowrap;font-size:10px;font-weight:700;color:var(--p);background:var(--pl);border:1.5px solid var(--pb);border-radius:6px;padding:3px 8px;flex-shrink:0;}
+    /* artista por ítem */
+    .artista-row{display:flex;align-items:center;gap:8px;margin-top:7px;}
+    .artista-lbl{font-size:9px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+    .artista-req{color:var(--p);}
+    .artista-sel{flex:1;border:1.5px solid var(--pb);border-radius:7px;padding:5px 22px 5px 8px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--tx);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239ca3af' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 6px center;outline:none;transition:border-color .15s;-webkit-appearance:none;}
+    .artista-sel:focus{border-color:var(--p);}
+    /* libre + aplicar buttons */
+    .btns-row{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;}
+    .btn-libre{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px dashed var(--pb);border-radius:8px;background:transparent;color:var(--mu);font-family:'Poppins',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;}
+    .btn-libre:hover{border-color:var(--p);color:var(--p);}
+    /* pagos */
+    .pago-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+    .pago-btn{padding:8px 4px;border:2px solid var(--pb);border-radius:10px;background:#fff;font-family:'Poppins',sans-serif;font-size:11px;font-weight:500;color:var(--mu);cursor:pointer;text-align:center;transition:all .15s;}
+    .pago-btn.active{border-color:var(--p);background:var(--pl);color:var(--p);font-weight:700;}
+    #pagos-montos{margin-top:8px;display:flex;flex-direction:column;gap:6px;}
+    .pago-monto-row{display:flex;align-items:center;justify-content:space-between;}
+    .pago-monto-lbl{font-size:12px;color:var(--tx);font-weight:500;}
+    .pago-suma{font-size:11px;margin-top:4px;text-align:right;}
+    .pago-suma.ok{color:#15803d;}.pago-suma.mal{color:#b91c1c;}
+    textarea{width:100%;border:1.5px solid var(--pb);border-radius:8px;padding:8px 10px;font-family:'Poppins',sans-serif;font-size:12px;color:var(--tx);resize:none;outline:none;min-height:56px;transition:border-color .15s;}
+    textarea:focus{border-color:var(--p);}
+    /* total */
+    .total-bar{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--pl);border-top:2px solid var(--pb);}
+    .total-lbl{font-size:11px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;}
+    .total-val{font-size:26px;font-weight:700;color:var(--p);}
+    .total-desglose{width:100;}.td-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0;}
+    .td-saldo{border-top:1.5px solid var(--pb);margin-top:5px;padding-top:6px;}
+    .total-val-sm{font-size:16px;font-weight:600;color:var(--mu);}
+    #btn-submit{display:block;width:100%;padding:15px;background:linear-gradient(135deg,var(--p),var(--pm));color:#fff;border:none;border-radius:0 0 20px 20px;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:opacity .2s;}
+    #btn-submit:hover{opacity:.88;}#btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+    /* success */
+    #success-overlay{display:none;position:fixed;inset:0;background:rgba(253,242,248,.96);z-index:500;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+    .success-card{background:#fff;border-radius:20px;padding:40px 24px;text-align:center;max-width:380px;width:100%;box-shadow:0 4px 32px rgba(190,24,93,.15);}
+    .success-icon{font-size:56px;margin-bottom:12px;}.success-nota{font-size:28px;font-weight:700;color:var(--p);margin-bottom:6px;}
+    .success-sub{font-size:13px;color:var(--mu);line-height:1.6;margin-bottom:24px;white-space:pre-line;}
+    .success-btns{display:flex;flex-direction:column;gap:8px;}
+    .btn-nueva{padding:12px 24px;background:linear-gradient(135deg,var(--p),var(--pm));color:#fff;border:none;border-radius:10px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+    .btn-volver{padding:10px 24px;background:var(--pl);color:var(--p);border:2px solid var(--pb);border-radius:10px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    #toast{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 20px;border-radius:10px;font-size:12px;z-index:999;max-width:calc(100vw - 32px);text-align:center;white-space:pre-line;}
+    /* ── EMAIL CHIPS ── */
+    .chips-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px;min-height:0;}
+    .chip{display:inline-flex;align-items:center;gap:3px;padding:3px 8px 3px 10px;background:var(--pl);border:1.5px solid var(--pb);border-radius:20px;font-size:11px;font-weight:500;color:var(--p);}
+    .chip-x{font-size:14px;color:var(--mu);cursor:pointer;line-height:1;}
+    .chip-x:hover{color:var(--p);}
+    .email-add-row{display:flex;gap:6px;margin-top:5px;}
+    .email-add-input{flex:1;border:1.5px solid var(--pb);border-radius:8px;padding:7px 10px;font-family:'Poppins',sans-serif;font-size:12px;color:var(--tx);outline:none;transition:border-color .15s;background:#fff;}
+    .email-add-input:focus{border-color:var(--p);}
+    .email-add-btn{width:34px;height:34px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--pb);background:var(--pl);color:var(--p);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:'Poppins',sans-serif;}
+    .email-add-btn:hover{border-color:var(--p);}
+    /* ── TOGGLE MISMOS ── */
+    .mismo-toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;}
+    .toggle-track{width:30px;height:17px;border-radius:9px;background:var(--pb);position:relative;transition:background .15s;flex-shrink:0;}
+    .toggle-track.on{background:var(--p);}
+    .toggle-thumb{position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+    .toggle-track.on .toggle-thumb{transform:translateX(13px);}
+    .btn-preset{display:inline-flex;align-items:center;padding:3px 9px;border:1.5px dashed var(--pb);border-radius:6px;background:transparent;color:var(--mu);font-family:'Poppins',sans-serif;font-size:10px;cursor:pointer;transition:all .15s;margin-top:4px;}
+.btn-preset:hover{border-color:var(--p);color:var(--p);}
+    /* ── PREVIEW OVERLAY ── */
+#ir-inicio{margin:0 0 8px;}
+#btn-cobrar{display:flex;width:100%;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;padding:10px 12px;border:1.5px solid var(--p);border-radius:10px;background:#fff;color:var(--p);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+#btn-cobrar.hay{background:var(--p);color:#fff;}
+/* 🩺 Anotar en el expediente desde la nota */
+#visita-overlay{display:none;position:fixed;inset:0;background:rgba(253,242,248,.98);z-index:520;padding:16px;overflow-y:auto;}
+.vn-wrap{width:100%;max-width:560px;margin:0 auto;display:grid;gap:10px;}
+.vn-top{display:flex;align-items:center;gap:10px;}
+.vn-top h2{margin:0;font-size:18px;color:var(--p);flex:1;}
+.vn-form{display:grid;gap:10px;background:#fff;border:1px solid var(--pb);border-radius:14px;padding:14px;}
+.vn-form label,.vn-l{display:grid;gap:4px;font-size:12.5px;font-weight:600;color:var(--mu);font-family:'Poppins',sans-serif;}
+.vn-form small{font-weight:400;}
+.vn-form input[type=text],.vn-form input[type=number],.vn-form select,.vn-form textarea{width:100%;box-sizing:border-box;border:1.5px solid var(--pb);border-radius:10px;padding:9px 11px;font:inherit;font-size:16px;color:var(--tx);background:#fff;}
+.vn-checks{display:grid;gap:6px;font-weight:400;color:var(--tx);font-size:14px;}
+.vn-checks label{display:flex;gap:8px;align-items:center;flex-direction:row;font-weight:400;color:var(--tx);font-size:14px;}
+.vn-checks input{width:19px;height:19px;accent-color:var(--p);}
+.vn-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.vn-chip{border:1.5px solid var(--pb);background:#fff;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;color:var(--tx);}
+.vn-chip[aria-pressed="true"]{background:var(--p);border-color:var(--p);color:#fff;font-weight:600;}
+.vn-btn{border:none;border-radius:999px;background:var(--p);color:#fff;font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;padding:12px;cursor:pointer;}
+.vn-btn:disabled{opacity:.6;}
+.vn-mu{font-size:13px;color:var(--mu);}
+.vn-err{color:#c0262d;font-size:13px;margin:0;}
+.vn-aviso{background:#fef3c7;color:#92400e;border-radius:12px;padding:10px 12px;font-size:13.5px;display:grid;gap:3px;}
+#cobrar-overlay{display:none;position:fixed;inset:0;background:rgba(253,242,248,.98);z-index:500;padding:16px;overflow-y:auto;}
+.cobrar-wrap{width:100%;max-width:560px;margin:0 auto;display:grid;gap:10px;}
+.cobrar-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.cobrar-top h2{margin:0;font-size:18px;color:var(--p);}
+.cobrar-item{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--pb);border-radius:12px;padding:12px 14px;font-family:'Poppins',sans-serif;color:var(--tx);cursor:pointer;}
+.cobrar-item b{display:block;font-size:15px;}
+.cobrar-item span{display:block;font-size:12.5px;color:var(--mu);margin-top:2px;}
+.cobrar-item span.cb-pill{display:inline-block;margin:6px 6px 0 0;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;}
+.cb-pill.ok{background:#ecfdf5;color:#047857;}.cb-pill.warn{background:#fef3c7;color:#92400e;}
+.cobrar-acc{display:flex;gap:8px;margin-top:-4px;}
+.cobrar-acc button{flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--pb);background:#fff;color:var(--mu);font-family:'Poppins',sans-serif;font-size:12px;cursor:pointer;}
+.zona-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.zona-row .zona-lbl{font-size:10px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.8px;flex:none;}
+.zona-row select,.zona-row input{flex:1;min-width:0;border:1.5px solid var(--pb);border-radius:8px;padding:6px 8px;font-family:'Poppins',sans-serif;font-size:12px;color:var(--tx);background:#fff;}
+.zona-aviso{margin-top:6px;background:#fef3c7;color:#92400e;border-radius:8px;padding:6px 9px;font-size:11.5px;}
+#btn-prenota{display:block;width:100%;padding:12px;background:#fff;color:var(--p);border:none;border-top:1px solid var(--pb);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+#btn-prenota:disabled{opacity:.5;cursor:not-allowed;}
+.sin-id{background:#fef3c7;color:#92400e;padding:10px 16px;font-size:12.5px;line-height:1.45;}
+#preview-overlay{display:none;position:fixed;inset:0;background:rgba(253,242,248,.96);z-index:500;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px;overflow-y:auto;}
+.preview-wrap{width:100%;max-width:480px;margin:0 auto;}
+.preview-nota{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 32px rgba(190,24,93,.15);margin-bottom:12px;}
+.preview-btns-bar{display:flex;gap:8px;}
+.btn-preview-cancel{flex:1;padding:13px;background:var(--pl);color:var(--p);border:2px solid var(--pb);border-radius:12px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+.btn-preview-ok{flex:2;padding:13px;background:linear-gradient(135deg,var(--p),var(--pm));color:#fff;border:none;border-radius:12px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-preview-ok:disabled{opacity:.5;cursor:not-allowed;}
+    /* ── PINK CLUB ── */
+    .pk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .pk-head .items-lbl{margin:0;}
+    .pk-card{background:var(--pl);border:1.5px solid var(--pb);border-radius:10px;padding:8px 10px;margin-top:8px;}
+    .pk-card.paga{border-color:var(--p);}
+    .pk-top{display:flex;align-items:center;gap:6px;}
+    .pk-name{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pk-id{font-size:10px;color:var(--mu);font-weight:500;}
+    .pk-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;white-space:nowrap;}
+    .pk-Activa{background:#dcfce7;color:#15803d;}.pk-Registrada{background:#fef9c3;color:#92400e;}
+    .pk-Baja,.pk-Sin{background:#f3f4f6;color:#6b7280;}
+    .pk-info{font-size:11px;color:var(--mu);margin-top:3px;line-height:1.5;}
+    .pk-info b{color:var(--tx);}
+    .pk-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+    .pk-mini{padding:3px 8px;border:1.5px solid var(--pb);border-radius:6px;background:#fff;color:var(--p);font-family:'Poppins',sans-serif;font-size:10px;font-weight:600;cursor:pointer;}
+    .pk-mini.on{background:var(--p);border-color:var(--p);color:#fff;}
+    .pk-resumen{font-size:11px;margin-top:8px;padding:6px 9px;border-radius:8px;background:#fff;border:1.5px dashed var(--pb);color:var(--mu);}
+    .pk-resumen.mal{border-color:#fca5a5;color:#b91c1c;}
+    .pk-row{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap;}
+    .pk-pts-in{width:64px;padding-left:6px;}
+    .pk-note{font-size:10px;color:var(--mu);}
+    .pk-regalo{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--p);font-weight:600;cursor:pointer;}
+    #pk-modal{display:none;position:fixed;inset:0;background:rgba(253,242,248,.97);z-index:600;overflow-y:auto;padding:16px;}
+    .pk-modal-card{max-width:480px;margin:0 auto;background:#fff;border-radius:20px;box-shadow:0 4px 32px rgba(190,24,93,.15);padding:16px;}
+    .pk-modal-card h3{font-size:15px;color:var(--p);margin-bottom:10px;}
+    .pk-modal-card .field{margin-bottom:9px;}
+    .pk-modal-card input[type=tel]{border:1.5px solid var(--pb);border-radius:8px;padding:8px 10px;font-family:'Poppins',sans-serif;font-size:13px;outline:none;width:100%;}
+    .pk-check{display:flex;align-items:flex-start;gap:8px;font-size:12px;margin:7px 0;cursor:pointer;}
+    .pk-check input{margin-top:3px;accent-color:var(--p);}
+    .pk-menor{background:var(--pl);border-radius:10px;padding:9px;margin:6px 0 9px;}
+  </style>
+</head>
+<body>
+
+<div id="tab-bar-wrap">
+  <div id="tab-bar"></div>
+  <button id="add-tab-btn" onclick="addTab()" title="Nueva nota">+</button>
+</div>
+
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <p style="color:var(--mu);font-size:13px;">Cargando catálogo...</p>
+</div>
+
+<div id="form-screen" style="display:none">
+<a id="ir-inicio" class="yp-casita" href="../" onclick="return salirAInicio()">⌂ Inicio</a>
+<button id="btn-cobrar" type="button" onclick="abrirPorCobrar()">📋 Por cobrar</button>
+<div class="card">
+  <div class="nota-header">
+    <div class="logo">yiyi pash<small>@yiyi_pash · 56 19 37 05 69</small></div>
+    <div class="nota-ref"><div class="lbl">Borrador</div><div class="val" id="header-ref">——</div></div>
+  </div>
+
+  <!-- Lugar + Fecha -->
+  <div class="section s-at">
+    <div class="sec-tit">Atención</div>
+    <div class="row2">
+      <div class="field"><label>Lugar</label>
+        <select id="punto-venta" onchange="saveField('punto_venta',this.value)"><option value="">Cargando...</option></select>
+      </div>
+      <div class="field"><label>Fecha</label>
+        <input type="date" id="fecha" onchange="saveField('fecha',this.value)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Pink Club -->
+  <div class="section s-pk" id="pink-section">
+    <div class="pk-head">
+      <span class="items-lbl">💗 Pink Club</span>
+      <button class="btn-preset" style="margin:0" onclick="pinkPedirClave(true)" id="pk-clave-btn">🔑 Clave</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">👤</span>
+      <input type="text" class="search-input" id="pk-search" placeholder="¿Ya eres Pink? Busca ID, nombre o WhatsApp" autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="search-results" id="pk-results"></div>
+    </div>
+    <div id="pk-personas"></div>
+    <div class="btns-row">
+      <button class="btn-libre" onclick="pinkAbrirRegistro()">＋ Registrar nueva</button>
+    </div>
+  </div>
+
+  <!-- Elaboró + Nombre + Emails -->
+  <div class="section s-dt">
+    <div class="sec-tit">Datos de la clienta</div>
+    <div class="field" style="margin-bottom:9px;"><label>Elaboró</label>
+      <div style="display:flex;gap:8px;align-items:center"><select id="elaboro-sel" onchange="onElabora(this)" style="flex:1"><option value="">Selecciona...</option></select>
+        <button type="button" class="btn-libre" id="elaboro-cambiar" onclick="cambiarElaboro()" style="display:none;white-space:nowrap">Cambiar</button></div>
+      <div id="elaboro-nota" style="font-size:11px;color:var(--mu);margin-top:3px"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px;"><label>Nombre clienta</label>
+      <input type="text" id="nombre-clienta" placeholder="Nombre..." oninput="onNombre(this.value)">
+      <button class="btn-preset" id="btn-publico" type="button" onclick="togglePublico()">＋ Público general (solo productos)</button>
+    </div>
+    <!-- Correos nota -->
+    <div class="field" style="margin-bottom:11px;">
+      <label>Nota digital — correos <span id="correo-req" style="font-weight:400;color:var(--mu);text-transform:none;letter-spacing:0;font-size:10px;">(requerido)</span></label>
+      <div class="chips-wrap" id="chips-nota"></div>
+<div class="email-add-row">
+  <input type="email" class="email-add-input" id="input-email-nota" placeholder="correo@ejemplo.com" autocomplete="email">
+  <button class="email-add-btn" onclick="addEmailNota()">+</button>
+</div>
+<button class="btn-preset" onclick="addEmailPreset('nota')">＋ yiyi.pash@gmail.com</button>
+    </div>
+    <!-- Correos manual -->
+    <div class="field">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <label style="margin-bottom:0;">Manual de cuidados</label>
+        <div class="mismo-toggle" onclick="toggleManualMismo()">
+          <div class="toggle-track on" id="toggle-mismo-track"><div class="toggle-thumb"></div></div>
+          <span style="font-size:10px;color:var(--mu);">Mismos</span>
+        </div>
+      </div>
+      <div id="manual-mismo-hint" style="font-size:10px;color:var(--mu);padding:2px 0 0;">Se enviará a los mismos correos que la nota</div>
+      <div id="manual-emails-extra" style="display:none;">
+        <div class="chips-wrap" id="chips-manual"></div>
+        <div class="email-add-row">
+  <input type="email" class="email-add-input" id="input-email-manual" placeholder="correo@ejemplo.com" autocomplete="email">
+  <button class="email-add-btn" onclick="addEmailManual()">+</button>
+</div>
+<button class="btn-preset" onclick="addEmailPreset('manual')">＋ yiyi.pash@gmail.com</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- Ítems -->
+  <div class="section s-it">
+    <div class="sec-tit">Servicios y productos</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="search-input" placeholder="Busca: top, piercing, huggie..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <div id="items-list"></div>
+    <div class="btns-row">
+      <button class="btn-libre" onclick="addItemLibre()">＋ Ítem libre</button>
+      <button class="btn-libre" id="btn-aplicar" style="display:none" onclick="aplicarArtistaATodos()">↓ Artista del primero a todos</button>
+      <button class="btn-libre" id="btn-aplicar-rec" style="display:none" onclick="aplicarReceptoraATodos()">↓ 💗 Quien recibe del primero a todos</button>
+    </div>
+  </div>
+
+  <!-- Pagos + Comentarios -->
+  <div class="section s-pg">
+    <div class="sec-tit">Pago</div>
+    <div class="field" style="margin-bottom:11px;"><label>Tipo de pago</label>
+      <div class="pago-grid">
+        <button class="pago-btn" data-pago="Efectivo"      onclick="togglePago(this)">💵 Efectivo</button>
+        <button class="pago-btn" data-pago="Transferencia" onclick="togglePago(this)">📲 Transf.</button>
+        <button class="pago-btn" data-pago="Tarjeta"       onclick="togglePago(this)">💳 Tarjeta</button>
+      </div>
+      <div id="pagos-montos"></div>
+    </div>
+    <div class="field"><label>Comentarios</label>
+      <textarea id="comentarios" placeholder="Notas especiales..." onchange="saveField('comentarios',this.value)"></textarea>
+    </div>
+  </div>
+
+  <!-- Anticipo -->
+  <div class="section s-pg" id="anticipo-section">
+    <div style="display:flex;align-items:center;width:100%;">
+      <span style="font-size:10px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.8px;">Anticipo</span>
+      <button class="btn-libre" id="anticipo-btn" onclick="toggleAnticipo()" style="margin:0 0 0 auto;">+ Anticipo</button>
+    </div>
+    <div id="anticipo-inputs" style="display:none;margin-top:9px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;color:var(--mu);">Monto recibido (Transferencia)</span>
+        <div class="mini-wrap" style="margin-left:auto;">
+          <span class="sym sym-l">$</span>
+          <input class="mini-in precio" id="anticipo-monto" type="number" inputmode="decimal" value="100" min="0" step="10" oninput="onAnticipo(this.value)" style="width:84px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="total-bar" id="total-bar">
+    <span class="total-lbl">Total</span><span class="total-val">$0</span>
+  </div>
+  <button id="btn-prenota" type="button" onclick="guardarPrenota()">💾 Guardar prenota (la cobra otra persona)</button>
+  <button id="btn-submit" onclick="enviarNota()">Registrar Nota ✨</button>
+</div>
+</div>
+
+<div id="success-overlay">
+  <div class="success-card">
+    <div class="success-icon">✨</div>
+    <div class="success-nota" id="s-nota">D-0000</div>
+    <div class="success-sub"  id="s-msg"></div>
+    <div class="success-btns">
+      <button class="btn-nueva"  onclick="nuevaNota()">+ Nueva nota</button>
+      <button class="btn-volver" onclick="cerrarExito()">Volver a las notas</button>
+    </div>
+  </div>
+</div>
+  <div id="cobrar-overlay">
+    <div class="cobrar-wrap">
+      <div class="cobrar-top"><a class="yp-casita" href="../" onclick="return salirAInicio()" style="margin:0">⌂ Inicio</a><h2 style="flex:1">Por cobrar</h2><button class="btn-preset" type="button" style="margin:0;font-size:12px;" onclick="cerrarPorCobrar()">Cerrar</button></div>
+      <div id="cobrar-lista" class="cobrar-wrap"></div>
+    </div>
+  </div>
+  <div id="visita-overlay" role="dialog" aria-modal="true" aria-labelledby="vn-tit">
+    <div class="vn-wrap">
+      <div class="vn-top"><h2 id="vn-tit">🩺 Anotar en el expediente</h2><button class="btn-preset" type="button" style="margin:0;font-size:12px;" onclick="cerrarVisitaNota()">Cerrar</button></div>
+      <div id="vn-cont" class="vn-wrap"></div>
+    </div>
+  </div>
+  <div id="preview-overlay">
+  <div class="preview-wrap">
+    <div class="preview-nota" id="preview-content"></div>
+    <div class="preview-btns-bar">
+      <button class="btn-preview-cancel" onclick="cerrarPreview()">Cancelar</button>
+      <button class="btn-preview-ok" id="btn-preview-ok" onclick="confirmarEnvio()">Registrar Nota ✨</button>
+    </div>
+  </div>
+</div>
+<div id="pk-modal">
+  <div class="pk-modal-card">
+    <h3>💗 Registrar en el Pink Club</h3>
+    <div class="row2">
+      <div class="field"><label>Apodo</label><input type="text" id="pk-apodo" placeholder="Como le dicen"></div>
+      <div class="field"><label>Fecha de nacimiento</label><input type="date" id="pk-fn" data-nac onchange="pinkRevisarEdad()"></div>
+    </div>
+    <div class="field"><label>Nombre completo</label><input type="text" id="pk-nombre" placeholder="Nombre y apellidos"></div>
+    <div class="row2">
+      <div class="field"><label>WhatsApp (10 dígitos)</label><input type="tel" id="pk-wa" inputmode="numeric" placeholder="5512345678"></div>
+      <div class="field"><label>Correo (opcional)</label><input type="email" id="pk-email" placeholder="correo@ejemplo.com"></div>
+    </div>
+    <div class="field"><label>¿Cómo se registra?</label>
+      <select id="pk-origen"><option value="Consentimiento">Formulario de consentimiento</option><option value="Bazar">Bazar</option><option value="Manual" selected>Manual (en caja)</option></select>
+    </div>
+    <div id="pk-menor" class="pk-menor" style="display:none">
+      <div style="font-size:11px;font-weight:600;color:var(--p);margin-bottom:6px;" id="pk-menor-tit">Es menor de edad: datos del tutor</div>
+      <div class="field"><label>Nombre del tutor</label><input type="text" id="pk-tnombre"></div>
+      <div class="row2">
+        <div class="field"><label>Parentesco</label><input type="text" id="pk-tpar" placeholder="Madre, padre..."></div>
+        <div class="field"><label>WhatsApp del tutor</label><input type="tel" id="pk-twa" inputmode="numeric" placeholder="5512345678"></div>
+      </div>
+      <div class="field" id="pk-tid-wrap" style="display:none"><label>ID Pink del tutor (debe estar registrado)</label><input type="text" id="pk-tid" placeholder="AAA-0000" style="text-transform:uppercase"></div>
+    </div>
+    <label class="pk-check"><input type="checkbox" id="pk-c-aviso"> <span>Acepta el aviso de privacidad <b style="color:var(--p)">*</b></span></label>
+    <label class="pk-check" id="pk-c-mkt-wrap"><input type="checkbox" id="pk-c-mkt"> <span>Acepta recibir promociones por WhatsApp</span></label>
+    <label class="pk-check"><input type="checkbox" id="pk-c-fotos"> <span>Acepta que publiquemos fotos de sus perforaciones</span></label>
+    <div class="preview-btns-bar" style="margin-top:12px;">
+      <button class="btn-preview-cancel" onclick="pinkCerrarRegistro()">Cancelar</button>
+      <button class="btn-preview-ok" id="pk-reg-btn" onclick="pinkRegistrar()">Registrar 💗</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="nota-cargando" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(253,242,248,.9);flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:24px">
+  <div class="spinner"></div><p id="nota-cargando-txt" style="color:var(--p);font-weight:600;font-size:14px;margin:0">Cargando…</p>
+</div>
+
+<script>
+const AS_URL='https://script.google.com/macros/s/AKfycbwJhAO5anQhZ_tzZ7f6jSE133AxFzSLU2rXkVH1vdtH9SlkMlbnvdjbez3786HIEhAf/exec';
+             
+// ── ESTADO ──────────────────────────────────────────────────────────
+let catalogo=[],artistas=[],currentResults=[],tabs=[],activeTabId=0,_nextTabId=1,_nextItemId=1;
+let _pendingPayload=null,_pendingTab=null;
+// ── TAB ─────────────────────────────────────────────────────────────
+function crearTab(){
+  const hoy=new Date();
+  const tab={
+    id:_nextTabId++,label:`Nota ${_nextTabId-1}`,items:[],
+    pagosActivos:[],pagosMontos:{Efectivo:0,Transferencia:0,Tarjeta:0},
+    anticipo_activo:false,anticipo_monto:100,
+    emails_nota:[],emails_manual:[],manual_mismo:true,
+    elaboro:{id:localStorage.getItem('yp_elaboro_id')||'',alias:localStorage.getItem('yp_elaboro_alias')||''},
+    form:{
+      punto_venta:localStorage.getItem('yp_lugar')||'',
+      fecha:`${hoy.getFullYear()}-${pad(hoy.getMonth()+1)}-${pad(hoy.getDate())}`,
+      nombre_clienta:'',comentarios:'',
+    },
+    pink:{personas:[],paga:'',canje:false},   // Pink Club: clientas de esta nota
+    publico:false,                            // venta a público general: sin correo y sin Pink Club
+  };
+  tabs.push(tab);return tab;
+}
+function getTab(){return tabs.find(t=>t.id===activeTabId);}
+function getItems(){return getTab()?.items||[];}
+
+function saveCurrentForm(){
+  const tab=getTab();if(!tab)return;  // ← primero esto
+  // luego la auto-captura:
+  const pN=(document.getElementById('input-email-nota')?.value||'').trim();
+  if(pN&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pN)&&!tab.emails_nota.includes(pN)){tab.emails_nota.push(pN);document.getElementById('input-email-nota').value='';renderEmailChips();}
+  if(!tab.manual_mismo){const pM=(document.getElementById('input-email-manual')?.value||'').trim();if(pM&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pM)&&!tab.emails_manual.includes(pM)){tab.emails_manual.push(pM);document.getElementById('input-email-manual').value='';renderEmailChips();}}
+  // luego el resto normal...
+  tab.form.punto_venta    =document.getElementById('punto-venta').value;
+  tab.form.fecha          =document.getElementById('fecha').value;
+  tab.form.nombre_clienta =document.getElementById('nombre-clienta').value;
+  tab.form.comentarios    =document.getElementById('comentarios').value;
+  const sel=document.getElementById('elaboro-sel');
+  if(sel){const opt=sel.options[sel.selectedIndex];tab.elaboro={id:sel.value,alias:sel.value?(opt?.dataset.alias||sel.value):''};}
+  const ai=document.getElementById('anticipo-inputs'),am=document.getElementById('anticipo-monto');
+  tab.anticipo_activo=ai?ai.style.display!=='none':false;
+  if(am) tab.anticipo_monto=parseFloat(am.value)||0;
+}
+function saveField(key,val){const tab=getTab();if(tab)tab.form[key]=val;}
+
+function loadTabForm(tab){
+  document.getElementById('punto-venta').value    =tab.form.punto_venta;
+  document.getElementById('fecha').value          =tab.form.fecha;
+  document.getElementById('nombre-clienta').value =tab.form.nombre_clienta;
+  document.getElementById('comentarios').value    =tab.form.comentarios;
+  const sel=document.getElementById('elaboro-sel');if(sel)sel.value=tab.elaboro?.id||'';
+  bloquearElaboro();
+  const ai=document.getElementById('anticipo-inputs'),ab=document.getElementById('anticipo-btn'),am=document.getElementById('anticipo-monto');
+  if(ai)ai.style.display=tab.anticipo_activo?'block':'none';
+  if(ab)ab.textContent=tab.anticipo_activo?'× Quitar anticipo':'+ Anticipo';
+  if(am)am.value=tab.anticipo_monto;
+  renderEmailChips();
+  renderPublico();
+  renderPink();
+  renderItems();renderPagoButtons();renderPagoMontos();updateTotal();renderTabBar();
+}
+
+function addTab(){saveCurrentForm();const tab=crearTab();activeTabId=tab.id;loadTabForm(tab);}
+function switchTab(id){if(id===activeTabId)return;saveCurrentForm();activeTabId=id;loadTabForm(getTab());}
+function closeTab(id){
+  const tab=tabs.find(t=>t.id===id);if(!tab)return;
+  const msg=tab.items.length>0?`¿Segura que quieres borrar esta nota?\nSe perderán los ítems sin registrar.`:`¿Segura que quieres borrar esta nota?`;
+  if(!confirm(msg))return;
+  tabs=tabs.filter(t=>t.id!==id);
+  if(tabs.length===0){const t=crearTab();activeTabId=t.id;loadTabForm(t);}
+  else if(activeTabId===id){activeTabId=tabs[tabs.length-1].id;loadTabForm(getTab());}
+  else renderTabBar();
+}
+function renderTabBar(){
+  document.getElementById('tab-bar').innerHTML=tabs.map(tab=>
+    `<div class="tab ${tab.id===activeTabId?'active':''}" onclick="switchTab(${tab.id})">
+      <span class="tab-name">${esc(tab.label)}</span>
+      <span class="tab-x" onclick="event.stopPropagation();closeTab(${tab.id})">×</span>
+    </div>`).join('');
+  const ref=document.getElementById('header-ref');if(ref)ref.textContent=getTab()?.label||'——';
+}
+function addEmailPreset(tipo){
+  const email='yiyi.pash@gmail.com', tab=getTab(); if(!tab)return;
+  const lista=tipo==='nota'?tab.emails_nota:tab.emails_manual;
+  if(lista.includes(email))return toast('⚠️ Correo ya agregado');
+  lista.push(email); renderEmailChips();
+}
+// ── INIT ────────────────────────────────────────────────────────────
+async function init(){
+  const tab=crearTab();activeTabId=tab.id;
+  // Abre al momento con el último catálogo de este celular; el nuevo llega por detrás y lo reemplaza
+  let guardado=null;
+  try{guardado=JSON.parse(localStorage.getItem('yp_cache_catalogo')||'null');}catch(e){}
+  const pedido=fetch(`${AS_URL}?action=catalogo`).then(r=>r.json()).then(json=>{
+    if(!json.ok)throw new Error(json.error||'Error al cargar');
+    try{localStorage.setItem('yp_cache_catalogo',JSON.stringify(json.data));}catch(e){}
+    return json.data;
+  });
+  const usarCatalogo=d=>{catalogo=d.catalogo||[];artistas=d.artistas||[];};
+  if(guardado){
+    usarCatalogo(guardado);
+    poblarLugares(guardado.puntos_venta||[]);
+    poblarElaboradores(guardado.elaboradores||[]);
+    pedido.then(d=>{usarCatalogo(d);renderItems();}).catch(()=>{});
+  }else{
+    try{
+      const d=await pedido;
+      usarCatalogo(d);
+      poblarLugares(d.puntos_venta||[]);
+      poblarElaboradores(d.elaboradores||[]);
+    }catch(e){toast('⚠️ '+(e.message||'Sin conexión'));poblarFallback();}
+  }
+  document.getElementById('loading-screen').style.display='none';
+  document.getElementById('form-screen').style.display='block';
+  loadTabForm(tab);
+  const inp=document.getElementById('search-input');
+  inp.addEventListener('input',onSearch);
+  inp.addEventListener('focus',()=>{if(inp.value.length>=2)onSearch();});
+  inp.addEventListener('blur',()=>setTimeout(closeSearch,160));
+  document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))closeSearch();});
+  // Enter en inputs de email
+  const inEN=document.getElementById('input-email-nota');
+  if(inEN)inEN.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addEmailNota();}});
+  const inEM=document.getElementById('input-email-manual');
+  if(inEM)inEM.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addEmailManual();}});
+  // Pink Club: buscador de clientas (va al servidor, con pausa para no saturar)
+  const pk=document.getElementById('pk-search');
+  pk.addEventListener('input',()=>{clearTimeout(pk._t);pk._t=setTimeout(pinkBuscar,450);});
+  pk.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(pk._t);pinkBuscar();}});
+  document.addEventListener('click',e=>{if(!e.target.closest('#pink-section .search-wrap'))document.getElementById('pk-results').classList.remove('open');});
+  renderPinkClaveBtn();
+  retomarAvanceNota();
+  tomarDelConsentimiento();
+  cargarPorCobrar();
+  setInterval(()=>{if(!document.hidden)cargarPorCobrar();},60000);
+  if(/[?&]ver=cobrar/.test(location.search)){history.replaceState(null,'',location.pathname);abrirPorCobrar();}
+}
+
+// ── VIENE DEL CONSENTIMIENTO ────────────────────────────────────────
+// El consentimiento deja los datos en este celular (yp_handoff) y abre la nota con ?desde=consentimiento.
+async function tomarDelConsentimiento(){
+  if(!/[?&]desde=consentimiento/.test(location.search))return;
+  let h=null;
+  try{h=JSON.parse(localStorage.getItem('yp_handoff')||'null');}catch(e){}
+  localStorage.removeItem('yp_handoff');
+  history.replaceState(null,'',location.pathname);
+  if(!h||h.desde!=='consentimiento')return;
+  if(tabConAlgo(getTab()))addTab();   // había una nota a medias: el consentimiento va en una nota nueva
+  notaCargando('Trayendo lo del consentimiento…');
+  try{await aplicarConsentimiento(h);}finally{notaListo();pintarCobrar();}
+}
+// Llena la nota abierta con un consentimiento, venga del mismo celular o de la fila Por cobrar
+async function aplicarConsentimiento(h){
+  const tab=getTab();
+  if(h.email&&!tab.emails_nota.includes(h.email)){tab.emails_nota.push(h.email);renderEmailChips();}
+  if(h.id_consent&&!tab.form.comentarios){tab.form.comentarios='Consentimiento '+h.id_consent;document.getElementById('comentarios').value=tab.form.comentarios;}
+  tab.consent={id:h.id_consent,perforaciones:h.perforaciones||[],tatuaje:h.servicio==='Tatuaje'};
+  if(tab.consent.tatuaje)tab.consent.perforaciones.forEach(agregarTatuaje);
+  renderItems();
+  try{
+    const d=await pinkApi('pink_buscar',{q:h.id_clienta});
+    const p=(d.resultados||[]).find(x=>x.id===h.id_clienta);
+    if(p)pinkAgregarPersona(p);
+  }catch(e){toast('⚠️ '+e.message);}
+  const nom=document.getElementById('nombre-clienta');
+  if(!nom.value.trim()&&h.apodo){nom.value=h.apodo;onNombre(h.apodo);}
+}
+// ── POR COBRAR ──────────────────────────────────────────────────────
+// Consentimientos recientes sin nota, hechos en cualquier celular. Se llena la nota igual que con el botón del consentimiento.
+let _porCobrar=[],_porCobrarDias=7;
+async function cargarPorCobrar(){
+  if(!pinkClave())return null;
+  try{
+    const d=await pinkApi('consent_por_cobrar');
+    _porCobrar=d.consentimientos||[];_porCobrarDias=d.dias||7;
+    pintarCobrar();
+    return _porCobrar;
+  }catch(e){return null;}
+}
+function pintarCobrar(){
+  const b=document.getElementById('btn-cobrar');if(!b)return;
+  const abierta=c=>tabs.some(t=>!t.registrada&&((c.id_consent&&t.consent&&t.consent.id===c.id_consent)||(c.prenota&&t.prenota===c.prenota.id)));
+  const n=_porCobrar.filter(c=>!abierta(c)).length;
+  b.textContent=n?`📋 Por cobrar (${n})`:'📋 Por cobrar';
+  b.classList.toggle('hay',n>0);
+}
+function notaCargando(t){const o=document.getElementById('nota-cargando');document.getElementById('nota-cargando-txt').textContent=t||'Cargando…';o.style.display='flex';}
+function notaListo(){document.getElementById('nota-cargando').style.display='none';}
+async function abrirPorCobrar(){
+  if(!pinkClave()&&!await pinkPedirClave(true))return;
+  const ov=document.getElementById('cobrar-overlay'),el=document.getElementById('cobrar-lista');
+  el.innerHTML='<p style="font-size:13px;color:var(--mu);">Cargando…</p>';
+  ov.style.display='block';
+  const r=await cargarPorCobrar();
+  if(r===null){el.innerHTML='<p style="font-size:13px;color:#b91c1c;">No se pudo cargar la lista. Revisa tu conexión o tu clave e intenta otra vez.</p>';return;}
+  if(!r.length){el.innerHTML=`<p style="font-size:13px;color:var(--mu);">No hay consentimientos ni prenotas sin nota en los últimos ${_porCobrarDias} días.</p>`;return;}
+  const hoy=new Date(),iso=`${hoy.getFullYear()}-${pad(hoy.getMonth()+1)}-${pad(hoy.getDate())}`;
+  el.innerHTML=r.map((c,i)=>{
+    const zonas=c.perforaciones.map(x=>x.zona+(x.lado&&x.lado!=='Centro'?' '+x.lado.toLowerCase():'')).join(' · ');
+    const cuando=(c.fecha===iso?'Hoy':c.fecha.split('-').reverse().join('/'))+(c.hora?' '+c.hora:'');
+    const pills=(c.estado_firma==='Por firmar'?'<span class="cb-pill warn">🖊️ Sin firmar</span>':'')
+      +(c.prenota?`<span class="cb-pill ok">✔ Prenota de ${esc(c.prenota.hizo||'—')}${c.prenota.hora?' · '+esc(c.prenota.hora):''}${c.prenota.total?' · $'+fmtN(c.prenota.total):''}</span>`:'');
+    return `<button class="cobrar-item" type="button" onclick="elegirPorCobrar(${i})"><b>${esc(c.apodo||c.nombre)}</b>${zonas?`<span>${esc(zonas)}</span>`:''}<span>${esc([cuando,c.lugar,c.atendio?'atendió '+c.atendio:''].filter(Boolean).join(' · '))}</span>${pills}</button>`
+      +(c.prenota?`<div class="cobrar-acc"><button type="button" onclick="descartarPrenota(${i})">Descartar prenota</button></div>`:'');
+  }).join('');
+}
+// Las notas sin registrar se guardan en esta pestaña (avance): se puede ir al Inicio y regresar sin perderlas
+function salirAInicio(){guardarAvanceNota();return true;}
+// ── AVANCE GUARDADO (Luis, 20/11): como en el consentimiento. Es de quien lo empezó (su perfil) y vive en esta pestaña.
+const BORR_NOTA=()=>'yp_borr_nota_'+(((window.YP&&YP.sesion())||{}).id||'x');
+const tabConAlgo=t=>!t.registrada&&!!(t.items.length||String(t.form.nombre_clienta||'').trim()||(t.pink&&t.pink.personas.length)||t.consent||t.prenota);
+function guardarAvanceNota(){
+  try{
+    if(!tabs.length)return;
+    saveCurrentForm();
+    const vivas=tabs.filter(tabConAlgo);
+    if(!vivas.length){sessionStorage.removeItem(BORR_NOTA());return;}
+    sessionStorage.setItem(BORR_NOTA(),JSON.stringify({tabs:vivas,active:activeTabId,nt:_nextTabId,ni:_nextItemId}));
+  }catch(e){}
+}
+function retomarAvanceNota(){
+  let b=null;try{b=JSON.parse(sessionStorage.getItem(BORR_NOTA())||'null');}catch(e){}
+  if(!b||!b.tabs||!b.tabs.length)return false;
+  tabs=b.tabs;_nextTabId=Math.max(b.nt||1,...tabs.map(t=>t.id+1));_nextItemId=Math.max(b.ni||1,_nextItemId);
+  activeTabId=tabs.some(t=>t.id===b.active)?b.active:tabs[0].id;
+  loadTabForm(getTab());toast('Seguimos donde te quedaste');
+  return true;
+}
+let _tAvance=null;
+['input','change','click'].forEach(ev=>document.addEventListener(ev,()=>{clearTimeout(_tAvance);_tAvance=setTimeout(guardarAvanceNota,500);}));
+window.addEventListener('pagehide',guardarAvanceNota);
+function cerrarPorCobrar(){document.getElementById('cobrar-overlay').style.display='none';}
+async function elegirPorCobrar(i){
+  const c=_porCobrar[i];if(!c)return;
+  cerrarPorCobrar();saveCurrentForm();
+  if(c.prenota)return abrirPrenota(c.prenota.id);
+  if(c.estado_firma==='Por firmar')toast('⚠️ Ojo: este consentimiento todavía no está firmado');
+  const abierta=tabs.find(t=>t.consent&&t.consent.id===c.id_consent);
+  if(abierta){switchTab(abierta.id);return;}
+  const t=getTab();
+  if(t.items.length||t.consent||t.publico||t.pink.personas.length||t.form.nombre_clienta.trim()||t.emails_nota.length)addTab();
+  notaCargando('Abriendo la nota de '+(c.apodo||c.nombre||'la clienta')+'…');
+  try{await aplicarConsentimiento(c);}finally{notaListo();pintarCobrar();}
+}
+// El tatuaje no lleva pieza: su línea entra sola con el tamaño y la artista que se eligieron en el consentimiento
+function agregarTatuaje(t){
+  const src=catalogo.find(i=>i.sku===t.sku_serv);
+  const it=src?itemDeCatalogo(src):Object.assign(itemLibre(),{categoria:'Tatuaje'});
+  const desc=t.zona+(src?' · '+src.nombre:'')+(t.tipo==='Retoque'?' · Retoque':'');
+  Object.assign(it,{descripcion:desc,desc_custom:true,tipo:'S',zona:t.zona||'',id_perfo:t.id_perfo||''});
+  const a=artistas.find(x=>x.alias===t.perforadora);
+  if(a){it.id_artista=a.id;it.alias_artista=a.alias;}
+  getTab().items.push(it);
+}
+// Aviso arriba de los artículos: qué perforaciones del consentimiento faltan por cobrar
+function renderConsentAviso(){
+  const tab=getTab(),list=document.getElementById('items-list');if(!list)return;
+  let box=document.getElementById('consent-aviso');
+  const c=tab&&tab.consent;
+  if(!c||!c.perforaciones.length){if(box)box.remove();return;}
+  if(!box){box=document.createElement('div');box.id='consent-aviso';list.parentNode.insertBefore(box,list);}
+  const cobradas=tab.items.filter(i=>i.con_servicio).reduce((s,i)=>s+(Number(i.cantidad)||1),0);
+  const zonas=c.perforaciones.map(x=>esc(x.zona)+(x.lado&&x.lado!=='Centro'?' '+esc(x.lado.toLowerCase()):'')).join(' · ');
+  box.style.cssText='background:#fef3c7;color:#92400e;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:10px;';
+  box.innerHTML=`<b>Del consentimiento ${esc(c.id)}:</b> ${zonas}<br>`+(c.tatuaje?'Ya está en la nota. Revisa la artista y el precio.':`Elige la pieza de cada una con su perforación incluida (${cobradas} de ${c.perforaciones.length}).`);
+}
+const _renderItemsSinAviso=renderItems;
+renderItems=function(){_renderItemsSinAviso();renderConsentAviso();};
+
+// ── ZONA DE CADA SERVICIO (punto 5) ─────────────────────────────────
+// Cada perforación o tatuaje de la nota guarda su zona (y la perforación del consentimiento) para que el
+// expediente, la clienta y los pagos sepan qué se hizo, sin cruzar a mano. A la clienta le sale en chiquito.
+const zonaDe=x=>x.zona+(x.lado&&x.lado!=='Centro'?' '+x.lado.toLowerCase():'');
+function zonasConsent(tab){return tab&&tab.consent&&!tab.consent.tatuaje?tab.consent.perforaciones:[];}
+function asignarZona(item){
+  const tab=getTab(),lista=zonasConsent(tab);if(!lista.length)return;
+  const usadas=tab.items.filter(i=>i!==item&&i.id_perfo_idx!==undefined&&i.id_perfo_idx!=='').map(i=>+i.id_perfo_idx);
+  const k=lista.findIndex((x,j)=>!usadas.includes(j));if(k<0)return;
+  item.id_perfo_idx=k;item.zona=zonaDe(lista[k]);item.id_perfo=lista[k].id_perfo||'';item.zona_otra=false;
+}
+function zonaHTML(item){
+  if(!esServicio(item))return '';
+  const tab=getTab(),lista=zonasConsent(tab);
+  if(tab.consent&&tab.consent.tatuaje)return item.zona?`<div class="zona-row"><span class="zona-lbl">Zona</span><span style="font-size:12px">${esc(item.zona)}</span></div>`:'';
+  if(!lista.length)return `<div class="zona-row"><span class="zona-lbl">Zona</span><input type="text" value="${esc(item.zona||'')}" placeholder="Ej. Helix izquierdo (opcional)" oninput="onZonaTexto(${item.id},this.value)"></div>`;
+  const sel=item.zona_otra?'otra':(item.id_perfo_idx!==undefined&&item.id_perfo_idx!==''?String(item.id_perfo_idx):'');
+  return `<div class="zona-row"><span class="zona-lbl">Zona</span><select onchange="onZona(${item.id},this.value)">
+      <option value=""${sel===''?' selected':''}>Elegir…</option>
+      ${lista.map((x,j)=>`<option value="${j}"${sel===String(j)?' selected':''}>${esc(zonaDe(x))}</option>`).join('')}
+      <option value="otra"${sel==='otra'?' selected':''}>Otra zona…</option></select></div>
+    ${item.zona_otra?`<div class="zona-row"><span class="zona-lbl">¿Cuál?</span><input type="text" value="${esc(item.zona||'')}" placeholder="Escribe la zona" oninput="onZonaTexto(${item.id},this.value)"></div>
+      <div class="zona-aviso">Esta zona no está en el consentimiento firmado. Si la zona cambió después de firmar, hace falta un consentimiento nuevo (Consentimientos → Nuevo).</div>`:''}`;
+}
+function onZona(id,v){
+  const tab=getTab(),it=tab.items.find(i=>i.id===id);if(!it)return;
+  const lista=zonasConsent(tab);
+  if(v==='otra'){it.zona_otra=true;it.zona='';it.id_perfo='';it.id_perfo_idx='';}
+  else if(v===''){it.zona_otra=false;it.zona='';it.id_perfo='';it.id_perfo_idx='';}
+  else{const x=lista[+v];it.zona_otra=false;it.id_perfo_idx=+v;it.zona=zonaDe(x);it.id_perfo=x.id_perfo||'';}
+  renderItems();
+}
+function onZonaTexto(id,v){const it=getTab().items.find(i=>i.id===id);if(it){it.zona=v;it.id_perfo='';}}
+
+// ── PRENOTA: la misma nota, guardada a medias ───────────────────────
+// La artista la deja lista y recepción la cobra desde Por cobrar. No cuenta como venta hasta registrarse.
+const PRENOTA_CAMPOS=['form','items','pink','emails_nota','emails_manual','manual_mismo','elaboro','consent','publico','pagosActivos','pagosMontos','anticipo_activo','anticipo_monto'];
+async function guardarPrenota(){
+  saveCurrentForm();
+  const tab=getTab();
+  if(!tab.items.length)return toast('⚠️ Agrega al menos un servicio o producto');
+  if(!tab.elaboro.id)return toast('⚠️ Elige en "Elaboró" quién hace la prenota');
+  if(!pinkClave()&&!await pinkPedirClave(true))return;
+  const datos={};PRENOTA_CAMPOS.forEach(k=>datos[k]=tab[k]);
+  const b=document.getElementById('btn-prenota');b.disabled=true;b.textContent='Guardando prenota…';
+  try{
+    const r=await pinkApi('consent_prenota_guardar',{id_prenota:tab.prenota||'',id_consent:tab.consent?tab.consent.id:'',id_clienta:tab.pink.paga||'',
+      nombre:tab.form.nombre_clienta.trim()||(tab.pink.personas[0]||{}).apodo||'',hizo:tab.elaboro,total:calcTotal(),datos});
+    tab.prenota=r.id_prenota;tab.prenota_al_dia=true;tab.label='Prenota '+r.id_prenota.replace('PRE-','');renderTabBar();
+    toast('✅ Prenota guardada. Ya aparece en Por cobrar');cargarPorCobrar();
+  }catch(e){toast('❌ '+e.message);}
+  finally{b.disabled=false;b.textContent='💾 Guardar prenota (la cobra otra persona)';}
+}
+async function abrirPrenota(id){
+  const ya=tabs.find(t=>t.prenota===id);if(ya){switchTab(ya.id);return;}
+  notaCargando('Abriendo la prenota…');
+  try{
+    const r=await pinkApi('consent_prenota_abrir',{id});
+    const t=getTab();
+    if(t.items.length||t.consent||t.publico||t.pink.personas.length||t.form.nombre_clienta.trim()||t.emails_nota.length)addTab();
+    const tab=getTab(),d=r.datos||{};
+    PRENOTA_CAMPOS.forEach(k=>{if(d[k]!==undefined)tab[k]=d[k];});
+    tab.items.forEach(i=>i.id=_nextItemId++);
+    tab.prenota=r.id_prenota;tab.prenota_al_dia=true;tab.label='Prenota '+r.id_prenota.replace('PRE-','');
+    loadTabForm(tab);
+    toast(`Prenota de ${r.hizo||'—'}: revisa y registra`);
+    // Puntos y estado del Pink Club al momento (lo guardado puede ser de hace rato)
+    for(const p of [...tab.pink.personas]){
+      try{const x=(await pinkApi('pink_buscar',{q:p.id})).resultados.find(y=>y.id===p.id);if(x){Object.assign(p,x);}}catch(e){}
+    }
+    if(getTab()===tab){renderPink();renderItems();bloquearElaboro();}
+  }catch(e){toast('❌ '+e.message);cargarPorCobrar();}
+  finally{notaListo();pintarCobrar();}
+}
+async function descartarPrenota(i){
+  const c=_porCobrar[i];if(!c||!c.prenota)return;
+  if(!confirm(`¿Descartar la prenota de ${c.prenota.hizo||'—'} para ${c.apodo||c.nombre}? Lo que tenía se pierde.`))return;
+  try{await pinkApi('consent_prenota_cancelar',{id:c.prenota.id});toast('Prenota descartada');abrirPorCobrar();
+    const t=tabs.find(x=>x.prenota===c.prenota.id);if(t){t.prenota='';t.prenota_al_dia=false;}}
+  catch(e){toast('❌ '+e.message);}
+}
+
+// ── BÚSQUEDA ────────────────────────────────────────────────────────
+function onSearch(){
+  const q=document.getElementById('search-input').value.trim();
+  if(q.length<2){closeSearch();return;}
+  currentResults=buscar(q);renderResults();
+  document.getElementById('search-results').classList.add('open');
+}
+function buscar(q){
+  const tokens=q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean);
+  return catalogo.filter(item=>{
+    const hay=`${item.sku} ${item.nombre} ${item.categoria}`.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    return tokens.every(t=>hay.includes(t));
+  }).slice(0,8);
+}
+function renderResults(){
+  const el=document.getElementById('search-results');
+  if(!currentResults.length){el.innerHTML='<div class="no-r">Sin resultados</div>';return;}
+  el.innerHTML=currentResults.map((item,idx)=>{
+    const b=getBadge(item);
+    const sv=item.servicio?` <span style="font-size:9px;color:var(--p);">+ perforación</span>`:'';
+    return `<div class="r-item" onmousedown="addItem(${idx})">
+      <span class="r-badge ${b.cls}">${b.txt}</span>
+      <div class="r-info"><div class="r-name">${esc(item.nombre)}${sv}</div><div class="r-sku">${esc(item.sku)}</div></div>
+      <span class="r-price">${item.precio?'$'+fmtN(item.precio):'—'}</span>
+    </div>`;
+  }).join('');
+}
+function closeSearch(){document.getElementById('search-results').classList.remove('open');}
+
+// ── ÍTEMS ───────────────────────────────────────────────────────────
+function addItem(idx){
+  const src=currentResults[idx];if(!src)return;
+  const it=itemDeCatalogo(src);
+  getTab().items.push(it);
+  if(esServicio(it))asignarZona(it);
+  document.getElementById('search-input').value='';closeSearch();renderItems();
+}
+function itemDeCatalogo(src){
+  const srv=src.servicio||null;
+  return {
+    id:_nextItemId++,sku:src.sku,sku_serv:srv?srv.sku:null,
+    sku_serv_default:srv?srv.sku:null,nombre_serv_default:srv?srv.nombre:'',precio_serv_default:srv?srv.precio:0,
+    descripcion:src.nombre,desc_custom:false,nombre_prod:src.nombre,
+    precio_prod:src.precio,precio_serv:srv?srv.precio:0,precio:src.precio,
+    cantidad:1,promo:'',importe:src.precio,
+    con_servicio:false,tiene_serv:!!srv,categoria:src.categoria,tipo:src.tipo,es_libre:false,
+    descuento:0,importe_manual:false,id_artista:'',alias_artista:'',
+    id_receptora:getTab().pink.paga||'',puntos_aplicados:0,regalo_cumple:false,
+  };
+}
+function addItemLibre(){
+  getTab().items.push(itemLibre());
+  renderItems();
+  setTimeout(()=>{const ins=document.querySelectorAll('.item-name-input');if(ins.length)ins[ins.length-1].focus();},50);
+}
+function itemLibre(){
+  return {
+    id:_nextItemId++,sku:'',sku_serv:null,descripcion:'',desc_custom:true,
+    nombre_prod:'',precio_prod:0,precio_serv:0,precio:0,
+    cantidad:1,promo:'',importe:0,con_servicio:false,tiene_serv:false,categoria:'',tipo:'P',es_libre:true,
+    descuento:0,importe_manual:false,id_artista:'',alias_artista:'',
+    id_receptora:getTab().pink.paga||'',puntos_aplicados:0,regalo_cumple:false,
+  };
+}
+function removeItem(id){const t=getTab();t.items=t.items.filter(i=>i.id!==id);renderItems();}
+
+function toggleServicio(id){
+  const item=getTab().items.find(i=>i.id===id);if(!item||!item.tiene_serv)return;
+  item.con_servicio=!item.con_servicio;
+  if(item.con_servicio&&!item.zona)asignarZona(item);
+  if(!item.con_servicio&&!esServicio(item)){item.zona='';item.id_perfo='';item.zona_otra=false;}
+  if(!item.desc_custom)item.descripcion=item.con_servicio?'Piercing '+item.nombre_prod:item.nombre_prod;
+  item.precio=item.con_servicio?item.precio_prod+item.precio_serv:item.precio_prod;
+  recalcImporte(item);renderItems();
+}
+
+// Servicios que se pueden elegir para una pieza: los del mismo tipo que su
+// perforación ligada (mismo prefijo, ej. PIR-), según el catálogo de servicios.
+function opcionesServicio(item){
+  if(!item.sku_serv_default)return [];
+  const pref=item.sku_serv_default.split('-')[0]+'-';
+  const ops=catalogo.filter(c=>c.tipo==='S'&&String(c.sku).startsWith(pref))
+    .map(c=>({sku:c.sku,nombre:c.nombre,precio:c.precio}));
+  if(!ops.some(o=>o.sku===item.sku_serv_default))
+    ops.unshift({sku:item.sku_serv_default,nombre:item.nombre_serv_default||item.sku_serv_default,precio:item.precio_serv_default});
+  return ops;
+}
+function cambiarServicio(id,sku){
+  const item=getTab().items.find(i=>i.id===id);if(!item)return;
+  const op=opcionesServicio(item).find(o=>o.sku===sku);if(!op)return;
+  item.sku_serv=op.sku;item.precio_serv=op.precio;
+  if(item.con_servicio)item.precio=item.precio_prod+item.precio_serv;
+  recalcImporte(item);renderItems();
+}
+
+function onDescripcion(id,val){const i=getTab().items.find(i=>i.id===id);if(i){i.descripcion=val;i.desc_custom=true;}}
+function onSku(id,val){const i=getTab().items.find(i=>i.id===id);if(i)i.sku=val;}
+function onPromo(id,val){
+  const item=getTab().items.find(i=>i.id===id);if(!item)return;
+  item.promo=val;
+  const m=val.trim().match(/^(\d+(?:\.\d+)?)%$/);
+  if(m){item.descuento=parseFloat(m[1])/100;item.importe_manual=false;recalcImporte(item);}
+  else if(item.descuento>0){item.descuento=0;item.importe_manual=false;recalcImporte(item);}
+  const el=document.querySelector(`[data-id="${id}"] .importe-input`);if(el)el.value=item.importe;
+  const row=document.querySelector(`[data-id="${id}"] .promo-row`);
+  if(row){
+    const ex=row.querySelector('.descuento-badge');
+    if(item.descuento>0){
+      const ahorro=Math.round((item.precio*item.cantidad-item.importe)*100)/100;
+      const txt=`✂️ −${Math.round(item.descuento*100)}% · −$${fmtN(ahorro)}`;
+      if(ex)ex.textContent=txt;else{const sp=document.createElement('span');sp.className='descuento-badge';sp.textContent=txt;row.appendChild(sp);}
+    }else{if(ex)ex.remove();}
+  }
+  updateTotal();
+}
+function stepCantidad(id,delta){
+  const item=getTab().items.find(i=>i.id===id);if(!item)return;
+  item.cantidad=Math.max(1,item.cantidad+delta);recalcImporte(item);renderItems();
+}
+function onPrecio(id,val){
+  const item=getTab().items.find(i=>i.id===id);if(!item)return;
+  item.precio=parseFloat(val)||0;if(item.es_libre)item.precio_prod=item.precio;
+  recalcImporte(item);
+  const el=document.querySelector(`[data-id="${id}"] .importe-input`);if(el)el.value=item.importe;
+  updateTotal();
+}
+function onImporte(id,val){
+  const item=getTab().items.find(i=>i.id===id);if(!item)return;
+  item.importe=parseFloat(val)||0;item.importe_manual=true;updateTotal();
+}
+function onItemArtista(id,val){
+  const item=getTab().items.find(i=>i.id===id);if(!item)return;
+  item.id_artista=val;
+  const a=artistas.find(a=>a.id===val);
+  item.alias_artista=a?a.alias:'';
+}
+function aplicarArtistaATodos(){
+  const items=getTab().items;if(items.length<2)return;
+  const first=items[0];
+  if(!first.id_artista)return toast('⚠️ El primer ítem no tiene artista asignado');
+  items.forEach((item,idx)=>{if(idx===0)return;item.id_artista=first.id_artista;item.alias_artista=first.alias_artista;});
+  renderItems();toast(`✅ Artista "${first.alias_artista}" aplicado a todos`);
+}
+function requiresArtista(item){return item.con_servicio||item.tipo==='S';}
+// TEMPORAL (06/11): mientras el equipo sigue con el Form viejo, una nota con servicio se puede registrar sin ID. Volver a true al lanzar.
+const REQUIERE_ID=false;
+// Todo servicio lleva clienta con ID, porque necesita seguimiento. Los ítems libres se reconocen por SKU o por su texto.
+function esServicio(i){
+  return requiresArtista(i)||/^(PIR|TAT|REP|RET)-/i.test(i.sku||'')||(i.es_libre&&/perforaci|tatuaje|revisi/i.test(i.descripcion||''));
+}
+// Qué manual de cuidados lleva la línea. Las revisiones no llevan.
+function tipoManual(i){
+  const d=i.es_libre?(i.descripcion||''):'';
+  if(/^(REP|RET)-/i.test(i.sku||'')||/revisi/i.test(d))return '';
+  if(/^TAT-/i.test(i.sku||'')||(i.tipo==='S'&&i.categoria==='Tatuaje')||(i.es_libre&&i.categoria==='Tatuaje')||/tatuaje/i.test(d))return 'tatuaje';
+  if(i.con_servicio||/^PIR-/i.test(i.sku||'')||/perforaci/i.test(d))return 'perforacion';
+  return '';
+}
+function recalcImporte(item){
+  if(item.importe_manual)return;
+  item.importe=Math.round(item.precio*item.cantidad*(1-(item.descuento||0))*100)/100;
+}
+function calcTotal(){return getItems().reduce((s,i)=>s+importeNeto(i),0);}
+// Lo que de verdad se cobra del artículo: sin la parte pagada con puntos ni la pieza de regalo
+function importeNeto(i){
+  if(i.regalo_cumple)return i.con_servicio?Math.round((i.precio_serv||0)*i.cantidad*100)/100:0;
+  return Math.max(0,Math.round((i.importe-(i.puntos_aplicados||0))*100)/100);
+}
+function calcSaldo(){const tab=getTab(),t=calcTotal();return tab.anticipo_activo?Math.max(0,t-(tab.anticipo_monto||0)):t;}
+function updateTotal(){
+  getItems().forEach(pinkClampItem);renderPinkResumen();
+  const tab=getTab(),total=calcTotal(),bar=document.getElementById('total-bar');if(!bar)return;
+  if(tab.anticipo_activo&&tab.anticipo_monto>0){
+    const saldo=Math.max(0,total-tab.anticipo_monto);
+    bar.innerHTML=`<div class="total-desglose">
+      <div class="td-row"><span class="total-lbl">Total</span><span class="total-val-sm">$${fmtN(total)}</span></div>
+      <div class="td-row"><span class="total-lbl">Anticipo (transf.)</span><span class="total-val-sm" style="color:#15803d;">−$${fmtN(tab.anticipo_monto)}</span></div>
+      <div class="td-row td-saldo"><span class="total-lbl">Saldo</span><span class="total-val">$${fmtN(saldo)}</span></div>
+    </div>`;
+  }else{bar.innerHTML=`<span class="total-lbl">Total</span><span class="total-val">$${fmtN(total)}</span>`;}
+  renderSumaPagos();
+}
+
+// ── RENDER ÍTEMS ────────────────────────────────────────────────────
+function renderItems(){
+  const el=document.getElementById('items-list'),items=getItems();
+  const btnAplicar=document.getElementById('btn-aplicar');
+  if(!items.length){el.innerHTML='';if(btnAplicar)btnAplicar.style.display='none';updateTotal();return;}
+  if(btnAplicar)btnAplicar.style.display=items.length>1?'inline-flex':'none';
+  const btnRec=document.getElementById('btn-aplicar-rec');
+  if(btnRec)btnRec.style.display=items.length>1&&getTab().pink.personas.length?'inline-flex':'none';
+  el.innerHTML=items.map(item=>{
+    const b=getBadge(item);
+    const topLeft=item.es_libre
+      ?`<input class="mini-in libre-sku" type="text" placeholder="SKU" value="${esc(item.sku)}" oninput="onSku(${item.id},this.value)">`
+      :`<span class="r-badge ${b.cls}">${b.txt}</span>`;
+    const perfoHtml=item.tiene_serv?`
+      <div class="perfo-wrap">
+        <button class="perfo-toggle ${item.con_servicio?'on':''}" onclick="toggleServicio(${item.id})">
+          <span>${item.con_servicio?'●':'○'}</span>
+          <span>${item.con_servicio?'Perforación incluida':'+ Incluir perforación'}</span>
+          <span class="perfo-price">+$${fmtN(item.precio_serv)}</span>
+        </button>
+        ${item.con_servicio&&opcionesServicio(item).length>1?`
+        <select class="perfo-select" onchange="cambiarServicio(${item.id},this.value)" aria-label="Tipo de perforación">
+          ${opcionesServicio(item).map(o=>`<option value="${esc(o.sku)}" ${o.sku===item.sku_serv?'selected':''}>${esc(o.nombre)} · $${fmtN(o.precio)}</option>`).join('')}
+        </select>`:''}
+      </div>`:'';
+    const ahorro=item.descuento>0?Math.round((item.precio*item.cantidad-item.importe)*100)/100:0;
+    const req=requiresArtista(item);
+    const artOpts=artistas.map(a=>`<option value="${esc(a.id)}" ${item.id_artista===a.id?'selected':''}>${esc(a.alias)}</option>`).join('');
+    return `<div class="item-card" data-id="${item.id}">
+      <div class="item-top">
+        ${topLeft}
+        <input class="item-name-input" type="text" value="${esc(item.descripcion)}" placeholder="Descripción..." oninput="onDescripcion(${item.id},this.value)">
+        <button class="item-del" onclick="removeItem(${item.id})">×</button>
+      </div>
+      ${perfoHtml}
+      ${zonaHTML(item)}
+      <div class="item-controls">
+        <div><div class="ic-lbl">Precio</div><div class="mini-wrap"><span class="sym sym-l">$</span>
+          <input class="mini-in precio" type="number" inputmode="decimal" value="${item.precio}" min="0" step="1" oninput="onPrecio(${item.id},this.value)">
+        </div></div>
+        <div><div class="ic-lbl">Cantidad</div><div class="qty-row">
+          <button class="qty-btn" onclick="stepCantidad(${item.id},-1)">−</button>
+          <span class="qty-val">${item.cantidad}</span>
+          <button class="qty-btn" onclick="stepCantidad(${item.id},+1)">+</button>
+        </div></div>
+        <div class="ic-importe"><div class="ic-lbl">Importe</div><div class="mini-wrap"><span class="sym sym-l">$</span>
+          <input class="mini-in importe importe-input" type="number" inputmode="decimal" value="${item.importe}" min="0" step="1" oninput="onImporte(${item.id},this.value)">
+        </div></div>
+      </div>
+      <div class="promo-row">
+        <input class="promo-input" type="text" maxlength="60" value="${esc(item.promo)}" placeholder="Promo: 4x2, cumple, 10%..." oninput="onPromo(${item.id},this.value)">
+        ${item.descuento>0?`<span class="descuento-badge">✂️ −${Math.round(item.descuento*100)}% · −$${fmtN(ahorro)}</span>`:''}
+      </div>
+      <div class="artista-row">
+        <span class="artista-lbl${req?' artista-req':''}">Artista${req?' *':''}</span>
+        <select class="artista-sel" onchange="onItemArtista(${item.id},this.value)">
+          <option value="">${req?'Requerido...':'Opcional...'}</option>
+          ${artOpts}
+        </select>
+      </div>
+      ${pinkItemHTML(item)}
+    </div>`;
+  }).join('');
+  updateTotal();
+}
+
+// ── EMAIL CHIPS ─────────────────────────────────────────────────────
+function addEmailNota(){
+  const inp=document.getElementById('input-email-nota');
+  const val=(inp.value||'').trim();
+  if(!val)return;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val))return toast('⚠️ Correo inválido');
+  const tab=getTab();if(!tab)return;
+  if(tab.emails_nota.includes(val))return toast('⚠️ Correo ya agregado');
+  tab.emails_nota.push(val);inp.value='';renderEmailChips();
+}
+function removeEmailNota(idx){
+  const tab=getTab();if(!tab)return;
+  tab.emails_nota.splice(idx,1);renderEmailChips();
+}
+function addEmailManual(){
+  const inp=document.getElementById('input-email-manual');
+  const val=(inp.value||'').trim();
+  if(!val)return;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val))return toast('⚠️ Correo inválido');
+  const tab=getTab();if(!tab)return;
+  if(tab.emails_manual.includes(val))return toast('⚠️ Correo ya agregado');
+  tab.emails_manual.push(val);inp.value='';renderEmailChips();
+}
+function removeEmailManual(idx){
+  const tab=getTab();if(!tab)return;
+  tab.emails_manual.splice(idx,1);renderEmailChips();
+}
+function toggleManualMismo(){
+  const tab=getTab();if(!tab)return;
+  tab.manual_mismo=!tab.manual_mismo;renderManualToggle();
+}
+function renderManualToggle(){
+  const tab=getTab();if(!tab)return;
+  const track=document.getElementById('toggle-mismo-track');
+  const extra=document.getElementById('manual-emails-extra');
+  const hint=document.getElementById('manual-mismo-hint');
+  if(track)track.classList.toggle('on',tab.manual_mismo);
+  if(extra)extra.style.display=tab.manual_mismo?'none':'block';
+  if(hint)hint.style.display=tab.manual_mismo?'block':'none';
+}
+function renderEmailChips(){
+  const tab=getTab();if(!tab)return;
+  const cn=document.getElementById('chips-nota');
+  if(cn)cn.innerHTML=tab.emails_nota.map((e,i)=>
+    `<span class="chip">${esc(e)}<span class="chip-x" onclick="removeEmailNota(${i})">×</span></span>`).join('');
+  const cm=document.getElementById('chips-manual');
+  if(cm)cm.innerHTML=tab.emails_manual.map((e,i)=>
+    `<span class="chip">${esc(e)}<span class="chip-x" onclick="removeEmailManual(${i})">×</span></span>`).join('');
+  renderManualToggle();
+}
+
+// ── PAGOS ───────────────────────────────────────────────────────────
+function togglePago(btn){
+  const tipo=btn.dataset.pago,tab=getTab(),idx=tab.pagosActivos.indexOf(tipo);
+  if(idx>=0){tab.pagosActivos.splice(idx,1);tab.pagosMontos[tipo]=0;}
+  else tab.pagosActivos.push(tipo);
+  renderPagoButtons();renderPagoMontos();
+}
+function renderPagoButtons(){const tab=getTab();document.querySelectorAll('.pago-btn').forEach(b=>b.classList.toggle('active',tab.pagosActivos.includes(b.dataset.pago)));}
+function renderPagoMontos(){
+  const tab=getTab(),el=document.getElementById('pagos-montos');
+  if(tab.pagosActivos.length<=1){el.innerHTML='';return;}
+  el.innerHTML=tab.pagosActivos.map(tipo=>`
+    <div class="pago-monto-row"><span class="pago-monto-lbl">${tipo}</span>
+    <div class="mini-wrap"><span class="sym sym-l">$</span>
+      <input class="mini-in precio" type="number" inputmode="decimal" value="${tab.pagosMontos[tipo]||''}" placeholder="0" oninput="onPagoMonto('${tipo}',this.value)">
+    </div></div>`).join('')+`<div class="pago-suma" id="pago-suma-lbl"></div>`;
+  renderSumaPagos();
+}
+function onPagoMonto(tipo,val){const tab=getTab();tab.pagosMontos[tipo]=parseFloat(val)||0;renderSumaPagos();}
+function renderSumaPagos(){
+  const tab=getTab(),el=document.getElementById('pago-suma-lbl');
+  if(!el||tab.pagosActivos.length<=1)return;
+  const suma=tab.pagosActivos.reduce((s,t)=>s+(tab.pagosMontos[t]||0),0),ref=calcSaldo();
+  if(Math.abs(suma-ref)<0.5){el.className='pago-suma ok';el.textContent=`✅ Suma correcta ($${fmtN(suma)})`;}
+  else{el.className='pago-suma mal';el.textContent=`⚠️ Suma: $${fmtN(suma)} · Diferencia: $${fmtN(ref-suma)}`;}
+}
+function getPagosPayload(){
+  const tab=getTab(),saldo=calcSaldo();
+  if(tab.pagosActivos.length===1)return[{tipo:tab.pagosActivos[0],monto:saldo}];
+  return tab.pagosActivos.map(tipo=>({tipo,monto:tab.pagosMontos[tipo]||0}));
+}
+
+// ── ANTICIPO ────────────────────────────────────────────────────────
+function toggleAnticipo(){
+  const tab=getTab();tab.anticipo_activo=!tab.anticipo_activo;if(!tab.anticipo_activo)tab.anticipo_monto=100;
+  const ai=document.getElementById('anticipo-inputs'),ab=document.getElementById('anticipo-btn'),am=document.getElementById('anticipo-monto');
+  ai.style.display=tab.anticipo_activo?'block':'none';ab.textContent=tab.anticipo_activo?'× Quitar anticipo':'+ Anticipo';
+  if(am)am.value=tab.anticipo_monto;updateTotal();
+}
+function onAnticipo(val){const tab=getTab();tab.anticipo_monto=parseFloat(val)||0;updateTotal();}
+
+// ── ENVIAR ──────────────────────────────────────────────────────────
+async function enviarNota(){
+  saveCurrentForm();
+  const tab=getTab(),form=tab.form;
+  if(!form.punto_venta)           return toast('⚠️ Selecciona el lugar');
+  if(!form.fecha)                 return toast('⚠️ Pon la fecha');
+  if(!tab.elaboro.id)             return toast('⚠️ Selecciona quién elaboró la nota');
+  if(!form.nombre_clienta.trim()) return toast('⚠️ Escribe el nombre de la clienta');
+  if(!tab.items.length)           return toast('⚠️ Agrega al menos un servicio o producto');
+  for(const item of tab.items){
+    if(requiresArtista(item)&&!item.id_artista)
+      return toast(`⚠️ "${item.descripcion||item.sku}" requiere artista`);
+  }
+  if(!tab.pagosActivos.length)return toast('⚠️ Selecciona el tipo de pago');
+  if(tab.pagosActivos.length>1){
+    const suma=tab.pagosActivos.reduce((s,t)=>s+(tab.pagosMontos[t]||0),0),saldo=calcSaldo();
+    if(Math.abs(suma-saldo)>0.5)return toast(`⚠️ Los pagos ($${fmtN(suma)}) no suman el saldo ($${fmtN(saldo)})`);
+  }
+  if(tab.items.some(esServicio)){
+    if(tab.publico)return toast('⚠️ Público general es solo para productos. Esta nota lleva un servicio: elige a la clienta');
+    const sinId=REQUIERE_ID&&tab.items.find(i=>esServicio(i)&&!i.id_receptora&&!tab.pink.paga);
+    if(sinId)return toast('⚠️ Esta nota lleva un servicio: elige a la clienta en Pink Club');
+  }
+  // ID flexible (Luis, 19/11), pero nunca por accidente: la vista previa pide confirmarlo
+  const avisoSinId=tab.items.some(esServicio)&&!tab.pink.paga&&!tab.items.some(i=>i.id_receptora);
+  if(!tab.publico&&!tab.emails_nota.length) return toast('⚠️ Agrega al menos un correo para la nota');
+if(!tab.publico&&!tab.manual_mismo&&!tab.emails_manual.length) return toast('⚠️ Agrega al menos un correo para el manual');
+  const errPink=pinkValidarAntesDeEnviar(tab);
+  if(errPink)return toast('⚠️ '+errPink);
+  const ptsCanje=pinkPuntosUsados(tab);
+    const payload={
+    fecha:form.fecha,punto_venta:form.punto_venta,
+    id_elaboro:tab.elaboro.id,alias_elaboro:tab.elaboro.alias,
+    nombre_clienta:form.nombre_clienta.trim(),
+    emails_nota:tab.emails_nota,
+    emails_manual:tab.manual_mismo?tab.emails_nota:tab.emails_manual,
+    items:tab.items.map(i=>({
+      sku:i.sku,sku_serv:i.con_servicio?i.sku_serv:null,
+      descripcion:i.descripcion||i.nombre_prod||'-',con_servicio:i.con_servicio,manual:tipoManual(i),
+      cantidad:i.cantidad,precio_prod:i.precio_prod,precio_serv:i.con_servicio?i.precio_serv:0,
+      precio:i.precio,promo:i.promo,importe:importeNeto(i),tipo:i.tipo,
+      id_artista:i.id_artista||'-',alias_artista:i.alias_artista||'-',
+      id_receptora:i.id_receptora||'',puntos_aplicados:i.regalo_cumple?0:(i.puntos_aplicados||0),regalo_cumple:!!i.regalo_cumple,
+      zona:(i.zona||'').trim(),id_perfo:i.id_perfo||'',
+    })),
+    total:calcTotal(),anticipo:tab.anticipo_activo?(tab.anticipo_monto||0):0,
+    pagos:getPagosPayload(),comentarios:form.comentarios||'-',
+    id_paga:tab.pink.paga||'',puntos_canjeados:ptsCanje,id_canje:ptsCanje>0?tab.pink.paga:'',
+  };
+  if(tab.consent)payload.id_consent=tab.consent.id;   // el servidor escribe el número de nota en su expediente
+  if(tab.prenota)payload.id_prenota=tab.prenota;      // al registrarse, la prenota queda cobrada
+  if(payload.id_consent||payload.id_prenota||payload.id_paga||payload.items.some(i=>i.id_receptora))payload.clave=localStorage.getItem('yp_pink_clave')||'';
+  mostrarPreview(payload,tab,avisoSinId);
+}
+function mostrarPreview(payload,tab,sinId){
+  _pendingPayload=payload;_pendingTab=tab;
+  document.getElementById('preview-content').innerHTML=(sinId?`<div class="sin-id"><b>⚠️ Esta nota lleva un servicio y no tiene ID de clienta.</b><br>Sin ID no queda en su expediente ni en su seguimiento. Si fue por error, toca Cancelar y elige a la clienta en Pink Club o en Por cobrar.</div>`:'')+buildPreviewHTML(payload);
+  document.getElementById('btn-preview-ok').textContent=sinId?'Sí, registrar sin ID':'Registrar Nota ✨';
+  const ov=document.getElementById('preview-overlay');
+  ov.style.display='flex';ov.scrollTop=0;
+}
+function cerrarPreview(){
+  document.getElementById('preview-overlay').style.display='none';
+  _pendingPayload=null;_pendingTab=null;
+}
+async function confirmarEnvio(){
+  if(!_pendingPayload||!_pendingTab)return;
+  const payload=_pendingPayload,tab=_pendingTab;
+  // La misma nota lleva siempre el mismo código: si se corta el internet y reintentan, no se duplica
+  payload.id_envio=tab.id_envio||(tab.id_envio=Date.now().toString(36)+Math.random().toString(36).slice(2));
+  cerrarPreview();
+  localStorage.setItem('yp_lugar',tab.form.punto_venta);
+  const btn=document.getElementById('btn-submit');
+  btn.disabled=true;btn.textContent='Enviando...';
+  try{
+    const res=await fetch(AS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),redirect:'follow'});
+    const json=await res.json();
+    if(json.ok){tab.registrada=true;tab.prenota='';ligarVisitasNota(tab,json.data.nota);mostrarExito(json.data.nota,tab.emails_nota);guardarAvanceNota();}
+    else throw new Error(json.error||'Error del servidor');
+  }catch(e){toast('❌ Error: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='Registrar Nota ✨';}
+}
+function buildPreviewHTML(data){
+  const fecha=new Date(data.fecha+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const artistasUnicos=[...new Set(data.items.map(i=>i.alias_artista).filter(a=>a&&a!=='-'))];
+  const filas=data.items.map(item=>{
+    const prTag=item.promo&&item.promo!=='-'?`<br><span style="font-size:10px;color:#be185d;background:#fdf2f8;border-radius:4px;padding:1px 5px;">${esc(item.promo)}</span>`:'';
+    return `<tr>
+      <td style="padding:7px 5px;border-bottom:1px solid #fce7f3;font-size:12px;">${esc(item.descripcion)}${item.zona?`<br><span style="font-size:10.5px;color:#9ca3af;">${esc(item.zona)}</span>`:''}${prTag}</td>
+      <td style="padding:7px 5px;border-bottom:1px solid #fce7f3;text-align:center;font-size:12px;">${item.cantidad}</td>
+      <td style="padding:7px 5px;border-bottom:1px solid #fce7f3;text-align:right;font-weight:700;color:#be185d;font-size:12px;">$${fmtN(item.importe)}</td>
+    </tr>`;
+  }).join('');
+  const pagoHtml=data.pagos.length===1?data.pagos[0].tipo:data.pagos.map(p=>`${p.tipo}: $${fmtN(p.monto)}`).join(' · ');
+  const totalSection=data.anticipo>0
+    ?`<div style="font-size:11px;color:#9ca3af;">Total: $${fmtN(data.total)}</div>
+      <div style="font-size:11px;color:#15803d;">Anticipo: −$${fmtN(data.anticipo)}</div>
+      <div style="font-size:20px;font-weight:700;color:#be185d;">$${fmtN(Math.max(0,data.total-data.anticipo))}</div>`
+    :`<div style="font-size:20px;font-weight:700;color:#be185d;">$${fmtN(data.total)}</div>`;
+  const emailsManual=data.emails_manual&&data.emails_manual.length?data.emails_manual:data.emails_nota;
+  const mismos=JSON.stringify(data.emails_nota)===JSON.stringify(emailsManual);
+  return `
+  <div style="background:linear-gradient(135deg,#be185d,#ec4899);padding:16px;text-align:center;">
+    <div style="color:#fff;font-size:16px;font-weight:700;letter-spacing:2px;">yiyi pash</div>
+    <div style="color:#fce7f3;font-size:10px;margin-top:2px;">Confirma antes de registrar</div>
+  </div>
+  <div style="background:#fdf2f8;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;">
+    <div><span style="color:#9ca3af;font-size:9px;display:block;">Lugar</span><strong style="font-size:12px;">${esc(data.punto_venta)}</strong></div>
+    <div style="text-align:center;"><span style="color:#9ca3af;font-size:9px;display:block;">Fecha</span><strong style="font-size:12px;">${fecha}</strong></div>
+    <div style="text-align:right;"><span style="color:#9ca3af;font-size:9px;display:block;">Elaboró</span><strong style="font-size:12px;">${esc(data.alias_elaboro||'-')}</strong></div>
+  </div>
+  <div style="padding:10px 16px;border-bottom:1px solid #fce7f3;">
+    <strong style="font-size:15px;">${esc(data.nombre_clienta)}</strong>
+    ${artistasUnicos.length?`<div style="font-size:11px;color:#9ca3af;margin-top:2px;">Artista(s): ${artistasUnicos.map(a=>esc(a)).join(', ')}</div>`:''}
+  </div>
+  <div style="padding:10px 16px;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr style="background:#fdf2f8;">
+        <th style="padding:5px;text-align:left;color:#be185d;font-size:10px;">Descripción</th>
+        <th style="padding:5px;text-align:center;color:#be185d;font-size:10px;">Cant.</th>
+        <th style="padding:5px;text-align:right;color:#be185d;font-size:10px;">Importe</th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+    </table>
+  </div>
+  <div style="padding:10px 16px;background:#fdf2f8;border-top:2px solid #fce7f3;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+      <div style="font-size:11px;color:#6b7280;">${esc(pagoHtml)}</div>
+      <div style="text-align:right;">${totalSection}</div>
+    </div>
+    ${data.comentarios&&data.comentarios!=='-'?`<div style="font-size:11px;color:#9ca3af;margin-top:6px;font-style:italic;">${esc(data.comentarios)}</div>`:''}
+  </div>
+  ${pinkPreviewHTML(data)}
+  <div style="padding:10px 16px;border-top:1px solid #fce7f3;">
+    ${data.emails_nota.length?`<div style="font-size:11px;color:#9ca3af;margin-bottom:3px;">✉️ Nota: ${data.emails_nota.map(e=>esc(e)).join(', ')}</div>
+    <div style="font-size:11px;color:#9ca3af;">📋 Manual: ${mismos?'mismos correos':emailsManual.map(e=>esc(e)).join(', ')}</div>`:'<div style="font-size:11px;color:#9ca3af;">✉️ Sin correo: solo copia al estudio</div>'}
+  </div>`;
+}
+function mostrarExito(notaNum,emailsNota){
+  document.getElementById('s-nota').textContent=notaNum;
+  const txt=emailsNota&&emailsNota.length
+    ?`Registrada correctamente.\nNota enviada a:\n${emailsNota.join('\n')}\ny a yiyi.pash@gmail.com ✅`
+    :'Registrada correctamente.\nCopia enviada a yiyi.pash@gmail.com ✅';
+  document.getElementById('s-msg').textContent=txt;
+  document.getElementById('success-overlay').style.display='flex';
+  cargarPorCobrar();
+}
+function nuevaNota(){cerrarExito();addTab();}
+function cerrarExito(){document.getElementById('success-overlay').style.display='none';loadTabForm(getTab());}
+
+
+// ── 🩺 ANOTAR EN EL EXPEDIENTE desde la nota (Luis, 20/11) ─────────────
+// El mismo formulario de "Anotar visita" del expediente, encima de la nota y sin salir de ella.
+// No sale si la nota viene de un consentimiento (ahí ya quedó la perforación). Si ya hay visita de hoy, la enseña antes.
+// Al registrar la nota, la visita queda ligada a su número (columna No_Nota de Visitas).
+let VN={id:'',d:null,estado:'',av:null};
+const hoyISO_VN=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
+const fmtF_VN=iso=>iso?new Date(iso+'T12:00').toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'}):'';
+const zonaTxt_VN=p=>p.zona+(p.lado&&p.lado!=='Centro'?' '+p.lado.toLowerCase():'');
+async function abrirVisitaNota(id){
+  const ov=document.getElementById('visita-overlay'),el=document.getElementById('vn-cont');
+  VN={id,d:null,estado:'',av:null};ov.style.display='block';ov.scrollTop=0;
+  el.innerHTML='<p class="vn-mu">Cargando su expediente…</p>';
+  try{VN.d=await pinkApi('consent_expediente',{id});pintarVisitaNota();}
+  catch(e){el.innerHTML=`<p class="vn-err">${esc(e.message)}</p>`;}
+}
+function cerrarVisitaNota(){document.getElementById('visita-overlay').style.display='none';}
+function pintarVisitaNota(){
+  const d=VN.d,p=d.persona,hoy=hoyISO_VN();
+  const deHoy=d.visitas.filter(v=>v.fecha===hoy);
+  const items=[...d.perforaciones,...(d.tatuajes||[]).map(t=>({...t,zona:'Tatuaje en '+t.zona,lado:''}))];
+  const activas=items.filter(x=>x.estado==='Curando');
+  document.getElementById('vn-cont').innerHTML=`
+    <p class="vn-mu" style="margin:0"><b>${esc(p.apodo)}</b> · ${esc(p.nombre)} · ${esc(p.id)}</p>
+    ${deHoy.length?`<div class="vn-aviso"><b>Ya hay ${deHoy.length===1?'una visita':deHoy.length+' visitas'} de hoy:</b>${deHoy.map(v=>`<div>· ${esc(v.tipo)}${v.atendio?' (anotó '+esc(v.atendio)+')':''}${v.obs?': '+esc(v.obs):''}</div>`).join('')}
+      <div>Si es la misma, no la anotes otra vez.</div></div>`:''}
+    <form id="vn-form" class="vn-form" onsubmit="event.preventDefault();guardarVisitaNota()">
+      <label>Tipo de visita<select id="vnTipo">${d.tipos.map(t=>`<option>${esc(t)}</option>`).join('')}</select></label>
+      <div class="vn-l">¿Qué se revisó?<div class="vn-checks">${items.length?items.map(x=>`<label><input type="checkbox" value="${esc(x.id)}"${activas.includes(x)?' checked':''}> ${esc(zonaTxt_VN(x))} <small>(${esc(fmtF_VN(x.fecha))})</small></label>`).join(''):'<span class="vn-mu">Sin perforaciones registradas.</span>'}</div></div>
+      <label>¿Qué se hizo o qué se propuso?<textarea id="vnObs" rows="3" placeholder="Ej. Se cambió la pieza por titanio; se propone downsize en 15 días"></textarea></label>
+      <div class="vn-l">¿Cómo quedan?<div class="vn-chips" id="vnEstado">${[['','No cambia'],['Curando','Curando'],['Sana','Sana'],['Retirada','Retirada']].map(([v,t])=>`<button type="button" class="vn-chip" data-e="${v}" aria-pressed="${v===''}">${t}</button>`).join('')}</div></div>
+      <label>Próxima acción <small>(opcional; ese día sale el recordatorio)</small><input type="text" id="vnAccion" placeholder="Ej. Revisión de downsize"></label>
+      <label>¿En cuántos días?<input type="number" id="vnDias" min="1" inputmode="numeric" style="max-width:120px"></label>
+      <label>Fotos de evolución <small>(privadas, solo para el equipo)</small><input type="file" id="vnFotos" accept="image/*" multiple></label>
+      <p class="vn-err" id="vnErr"></p>
+      <button class="vn-btn" type="submit" id="vnGuardar">Guardar en el expediente</button>
+    </form>`;
+  document.querySelectorAll('#vnEstado .vn-chip').forEach(c=>c.onclick=()=>{VN.estado=c.dataset.e;document.querySelectorAll('#vnEstado .vn-chip').forEach(x=>x.setAttribute('aria-pressed',x===c));});
+  VN.av=window.YP&&YP.avance?YP.avance(document.getElementById('vn-form'),'visita_'+VN.id):null;
+  if(VN.av&&VN.av.restaurar())document.getElementById('vnErr').textContent='Seguiste donde te quedaste: todavía no está guardada.';
+}
+function reducirFoto_VN(file){return new Promise((ok,no)=>{const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{const k=Math.min(1,1600/Math.max(img.width,img.height)),c=document.createElement('canvas');
+    c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.82));};
+  img.onerror=()=>no(new Error('No pude leer la foto '+file.name));img.src=u;});}
+async function guardarVisitaNota(){
+  const err=document.getElementById('vnErr'),b=document.getElementById('vnGuardar');
+  const accion=document.getElementById('vnAccion').value.trim(),dias=+document.getElementById('vnDias').value||0,obs=document.getElementById('vnObs').value.trim();
+  if(!obs){err.textContent='Escribe qué se hizo o qué se propuso.';return document.getElementById('vnObs').focus();}
+  if(accion&&dias<=0){err.textContent='Pon en cuántos días es la próxima acción.';return document.getElementById('vnDias').focus();}
+  const tab=getTab();saveCurrentForm();
+  b.disabled=true;b.textContent='Guardando…';err.textContent='';
+  try{
+    const r=await pinkApi('consent_visita',{id_clienta:VN.id,tipo:document.getElementById('vnTipo').value,obs,estado:VN.estado,accion,dias,
+      perfos:[...document.querySelectorAll('#vn-form .vn-checks input:checked')].map(i=>i.value),
+      atiende:{id:tab.elaboro.id||'',alias:tab.elaboro.alias||''}});
+    const fotos=YP.fotos(document.getElementById('vnFotos'));
+    for(let i=0;i<fotos.length;i++){b.textContent=`Subiendo foto ${i+1} de ${fotos.length}…`;
+      await pinkApi('consent_foto',{id_visita:r.id_visita,foto:await reducirFoto_VN(fotos[i])});}
+    if(VN.av)VN.av.borrar();
+    tab.visitas=(tab.visitas||[]).concat(r.id_visita);guardarAvanceNota();renderPink();
+    cerrarVisitaNota();toast('🩺 Visita anotada en el expediente'+(r.fecha_proxima?' · recordatorio el '+fmtF_VN(r.fecha_proxima):''));
+  }catch(e){err.textContent='No se guardó: '+e.message;}
+  finally{b.disabled=false;b.textContent='Guardar en el expediente';}
+}
+// Al registrar la nota: la visita queda con su número
+function ligarVisitasNota(tab,nota){
+  if(!tab.visitas||!tab.visitas.length)return;
+  pinkApi('consent_visita_ligar',{ids:tab.visitas,no_nota:nota}).catch(()=>{});
+}
+
+// ── PINK CLUB ────────────────────────────────────────────────────────
+// La clave del equipo se guarda en este celular. Sin clave no se puede buscar, registrar ni mover puntos.
+let pinkUltimos=[];
+function pinkClave(){return localStorage.getItem('yp_pink_clave')||'';}
+function renderPinkClaveBtn(){const b=document.getElementById('pk-clave-btn');if(b)b.textContent=pinkClave()?'🔑 Clave ✓':'🔑 Poner clave';}
+async function pinkApi(action,data){
+  const body=Object.assign({action,clave:pinkClave()},data||{});
+  const res=await fetch(AS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body),redirect:'follow'});
+  const json=await res.json();
+  if(!json.ok){
+    if(/Clave de equipo/i.test(json.error||'')){localStorage.removeItem('yp_pink_clave');renderPinkClaveBtn();}
+    throw new Error(json.error||'Error del servidor');
+  }
+  return json.data;
+}
+async function pinkPedirClave(forzar){
+  if(!forzar&&pinkClave())return true;
+  const c=prompt('Clave del equipo Pink Club:','');
+  if(c===null||!c.trim())return false;
+  try{
+    await pinkApi('pink_validar_clave',{clave:c.trim()});
+    localStorage.setItem('yp_pink_clave',c.trim());renderPinkClaveBtn();
+    toast('✅ Clave guardada en este dispositivo');return true;
+  }catch(e){toast('❌ '+e.message);return false;}
+}
+function pinkEstadoCls(e){return ['Activa','Registrada','Baja'].includes(e)?e:'Sin';}
+
+// Buscar clienta (ID, nombre, apodo o WhatsApp)
+async function pinkBuscar(){
+  const inp=document.getElementById('pk-search'),box=document.getElementById('pk-results');
+  const q=inp.value.trim();
+  if(q.length<2){box.classList.remove('open');return;}
+  if(!pinkClave()&&!(await pinkPedirClave(false)))return;
+  box.innerHTML='<div class="no-r">Buscando...</div>';box.classList.add('open');
+  try{
+    const d=await pinkApi('pink_buscar',{q});
+    if(inp.value.trim()!==q)return;                     // ya escribió otra cosa
+    pinkUltimos=d.resultados||[];
+    box.innerHTML=pinkUltimos.length?pinkUltimos.map((p,i)=>`<div class="r-item" onmousedown="pinkAgregar(${i})">
+      <span class="r-badge pk-badge pk-${pinkEstadoCls(p.estado)}">${esc(p.id)}</span>
+      <div class="r-info"><div class="r-name">${esc(p.apodo)} · ${esc(p.nombre)}</div>
+        <div class="r-sku">${p.tipo==='Dependiente_menor_12'?'Menor de 12 · suma a '+esc(p.cuenta_id):esc(p.estado)+' · '+fmtN(p.saldo)+' pts'} · WA …${esc(p.wa_final)}</div></div>
+    </div>`).join(''):'<div class="no-r">No está registrada. Usa “＋ Registrar nueva”.</div>';
+  }catch(e){box.innerHTML=`<div class="no-r">❌ ${esc(e.message)}</div>`;}
+}
+function pinkAgregar(i){
+  const p=pinkUltimos[i];if(!p)return;
+  pinkAgregarPersona(p);
+  document.getElementById('pk-search').value='';
+  document.getElementById('pk-results').classList.remove('open');
+}
+function pinkAgregarPersona(p){
+  const tab=getTab(),pk=tab.pink;
+  if(tab.publico)togglePublico();              // si ya tiene ID, deja de ser público general
+  const ya=pk.personas.findIndex(x=>x.id===p.id);
+  if(ya>=0)pk.personas[ya]=p;else pk.personas.push(p);
+  if(pk.personas.length===1)tab.items.forEach(it=>{if(!it.id_receptora)it.id_receptora=p.id;});  // la primera recibe todo
+  if(!pk.paga)pinkSetPaga(p.id,true);
+  renderPink();renderItems();
+}
+function pinkSetPaga(id,auto){
+  const tab=getTab(),pk=tab.pink;
+  pk.paga=id;pk.canje=false;tab.items.forEach(it=>{it.puntos_aplicados=0;});
+  pinkDatosPaga(tab);
+  if(!auto){renderPink();renderItems();}
+}
+// Nombre y correo de la nota siguen a quien paga: si cambia o se quita, se cambian o se borran.
+// Solo toca lo que puso la nota sola; si alguien escribió otro nombre o correo, se respeta.
+function pinkDatosPaga(tab){
+  const pk=tab.pink,p=pk.personas.find(x=>x.id===pk.paga);
+  const nom=document.getElementById('nombre-clienta');
+  const nomNota=p?(p.apodo||p.nombre):'';                 // en la nota va el apodo
+  if(!nom.value.trim()||(pk.nombre_auto&&nom.value===pk.nombre_auto)){nom.value=nomNota;onNombre(nomNota);pk.nombre_auto=nomNota;}
+  const ok=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e||'');
+  if(pk.email_auto&&pk.email_auto!==(p&&p.email)){const k=tab.emails_nota.indexOf(pk.email_auto);if(k>=0)tab.emails_nota.splice(k,1);pk.email_auto='';}
+  if(p&&ok(p.email)&&!tab.emails_nota.includes(p.email)){tab.emails_nota.push(p.email);pk.email_auto=p.email;}
+  renderEmailChips();
+}
+function pinkQuitar(id){
+  const tab=getTab(),pk=tab.pink;
+  if(pk.personas.length===1&&tab.items.some(esServicio)&&!confirm('Esta nota lleva un servicio. Si quitas a la clienta, la nota se queda sin ID y no llega a su expediente. ¿Quitarla?'))return;
+  pk.personas=pk.personas.filter(x=>x.id!==id);
+  tab.items.forEach(it=>{if(it.id_receptora===id){it.id_receptora='';it.regalo_cumple=false;}});
+  if(pk.paga===id){pk.paga=pk.personas[0]?pk.personas[0].id:'';pk.canje=false;tab.items.forEach(it=>{it.puntos_aplicados=0;});pinkDatosPaga(tab);}
+  renderPink();renderItems();
+}
+function pinkToggleCanje(){
+  const tab=getTab();tab.pink.canje=!tab.pink.canje;
+  if(!tab.pink.canje)tab.items.forEach(it=>{it.puntos_aplicados=0;});
+  renderPink();renderItems();
+}
+function renderPink(){
+  const tab=getTab(),el=document.getElementById('pk-personas');if(!tab||!el)return;
+  const pk=tab.pink;
+  el.innerHTML=pk.personas.map(p=>{
+    const esPaga=p.id===pk.paga,dep=p.tipo==='Dependiente_menor_12',varias=pk.personas.length>1;
+    let info;
+    if(dep)info=`Menor de 12: sus compras suman en la cuenta de <b>${esc(p.cuenta_id)}</b>`;
+    else if(p.estado==='Activa')info=`<b>${fmtN(p.saldo)} pts</b> disponibles${p.vence?` · vencen el ${esc(p.vence)}`:''}`;
+    else if(p.estado==='Registrada')info=`<b>${fmtN(p.saldo)} pts</b> · le faltan <b>$${fmtN(p.falta_activar)}</b> en compras para activar y poder canjear`;
+    else info=esc(p.estado);
+    if(!dep&&p.sin_aviso)info+=`<br>⚠️ <b>Aún no entra a su app del Pink Club</b>: esta compra no le dará puntos. Pídele que abra su link y acepte el aviso antes de cobrar.`;
+    if(p.regalo_cumple)info+=`<br>🎁 <b>Tiene su regalo de cumpleaños</b>: márcalo en el artículo de regalo: arete, collar… (hasta $${fmtN(p.tope_regalo||200)})`;
+    const acts=[];
+    if(!esPaga)acts.push(`<button class="pk-mini" onclick="pinkSetPaga('${esc(p.id)}')">Ella paga</button>`);
+    if(esPaga&&p.puede_canjear)acts.push(`<button class="pk-mini ${pk.canje?'on':''}" onclick="pinkToggleCanje()">${pk.canje?'✓ Usando puntos':'Usar puntos'}</button>`);
+    if(!tab.consent)acts.push(`<button class="pk-mini" onclick="abrirVisitaNota('${esc(p.id)}')">🩺 Anotar en expediente</button>`);   // con consentimiento ya quedó en el expediente
+    acts.push(`<button class="pk-mini" onclick="pinkQuitar('${esc(p.id)}')">Quitar</button>`);
+    return `<div class="pk-card ${esPaga&&varias?'paga':''}">
+      <div class="pk-top"><div class="pk-name">${esc(p.apodo)} <span class="pk-id">${esc(p.id)}</span></div>
+        ${esPaga&&varias?'<span class="pk-badge" style="background:var(--p);color:#fff;">Paga</span>':''}
+        <span class="pk-badge pk-${dep?'Sin':pinkEstadoCls(p.estado)}">${dep?'Menor 12':esc(p.estado)}</span></div>
+      <div class="pk-info">${info}</div>
+      <div class="pk-acts">${acts.join('')}</div>
+    </div>`;
+  }).join('')+'<div id="pk-resumen"></div>';
+  renderPinkResumen();
+}
+function renderPinkResumen(){
+  const el=document.getElementById('pk-resumen');if(!el)return;
+  const tab=getTab(),pk=tab.pink;
+  if(!pk.canje){el.innerHTML='';return;}
+  const p=pk.personas.find(x=>x.id===pk.paga),usados=pinkPuntosUsados(tab),saldo=p?p.saldo:0;
+  el.innerHTML=`<div class="pk-resumen ${usados>saldo?'mal':''}">Usando <b>${fmtN(usados)}</b> de ${fmtN(saldo)} pts. Escribe los puntos en cada pieza (la perforación y los servicios no se pagan con puntos). <b>No uses puntos en productos en promoción o con descuento.</b></div>`;
+}
+
+// Por artículo: quién recibe, regalo de cumpleaños y puntos
+function pinkMaxPuntos(it){
+  if(it.tipo==='S'||it.regalo_cumple)return 0;
+  return Math.max(0,Math.floor(Math.min((it.precio_prod||0)*it.cantidad,it.importe||0)));
+}
+function pinkClampItem(it){it.puntos_aplicados=Math.min(Math.max(0,Math.floor(it.puntos_aplicados||0)),pinkMaxPuntos(it));}
+function pinkPuntosUsados(tab){return tab.items.reduce((s,i)=>s+(i.regalo_cumple?0:(i.puntos_aplicados||0)),0);}
+function pinkItemHTML(item){
+  const pk=getTab().pink;if(!pk.personas.length)return '';
+  const opts=pk.personas.map(p=>`<option value="${esc(p.id)}" ${item.id_receptora===p.id?'selected':''}>${esc(p.apodo)} · ${esc(p.id)}</option>`).join('');
+  let html=`<div class="artista-row"><span class="artista-lbl" style="color:var(--p)">💗 Recibe</span>
+    <select class="artista-sel" onchange="onItemReceptora(${item.id},this.value)"><option value="">Sin ID (no suma puntos)</option>${opts}</select></div>`;
+  const rec=pk.personas.find(p=>p.id===item.id_receptora);
+  if(rec&&rec.regalo_cumple&&item.tipo!=='S'){   // pieza sorpresa Pink: cualquier producto; el servidor revisa el tope
+    html+=`<div class="pk-row"><label class="pk-regalo"><input type="checkbox" ${item.regalo_cumple?'checked':''} onchange="onItemRegalo(${item.id},this.checked)" style="accent-color:var(--p)"> 🎁 Regalo de cumpleaños de ${esc(rec.apodo)}</label>
+      ${item.regalo_cumple?`<span class="pk-note">pieza sin costo${item.con_servicio?' · la perforación sí se cobra':''}</span>`:''}</div>`;
+  }
+  const max=pinkMaxPuntos(item);
+  if(pk.canje&&!item.regalo_cumple&&max>0){
+    html+=`<div class="pk-row"><span class="artista-lbl">Puntos</span>
+      <input class="mini-in pk-pts-in" type="number" inputmode="numeric" min="0" max="${max}" step="1" value="${item.puntos_aplicados||''}" placeholder="0" oninput="onItemPuntos(${item.id},this.value)">
+      <span class="pk-note">máx ${max} · paga <b id="pk-neto-${item.id}">$${fmtN(importeNeto(item))}</b></span></div>`;
+  }else if(pk.canje&&!item.regalo_cumple&&item.tipo==='S'){
+    html+=`<div class="pk-row"><span class="pk-note">Los servicios no se pagan con puntos</span></div>`;
+  }
+  return html;
+}
+function onItemReceptora(id,val){
+  const it=getTab().items.find(i=>i.id===id);if(!it)return;
+  it.id_receptora=val;it.regalo_cumple=false;renderItems();
+}
+function onItemRegalo(id,on){
+  const tab=getTab(),it=tab.items.find(i=>i.id===id);if(!it)return;
+  if(on&&it.cantidad!==1){toast('⚠️ El regalo es de una sola pieza: deja la cantidad en 1');renderItems();return;}
+  if(on&&tab.items.some(x=>x!==it&&x.regalo_cumple&&x.id_receptora===it.id_receptora)){toast('⚠️ Solo un regalo de cumpleaños por clienta');renderItems();return;}
+  it.regalo_cumple=on;if(on)it.puntos_aplicados=0;renderItems();
+}
+function onItemPuntos(id,val){
+  const it=getTab().items.find(i=>i.id===id);if(!it)return;
+  const tab=getTab(),p=tab.pink.personas.find(x=>x.id===tab.pink.paga);
+  const libres=Math.max(0,Math.floor((p?p.saldo:0)-(pinkPuntosUsados(tab)-(it.puntos_aplicados||0))));   // no deja pasar del saldo
+  const max=Math.min(pinkMaxPuntos(it),libres),v=Math.max(0,Math.floor(Number(val)||0));
+  if(v>max){it.puntos_aplicados=max;toast(max<pinkMaxPuntos(it)?`⚠️ Solo le quedan ${max} puntos`:`⚠️ Máximo ${max} puntos en esta pieza`);renderItems();return;}
+  it.puntos_aplicados=v;
+  const n=document.getElementById('pk-neto-'+id);if(n)n.textContent='$'+fmtN(importeNeto(it));
+  updateTotal();
+}
+function aplicarReceptoraATodos(){
+  const items=getTab().items;if(items.length<2)return;
+  const f=items[0].id_receptora;
+  items.forEach((it,i)=>{if(i&&it.id_receptora!==f){it.id_receptora=f;it.regalo_cumple=false;}});
+  renderItems();toast(f?`✅ Todo suma a ${f}`:'✅ Ningún artículo suma puntos');
+}
+function pinkValidarAntesDeEnviar(tab){
+  const pk=tab.pink,usados=pinkPuntosUsados(tab);
+  if((pk.paga||tab.items.some(i=>i.id_receptora))&&!pinkClave())return 'Falta la clave del equipo (botón 🔑 en Pink Club)';
+  if(usados>0){
+    const p=pk.personas.find(x=>x.id===pk.paga);
+    if(!p||!p.puede_canjear)return 'Quien paga no puede canjear puntos';
+    if(usados>p.saldo)return `${p.apodo} solo tiene ${p.saldo} puntos`;
+  }
+  return '';
+}
+function pinkPreviewHTML(data){
+  const tab=_pendingTab||getTab();
+  const nom=id=>{const p=tab.pink.personas.find(x=>x.id===id);return p?`${p.apodo} (${id})`:id;};
+  const recs=[...new Set(data.items.map(i=>i.id_receptora).filter(Boolean))];
+  if(!recs.length&&!data.puntos_canjeados)return '';
+  const sinId=data.items.filter(i=>!i.id_receptora).length;
+  const l=[];
+  if(recs.length)l.push('💗 Suman puntos: '+recs.map(r=>esc(nom(r))).join(', '));
+  if(recs.length&&sinId)l.push(`${sinId} artículo(s) sin ID: no suman puntos`);
+  if(data.puntos_canjeados>0)l.push(`Canje: <b>${fmtN(data.puntos_canjeados)} pts</b> de ${esc(nom(data.id_canje))}`);
+  const reg=data.items.filter(i=>i.regalo_cumple);
+  if(reg.length)l.push('🎁 Regalo de cumpleaños: '+reg.map(i=>esc(i.descripcion)).join(', '));
+  return `<div style="padding:10px 16px;border-top:1px solid #fce7f3;font-size:11px;color:#be185d;line-height:1.6;">${l.join('<br>')}</div>`;
+}
+
+// Registro de clienta nueva (desde caja)
+function pinkEdadDe(s){
+  const m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return null;
+  const h=new Date();let e=h.getFullYear()-(+m[1]);
+  if(h.getMonth()+1<+m[2]||(h.getMonth()+1===+m[2]&&h.getDate()<+m[3]))e--;
+  return e;
+}
+function pinkRevisarEdad(){
+  const ed=pinkEdadDe(document.getElementById('pk-fn').value);
+  const menor=ed!==null&&ed<18,peque=ed!==null&&ed<12;
+  document.getElementById('pk-menor').style.display=menor?'block':'none';
+  document.getElementById('pk-tid-wrap').style.display=peque?'block':'none';
+  document.getElementById('pk-c-mkt-wrap').style.display=menor?'none':'flex';
+  document.getElementById('pk-menor-tit').textContent=peque
+    ?'Menor de 12: no tiene cuenta propia, sus compras suman en la cuenta del tutor'
+    :'Es menor de edad: datos del tutor (no recibe promociones)';
+}
+function pinkAbrirRegistro(){
+  if(!pinkClave()){pinkPedirClave(false).then(ok=>{if(ok)pinkAbrirRegistro();});return;}
+  ['pk-apodo','pk-nombre','pk-fn','pk-wa','pk-email','pk-tnombre','pk-tpar','pk-twa','pk-tid'].forEach(id=>{document.getElementById(id).value='';});
+  ['pk-c-aviso','pk-c-mkt','pk-c-fotos'].forEach(id=>{document.getElementById(id).checked=false;});
+  const tab=getTab(),p=tab.pink.personas.find(x=>x.id===tab.pink.paga);
+  if(p&&p.tipo==='Titular'){document.getElementById('pk-tid').value=p.id;document.getElementById('pk-tnombre').value=p.nombre;}
+  pinkRevisarEdad();
+  document.getElementById('pk-modal').style.display='block';
+  document.getElementById('pk-apodo').focus();
+}
+function pinkCerrarRegistro(){document.getElementById('pk-modal').style.display='none';}
+async function pinkRegistrar(){
+  const v=id=>document.getElementById(id).value.trim();
+  const ed=pinkEdadDe(v('pk-fn'));
+  const d={apodo:v('pk-apodo'),nombre_completo:v('pk-nombre'),fecha_nacimiento:v('pk-fn'),whatsapp:v('pk-wa'),email:v('pk-email'),
+    origen:v('pk-origen'),registro_por:getTab().elaboro.alias||'',
+    consent_aviso:document.getElementById('pk-c-aviso').checked,
+    consent_marketing_wa:ed!==null&&ed>=18&&document.getElementById('pk-c-mkt').checked,
+    consent_fotos:document.getElementById('pk-c-fotos').checked};
+  if(ed!==null&&ed<18)Object.assign(d,{tutor_nombre:v('pk-tnombre'),tutor_parentesco:v('pk-tpar'),tutor_whatsapp:v('pk-twa'),id_tutor:ed<12?v('pk-tid').toUpperCase():''});
+  if(!d.apodo||!d.nombre_completo||!d.fecha_nacimiento)return toast('⚠️ Faltan apodo, nombre completo o fecha de nacimiento');
+  if(d.whatsapp.replace(/\D/g,'').length!==10)return toast('⚠️ El WhatsApp debe tener 10 dígitos');
+  if(!d.consent_aviso)return toast('⚠️ Debe aceptar el aviso de privacidad');
+  const btn=document.getElementById('pk-reg-btn');btn.disabled=true;btn.textContent='Registrando...';
+  try{
+    const r=await pinkApi('pink_registrar',d);
+    const b=await pinkApi('pink_buscar',{q:r.id_clienta});
+    const p=(b.resultados||[]).find(x=>x.id===r.id_clienta);
+    if(p)pinkAgregarPersona(p);
+    pinkCerrarRegistro();
+    if(r.duplicada)alert(`Ya estaba registrada con el ID ${r.id_clienta}. La agregué a la nota.`);
+    else alert(`✅ Registrada: ${r.id_clienta}`+
+      (r.tipo==='Dependiente_menor_12'?'\n\nEs menor de 12: sus compras suman en la cuenta de su tutor.':'\n\nSu mensaje de bienvenida con el ID quedó en Pendientes_WA para mandarlo por WhatsApp.')+
+      (r.historial_sugerido?`\n\nEncontré ${r.historial_sugerido} nota(s) anteriores que podrían ser suyas: revísalas en Historial_Por_Vincular.`:''));
+  }catch(e){toast('❌ '+e.message);}
+  finally{btn.disabled=false;btn.textContent='Registrar 💗';}
+}
+
+// ── DROPDOWNS ────────────────────────────────────────────────────────
+function poblarLugares(lista){
+  const sel=document.getElementById('punto-venta');
+  sel.innerHTML='<option value="">Selecciona...</option>';
+  lista.forEach(pv=>{const o=document.createElement('option');o.value=pv.lugar;o.textContent=pv.lugar;sel.appendChild(o);});
+  const saved=localStorage.getItem('yp_lugar');if(saved){sel.value=saved;getTab().form.punto_venta=saved;}
+}
+function poblarElaboradores(lista){
+  const sel=document.getElementById('elaboro-sel');
+  sel.innerHTML='<option value="">Selecciona...</option>';
+  lista.forEach(e=>{const o=document.createElement('option');o.value=e.id;o.dataset.alias=e.alias;o.textContent=e.alias;sel.appendChild(o);});
+  const savedId=localStorage.getItem('yp_elaboro_id');
+  if(savedId){sel.value=savedId;const tab=getTab();const found=lista.find(e=>e.id===savedId);if(found&&tab)tab.elaboro={id:found.id,alias:found.alias};}
+  bloquearElaboro();
+}
+// "Elaboró" queda fijo con quien está registrado en este celular (o quien hizo la prenota): así no hay malentendidos.
+// Se puede cambiar, pero con aviso. Cuando existan los perfiles (fase 2) saldrá del usuario que entró.
+function bloquearElaboro(){
+  const tab=getTab(),sel=document.getElementById('elaboro-sel'),b=document.getElementById('elaboro-cambiar'),n=document.getElementById('elaboro-nota');
+  if(!tab||!sel)return;
+  const fijo=!!(tab.elaboro&&tab.elaboro.id)&&!tab.elaboro_libre;
+  // Fase 2: sale del perfil que entró con su PIN; solo un dueño puede cambiarlo
+  const s=window.YP_SESION,dueno=!s||s.clave_rol==='dueno';
+  sel.disabled=fijo;b.style.display=fijo&&dueno?'':'none';
+  n.textContent=!fijo?(localStorage.getItem('yp_elaboro_id')?'':'Elige quién usa este celular; se queda guardado.')
+    :(tab.prenota?'Lo hizo quien guardó la prenota.':s?'Quien entró con su PIN.':'Quien está registrado en este celular.');
+}
+function cambiarElaboro(){
+  const tab=getTab();
+  if(!confirm(`Esta nota dice que la elaboró ${tab.elaboro.alias||'—'}. ¿Cambiarlo? Hazlo solo si de verdad la hizo otra persona.`))return;
+  tab.elaboro_libre=true;bloquearElaboro();document.getElementById('elaboro-sel').focus();
+}
+function poblarFallback(){
+  poblarLugares([{lugar:'Yiyipash Studio'},{lugar:'Peace & Love Stores'},{lugar:'Casa OKO'}]);
+  poblarElaboradores([{id:'ART-001',alias:'Yiyi'},{id:'ART-003',alias:'Kat'}]);
+  artistas=[{id:'ART-001',alias:'Yiyi'},{id:'ART-003',alias:'Kat'}];
+}
+
+// ── EVENTOS ──────────────────────────────────────────────────────────
+function onElabora(sel){
+  const tab=getTab();if(!tab)return;
+  const opt=sel.options[sel.selectedIndex];
+  tab.elaboro={id:sel.value,alias:sel.value?(opt?.dataset.alias||sel.value):''};
+  // La primera vez se registra este celular con esa persona (después ya no cambia solo)
+  if(!localStorage.getItem('yp_elaboro_id')&&sel.value){localStorage.setItem('yp_elaboro_id',tab.elaboro.id);localStorage.setItem('yp_elaboro_alias',tab.elaboro.alias);}
+}
+function onNombre(val){
+  const tab=getTab();if(!tab)return;
+  tab.form.nombre_clienta=val;tab.label=val.trim()||`Nota ${tab.id}`;renderTabBar();
+  if(tab.publico&&val!==PUBLICO){tab.publico=false;renderPublico();}   // escribieron otro nombre
+}
+// Público general: venta sin datos de clienta. No pide correo ni lleva ID; la copia al estudio llega igual.
+const PUBLICO='Público general';
+function togglePublico(){
+  const tab=getTab();if(!tab)return;
+  if(!tab.publico&&tab.pink.personas.length)return toast('⚠️ Esta nota ya tiene clienta del Pink Club');
+  tab.publico=!tab.publico;
+  const nom=document.getElementById('nombre-clienta');
+  nom.value=tab.publico?PUBLICO:'';onNombre(nom.value);
+  renderPublico();
+}
+function renderPublico(){
+  const tab=getTab(),b=document.getElementById('btn-publico'),r=document.getElementById('correo-req');
+  if(!tab||!b)return;
+  b.textContent=tab.publico?'✓ Público general (toca para quitar)':'＋ Público general (solo productos)';
+  b.style.cssText=tab.publico?'border-style:solid;border-color:var(--p);color:var(--p);font-weight:600;':'';
+  if(r)r.textContent=tab.publico?'(opcional)':'(requerido)';
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────
+function getBadge(item){
+  const m={'Tatuaje':'c-TAT','Piercing':'c-PIR','Piercing Acero Quirurgico':'c-PAQ','Piercing Titanio':'c-PTN','HUGGIES':'c-HUG','Aftercare':'c-AFC','Revision Piercing':'c-REP','Revision Tatuaje':'c-RET'};
+  const cls=m[item.categoria]||(item.tipo==='S'?'c-SRV':'c-DEF');
+  const txt=item.sku?item.sku.split('-')[0]:'—';
+  return{cls,txt};
+}
+function fmtN(n){return Number(n).toLocaleString('es-MX');}
+function pad(n){return String(n).padStart(2,'0');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';
+  clearTimeout(el._t);el._t=setTimeout(()=>{el.style.display='none';},3500);
+}
+
+init();
+// Fechas de nacimiento: el calendario no deja elegir días después de hoy ni de hace más de 110 años
+(function(){const h=new Date(),d=h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
+  document.querySelectorAll('input[data-nac]').forEach(x=>{x.max=d;x.min=(h.getFullYear()-110)+'-01-01';});})();
+document.addEventListener('yp-sesion',()=>{try{bloquearElaboro();}catch(e){}});   // fase 2: "Cambiar" solo para dueños
+</script>
+</body>
+</html>
