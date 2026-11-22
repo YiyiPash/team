@@ -1498,7 +1498,18 @@ function retomarBorrador(){
   const conClave=DEMO||!!store.get('yp_pink_clave');
   if(/[?&]ver=firmar/.test(location.search)&&conClave){history.replaceState(null,'',location.pathname);return show(10);}
   show(conClave?2:0);
+  if(/[?&]desde=expediente/.test(location.search)&&conClave)tomarDelExpediente();
 })();
+// Desde el expediente o el Panel de notas (22/11): la clienta nunca ha firmado y se abre con sus datos ya puestos.
+// El ID viaja en la memoria del celular (yp_handoff_cons), nunca en la liga.
+async function tomarDelExpediente(){
+  let h=null;try{h=JSON.parse(localStorage.getItem('yp_handoff_cons')||'null');localStorage.removeItem('yp_handoff_cons');}catch(e){}
+  history.replaceState(null,'',location.pathname);
+  if(!h||!h.id_clienta||Date.now()-(h.t||0)>15*60000)return;
+  try{await cargarLista();}catch(x){toast('No pude traer la lista de clientas: '+x.message,true);return;}
+  const p=(LISTA||[]).find(x=>x.id===h.id_clienta);
+  if(p)elegir(p);else toast('No encontré a '+h.id_clienta+'. Búscala arriba.',true);
+}
 // Fechas de nacimiento: el calendario no deja elegir días después de hoy ni de hace más de 110 años
 (function(){const h=new Date(),d=h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
   document.querySelectorAll('input[data-nac]').forEach(x=>{x.max=d;x.min=(h.getFullYear()-110)+'-01-01';});})();

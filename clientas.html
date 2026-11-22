@@ -94,6 +94,16 @@ label{display:grid;gap:4px;font-size:13px;font-weight:600}
         <p class="err" id="ePapel" hidden></p>
         <button class="btn" type="submit" id="bPapel">Agregar nota de papel</button>
       </form>
+      <!-- Llave cubierta (22/11, Luis): solo dueños, con motivo y su PIN. Para quien ya cubrió los $999 sin notas digitales -->
+      <button class="btn sec" type="button" id="bLlave" hidden>🔑 Llave cubierta</button>
+      <form id="fLlave" class="lista" hidden>
+        <p class="mu" style="font-weight:600;color:var(--fg)">Marcar que ya cubrió la llave de $999</p>
+        <p class="mu">Úsalo solo si ya juntó los $999 y no hay notas que lo muestren. Queda Founder, sus compras de este programa que se fueron a la llave le dan sus puntos, y queda anotado quién lo hizo, cuándo y por qué.</p>
+        <label for="llMotivo">¿Por qué? (por ejemplo, qué notas o compras lo cubren)<textarea id="llMotivo" rows="2"></textarea></label>
+        <label for="llPin">Tu PIN<input type="password" id="llPin" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+        <p class="err" id="eLlave" hidden></p>
+        <div class="fila" style="display:flex;gap:8px"><button class="btn sec" type="button" id="bLlaveNo">Cancelar</button><button class="btn" type="submit" id="bLlaveSi" style="flex:1">Marcar llave cubierta</button></div>
+      </form>
     </div>
     <div class="card" id="historial" hidden></div>
   </section>
@@ -164,7 +174,9 @@ function pintarPink(k){
   if(k.sin_cuenta){$('pkEstado').textContent='Todavía no tiene cuenta Pink'+(k.cuenta_id!==actual.id?' (acumula en '+k.cuenta_id+')':'')+'.';$('pkPapel').innerHTML='';$('fPapel').hidden=true;return;}
   const de=k.cuenta_id!==actual.id?' · acumula en '+k.cuenta_id:'';
   $('pkEstado').textContent=(k.estado==='Activa'?'Activa'+(k.founder?' · Founder':'')+' · '+fmt(k.saldo)+' puntos':k.estado==='Registrada'?'Lleva $'+fmt(k.acumulado)+': le faltan $'+fmt(k.falta)+' para entrar':k.estado)+de;
-  $('pkPapel').innerHTML=k.papel.map(x=>'<div class="ev"><b>Nota de papel '+esc(x.folio)+'</b> · $'+fmt(x.monto)+'<br>'+esc(x.motivo.replace(/:.*/,''))+' · revisó '+esc(x.por)+' el '+esc(x.fecha)+'</div>').join('');
+  $('pkPapel').innerHTML=k.papel.map(x=>'<div class="ev"><b>Nota de papel '+esc(x.folio)+'</b> · $'+fmt(x.monto)+'<br>'+esc(x.motivo.replace(/:.*/,''))+' · revisó '+esc(x.por)+' el '+esc(x.fecha)+'</div>').join('')
+    +(k.llave_cubierta||[]).map(x=>'<div class="ev"><b>🔑 Llave cubierta</b> · $'+fmt(x.monto)+'<br>'+esc(x.motivo)+' · '+esc(x.por)+' el '+esc(x.fecha)+'</div>').join('');
+  $('bLlave').hidden=!(actual&&actual.dueno)||k.estado!=='Registrada'||k.cuenta_id!==actual.id;$('fLlave').hidden=true;
   $('fPapel').hidden=!k.acepta_papel||k.estado==='Baja';$('pkHasta').textContent=k.hasta;
   $('pFecha').max=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
   error('ePapel','');
@@ -182,6 +194,22 @@ $('fPapel').onsubmit=async e=>{
     $('aviso').textContent='Nota de papel agregada.'+(r.founder?' Con eso juntó $999: ya es Founder.':'');$('aviso').hidden=false;scrollTo(0,0);
   }catch(x){error('ePapel',x.message);}
   $('bPapel').disabled=false;
+};
+$('bLlave').onclick=()=>{$('bLlave').hidden=true;$('fLlave').hidden=false;$('llMotivo').value='';$('llPin').value='';error('eLlave','');$('llMotivo').focus();};
+$('bLlaveNo').onclick=()=>{$('fLlave').hidden=true;$('bLlave').hidden=false;};
+$('fLlave').onsubmit=async e=>{
+  e.preventDefault();error('eLlave','');
+  const motivo=$('llMotivo').value.trim(),pin=$('llPin').value.trim();
+  if(motivo.length<5)return error('eLlave','Escribe por qué (qué notas o compras cubren los $999).');
+  if(!/^\d{6}$/.test(pin))return error('eLlave','Escribe tu PIN (6 números).');
+  if(!confirm('¿Marcar que '+actual.apodo+' ya cubrió la llave de $999? Queda activa y Founder.'))return;
+  $('bLlaveSi').disabled=true;
+  try{
+    const r=await api('consent_llave_cubierta',{id_clienta:actual.id,motivo,pin},'Guardando…');
+    const c=await api('consent_clienta_detalle',{id:actual.id},'Actualizando…');
+    pintar(c,'Listo: '+actual.apodo+' ya está activa y es Founder.'+(r.puntos?' Recibió '+fmt(r.puntos)+' puntos de sus compras que se habían ido a la llave.':''));
+  }catch(x){error('eLlave',x.message);$('llPin').value='';}
+  $('bLlaveSi').disabled=false;
 };
 $('q').oninput=buscar;
 $('res').onclick=async e=>{

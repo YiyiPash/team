@@ -603,15 +603,33 @@ async function init(){
 // ── VIENE DEL CONSENTIMIENTO ────────────────────────────────────────
 // El consentimiento deja los datos en este celular (yp_handoff) y abre la nota con ?desde=consentimiento.
 async function tomarDelConsentimiento(){
-  if(!/[?&]desde=consentimiento/.test(location.search))return;
+  if(!/[?&]desde=(consentimiento|expediente)/.test(location.search))return;
   let h=null;
   try{h=JSON.parse(localStorage.getItem('yp_handoff')||'null');}catch(e){}
   localStorage.removeItem('yp_handoff');
   history.replaceState(null,'',location.pathname);
+  if(h&&h.desde==='expediente'&&h.id_clienta)return tomarDelExpediente(h);
   if(!h||h.desde!=='consentimiento')return;
   if(tabConAlgo(getTab()))addTab();   // había una nota a medias: el consentimiento va en una nota nueva
   notaCargando('Trayendo lo del consentimiento…');
   try{await aplicarConsentimiento(h);}finally{notaListo();pintarCobrar();}
+}
+// Desde el expediente o "Anotadas hace poco" (Fichas, 22/11): la nota se abre con la clienta ya puesta.
+// Las visitas de hoy quedan ligadas a esta nota al registrarla (como el 🩺 de la nota).
+async function tomarDelExpediente(h){
+  if(tabConAlgo(getTab()))addTab();
+  notaCargando('Poniendo a la clienta…');
+  try{
+    const tab=getTab();
+    if(h.visitas&&h.visitas.length)tab.visitas=(tab.visitas||[]).concat(h.visitas.filter(v=>!(tab.visitas||[]).includes(v)));
+    const d=await pinkApi('pink_buscar',{q:h.id_clienta});
+    const p=(d.resultados||[]).find(x=>x.id===h.id_clienta);
+    if(p)pinkAgregarPersona(p);else toast('⚠️ No encontré a '+h.id_clienta+' en el Pink Club');
+    const nom=document.getElementById('nombre-clienta');
+    if(!nom.value.trim()&&h.apodo){nom.value=h.apodo;onNombre(h.apodo);}
+    guardarAvanceNota();
+  }catch(e){toast('⚠️ '+e.message);}
+  finally{notaListo();}
 }
 // Llena la nota abierta con un consentimiento, venga del mismo celular o de la fila Por cobrar
 async function aplicarConsentimiento(h){

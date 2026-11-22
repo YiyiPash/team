@@ -43,6 +43,17 @@ label{display:grid;gap:4px;font-size:13px;font-weight:600}
 .ok{background:var(--ok-bg);color:var(--ok);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;margin:0}
 .lista{display:grid;gap:8px}
 .ev{font-size:13px;border-top:1px solid var(--line);padding-top:6px}
+select{width:100%;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--fg)}
+.pagos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pagos label{font-weight:500}
+.aviso-f{background:#fff7e6;border:1.5px solid #f3d08a;color:#7a4b00;border-radius:10px;padding:9px 12px;font-size:13px;margin:0}
+/* Total del día (22/11, Luis): dorado discreto, solo dueños */
+.oro{justify-self:start;border:1.5px solid #d9b45a;background:#fffaf0;color:#8a6414;border-radius:999px;font:inherit;font-size:13px;font-weight:700;padding:7px 14px;cursor:pointer}
+.oro:focus-visible{outline:3px solid #e8c877;outline-offset:2px}
+.totdia{background:#fffaf0;border:1.5px solid #ecd9a6;border-radius:16px;padding:14px;display:grid;gap:8px}
+.totdia .grande{font-size:26px;font-weight:700;color:#8a6414;font-variant-numeric:tabular-nums}
+.pin{display:flex;gap:8px;align-items:center}
+.pin input{max-width:150px;letter-spacing:4px}
 </style>
 </head>
 <body>
@@ -61,6 +72,15 @@ label{display:grid;gap:4px;font-size:13px;font-weight:600}
   </section>
 
   <section id="vLista" class="lista">
+    <button class="oro" type="button" id="bTotal" hidden>Total del día</button>
+    <div class="totdia" id="vTotal" hidden>
+      <div id="totPin">
+        <label for="pinTot">Escribe tu PIN para ver el total</label>
+        <div class="pin"><input type="password" id="pinTot" inputmode="numeric" maxlength="6" autocomplete="off"><button class="btn" type="button" id="bVerTotal">Ver</button><button class="btn sec" type="button" id="bCerrarTot">Cerrar</button></div>
+        <p class="err" id="eTotal" hidden></p>
+      </div>
+      <div id="totDatos" hidden></div>
+    </div>
     <label for="q" id="lQ">Buscar en las notas de hoy<input type="search" id="q" placeholder="Número, nombre o correo" autocomplete="off"></label>
     <label for="fecha" id="lFecha" hidden>Del día (opcional)<input type="date" id="fecha"></label>
     <p class="err" id="eLista" hidden></p>
@@ -74,6 +94,8 @@ label{display:grid;gap:4px;font-size:13px;font-weight:600}
     <section class="card" id="cClienta">
       <h2>Clienta</h2>
       <p style="margin:0" id="clientaTxt"></p>
+      <button class="btn" type="button" id="bExp">📋 Expediente</button>
+      <p class="aviso-f" id="expSinId" hidden>Para abrir su expediente, primero asigna a la clienta.</p>
       <button class="btn sec" type="button" id="bAsignar">Asignar clienta</button>
       <div id="vAsignar" class="lista" hidden>
         <label for="qCli">Buscar clienta<input type="search" id="qCli" placeholder="Nombre, apodo, ID o WhatsApp" autocomplete="off"></label>
@@ -88,6 +110,16 @@ label{display:grid;gap:4px;font-size:13px;font-weight:600}
       <label for="nombre">Nombre<input id="nombre" autocomplete="off"></label>
       <label for="correos">Correos de la nota<input id="correos" autocomplete="off" inputmode="email" placeholder="Si son varios, sepáralos con coma"></label>
       <label for="manual">Correos del manual<input id="manual" autocomplete="off" inputmode="email" placeholder="Si son varios, sepáralos con coma"></label>
+      <label for="lugar">Lugar<select id="lugar"></select></label>
+      <label for="elaboro">¿Quién hizo la nota?<select id="elaboro"></select></label>
+      <div id="artistas" class="lista"></div>
+      <div id="bloquePagos"><b style="font-size:13px">Forma de pago</b> <span class="mu" id="pagoSuma"></span>
+        <div class="pagos"><label>Efectivo<input type="number" id="pEf" inputmode="decimal" min="0" step="0.01"></label><label>Transferencia<input type="number" id="pTr" inputmode="decimal" min="0" step="0.01"></label><label>Tarjeta<input type="number" id="pTa" inputmode="decimal" min="0" step="0.01"></label></div></div>
+      <label for="coment">Comentarios<textarea id="coment" rows="2"></textarea></label>
+      <div id="bloqueFecha" class="lista" hidden>
+        <label for="fechaN">Fecha de la nota<input type="date" id="fechaN"></label>
+        <p class="aviso-f" id="avisoFecha" hidden>⚠️ Cambiar la fecha mueve las ventas y las métricas de ese día (y la fecha de sus puntos, si ya dio). Úsalo solo si se registró en otro día por error.</p>
+      </div>
       <label for="por" id="lPor">¿Quién hace el cambio?<input id="por" autocomplete="off"></label>
       <p class="err" id="eCorregir" hidden></p>
       <button class="btn" type="submit" id="bGuardar">Guardar cambios</button>
@@ -111,7 +143,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const dinero=n=>'$'+Number(n||0).toLocaleString('es-MX');
 const fechaTxt=f=>f?f.split('-').reverse().join('/'):'';
 const leer=k=>{try{return localStorage.getItem(k)||'';}catch(e){return '';}};
-let actual=null,tBuscar=0,turno=0;
+let actual=null,tBuscar=0,turno=0,esDueno=false;
 // Notas anteriores (fase 2): solo dueños, después de aceptar la advertencia. El servidor lo vuelve a revisar.
 const ANT=new URLSearchParams(location.search).get('ver')==='anteriores';
 async function api(action,data){
@@ -131,7 +163,9 @@ async function buscar(){
     const filtro=$('q').value.trim()||(ANT&&$('fecha').value);
     $('estado').textContent=ANT?(d.notas.length?(filtro?'':'Las 30 más recientes'):'No encontré notas con esa búsqueda.')
       :d.notas.length?($('q').value.trim()?'':'Notas de hoy'):($('q').value.trim()?'No encontré notas de hoy con esa búsqueda.':'Hoy todavía no hay notas.');
-    $('notas').innerHTML=d.notas.map(n=>'<button class="nota" type="button" data-id="'+esc(n.id)+'"><span><b>'+esc(n.id)+' · '+esc(n.nombre)+'</b><small>'+esc(fechaTxt(n.fecha))+' · '+esc(n.lugar)+'</small></span><span class="der">'+(n.estado==='Anulada'?'<span class="pill">Anulada</span>':esc(dinero(n.total)))+'</span></button>').join('');
+    esDueno=!!d.dueno;$('bTotal').hidden=!esDueno||ANT||!$('vTotal').hidden;
+    // Luis (22/11): en la lista, los montos solo los ven los dueños
+    $('notas').innerHTML=d.notas.map(n=>'<button class="nota" type="button" data-id="'+esc(n.id)+'"><span><b>'+esc(n.id)+' · '+esc(n.nombre)+'</b><small>'+esc(fechaTxt(n.fecha))+' · '+esc(n.lugar)+'</small></span><span class="der">'+(n.estado==='Anulada'?'<span class="pill">Anulada</span>':n.total!==null&&n.total!==undefined?esc(dinero(n.total)):'')+'</span></button>').join('');
   }catch(x){if(mio===turno){$('estado').textContent='';error('eLista',x.message);}}
 }
 function pintar(n,msg){
@@ -149,15 +183,51 @@ function pintar(n,msg){
   pintarClienta(n);
   $('fCorregir').hidden=anulada;$('fAnular').hidden=anulada||!/^D-/.test(n.id);
   $('nombre').value=n.nombre;$('correos').value=n.emails_nota;$('manual').value=n.emails_manual;
+  llenarCorregir(n);
   if(!$('por').value)$('por').value=leer('yp_elaboro_alias');
   $('motivo').value='';$('claveD').value='';error('eCorregir','');error('eAnular','');
   AV=window.YP&&YP.avance?YP.avance($('fCorregir'),n.id):null;   // avance guardado de la corrección
   if(!msg&&AV&&AV.restaurar()){$('aviso').textContent='Seguiste donde te quedaste: todavía no está guardado.';$('aviso').hidden=false;}
   $('historial').hidden=!n.cambios.length;
-  $('historial').innerHTML='<h2>Cambios</h2>'+n.cambios.map(c=>'<div class="ev"><b>'+esc(c.accion)+'</b>'+(c.campo&&c.campo!=='ID_Clienta'?' '+esc(({Nombre_Clienta:'nombre',Email_Clienta:'correo de la nota','Correos manual':'correo del manual'})[c.campo]||c.campo):'')+' · '+esc(c.por)+' · '+esc(c.fecha)+(c.despues?'<br>'+esc(c.despues):'')+(c.motivo?'<br>'+esc(c.motivo):'')+'</div>').join('');
+  $('historial').innerHTML='<h2>Cambios</h2>'+n.cambios.map(c=>'<div class="ev"><b>'+esc(c.accion)+'</b>'+(c.campo&&c.campo!=='ID_Clienta'?' '+esc(CAMPO[c.campo]||c.campo):'')+' · '+esc(c.por)+' · '+esc(c.fecha)+(c.despues?'<br>'+esc(c.despues):'')+(c.motivo?'<br>'+esc(c.motivo):'')+'</div>').join('');
   scrollTo(0,0);
 }
 let AV=null;
+const CAMPO={Nombre_Clienta:'nombre',Email_Clienta:'correo de la nota','Correos manual':'correo del manual',Punto_Venta:'lugar',Comentarios:'comentarios',
+  Pago_Efectivo:'efectivo',Pago_Transferencia:'transferencia',Pago_Tarjeta:'tarjeta',ID_Elaboro:'quién hizo la nota',Alias_Elaboro:'quién hizo la nota (nombre)',Fecha:'fecha','Fecha en Pink Club':'fecha en el Pink Club'};
+// Corregir todo (22/11): lugar, quién hizo la nota, artista de cada renglón, forma de pago, comentarios y (solo dueños) la fecha
+const opcion=(v,t,sel)=>'<option value="'+esc(v)+'"'+(sel?' selected':'')+'>'+esc(t)+'</option>';
+function llenarCorregir(n){
+  const op=n.opciones||{lugares:[],elaboradores:[],artistas:[]};
+  const lugares=op.lugares.indexOf(n.lugar)<0&&n.lugar?[n.lugar].concat(op.lugares):op.lugares;
+  $('lugar').innerHTML=lugares.map(l=>opcion(l,l,l===n.lugar)).join('');
+  const elab=op.elaboradores.some(c=>c.id===n.id_elaboro)||!n.id_elaboro?op.elaboradores:[{id:n.id_elaboro,alias:n.elaboro||n.id_elaboro}].concat(op.elaboradores);
+  $('elaboro').innerHTML=elab.map(c=>opcion(c.id,c.alias,c.id===n.id_elaboro)).join('');
+  $('artistas').innerHTML=n.items.length?'<b style="font-size:13px">Artista de cada renglón</b>'+n.items.map(i=>{
+    const lista=[{id:'-',alias:'Ninguna (solo producto)'}].concat(op.artistas.some(a=>a.id===i.id_artista)||!i.id_artista||i.id_artista==='-'?op.artistas:[{id:i.id_artista,alias:i.artista}].concat(op.artistas));
+    return '<label>'+esc(i.cantidad+' × '+i.descripcion)+(i.zona?' <small class="mu">('+esc(i.zona)+')</small>':'')+'<select data-ren="'+esc(i.i)+'">'+lista.map(a=>opcion(a.id,a.alias,a.id===(i.id_artista||'-'))).join('')+'</select></label>';
+  }).join(''):'';
+  const p=n.pago||{};$('pEf').value=p.Efectivo||0;$('pTr').value=p.Transferencia||0;$('pTa').value=p.Tarjeta||0;
+  sumaPagos();
+  $('coment').value=n.comentarios&&n.comentarios!=='-'?n.comentarios:'';
+  $('bloqueFecha').hidden=!n.dueno;$('fechaN').value=n.fecha;$('fechaN').max=hoyISO();$('avisoFecha').hidden=true;
+}
+const hoyISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const pagosAntes=()=>{const p=(actual&&actual.pago)||{};return (p.Efectivo||0)+(p.Transferencia||0)+(p.Tarjeta||0);};
+function sumaPagos(){
+  const s=['pEf','pTr','pTa'].reduce((a,k)=>a+(Number($(k).value)||0),0),deb=pagosAntes();
+  $('pagoSuma').textContent=Math.abs(s-deb)<0.01?'(suma '+dinero(deb)+')':'(debe sumar '+dinero(deb)+'; ahora suma '+dinero(s)+')';
+  $('pagoSuma').style.color=Math.abs(s-deb)<0.01?'':'var(--bad)';
+}
+['pEf','pTr','pTa'].forEach(k=>$(k).addEventListener('input',sumaPagos));
+$('fechaN').addEventListener('input',()=>{$('avisoFecha').hidden=!actual||$('fechaN').value===actual.fecha;});
+// 📋 Expediente (22/11): con ID abre su expediente listo para anotar la visita; sin ID, primero se asigna.
+// El ID viaja en la memoria del celular (nunca en la liga).
+$('bExp').onclick=()=>{
+  if(!actual||!actual.clienta){$('expSinId').hidden=false;if(actual&&actual.asignable){$('bAsignar').click();}return;}
+  try{localStorage.setItem('yp_abrir_exp',JSON.stringify({id:actual.clienta.id,nota:/^D-\d+$/.test(actual.id)?actual.id:'',t:Date.now()}));}catch(e){}
+  location.href='fichas.html#exp';
+};
 // Clienta de la nota (21/11): asignar o cambiar mientras la nota no haya dado puntos ni compras en el Pink Club
 function pintarClienta(n){
   const c=n.clienta,anulada=n.estado==='Anulada';
@@ -167,6 +237,7 @@ function pintarClienta(n){
       +(mv.length?'<br><span class="mu">Pink Club: '+mv.map(m=>m.puntos?esc(m.puntos)+' puntos':'suma '+esc(dinero(m.monto))+' para activar').join(' · ')+'</span>':'')
     :(n.id_clienta?'Tiene el ID '+esc(n.id_clienta)+', pero no está en la lista de clientas.':'Esta nota no está ligada a ninguna clienta.');
   $('bAsignar').hidden=!n.asignable;
+  $('bExp').hidden=anulada;$('expSinId').hidden=true;
   $('bAsignar').textContent=c?'Cambiar clienta':'Asignar clienta';
   $('vAsignar').hidden=true;$('qCli').value='';$('clientas').innerHTML='';$('estCli').textContent='';error('eAsignar','');
 }
@@ -204,6 +275,27 @@ $('clientas').onclick=async e=>{
   }catch(x){$('estCli').textContent='';error('eAsignar',x.message);$('clientas').querySelectorAll('button').forEach(x=>x.disabled=false);}
 };
 function aLista(){$('vNota').hidden=true;$('vLista').hidden=false;$('aLista').hidden=true;actual=null;buscar();}
+// Total del día (22/11, Luis): solo dueños y después de escribir otra vez su PIN. No se guarda: al salir se oculta.
+$('bTotal').onclick=()=>{$('bTotal').hidden=true;$('vTotal').hidden=false;$('totPin').hidden=false;$('totDatos').hidden=true;$('pinTot').value='';error('eTotal','');$('pinTot').focus();};
+$('bCerrarTot').onclick=cerrarTotal;
+function cerrarTotal(){$('vTotal').hidden=true;$('totDatos').innerHTML='';$('pinTot').value='';$('bTotal').hidden=!esDueno||ANT;}
+$('pinTot').addEventListener('keydown',e=>{if(e.key==='Enter')$('bVerTotal').click();});
+$('bVerTotal').onclick=async()=>{
+  const pin=$('pinTot').value.trim();error('eTotal','');
+  if(!/^\d{6}$/.test(pin))return error('eTotal','El PIN son 6 números.');
+  $('bVerTotal').disabled=true;
+  try{
+    const t=await api('consent_nota_total',{pin});
+    $('pinTot').value='';$('totPin').hidden=true;$('totDatos').hidden=false;
+    $('totDatos').innerHTML='<div class="fila"><b>Venta de hoy</b><span class="mu">'+esc(t.notas)+(t.notas===1?' nota':' notas')+'</span></div><div class="grande">'+esc(dinero(t.total))+'</div>'
+      +['Efectivo','Transferencia','Tarjeta'].filter(k=>t.pagos[k]).map(k=>'<div class="fila"><span>'+k+'</span><span>'+esc(dinero(t.pagos[k]))+'</span></div>').join('')
+      +(t.saldo?'<div class="fila"><span>Por cobrar (saldos)</span><span>'+esc(dinero(t.saldo))+'</span></div>':'')
+      +(t.lugares.length>1?'<div class="ev">'+t.lugares.map(l=>'<div class="fila"><span>'+esc(l.lugar)+'</span><span>'+esc(dinero(l.total))+'</span></div>').join('')+'</div>':'')
+      +'<button class="btn sec" type="button" id="bOcultarTot">Ocultar</button>';
+    $('bOcultarTot').onclick=cerrarTotal;
+  }catch(x){error('eTotal',x.message);$('pinTot').value='';}
+  $('bVerTotal').disabled=false;
+};
 $('aLista').onclick=aLista;
 $('notas').onclick=async e=>{
   const b=e.target.closest('[data-id]');if(!b)return;
@@ -218,8 +310,17 @@ $('fCorregir').onsubmit=async e=>{
   if(!quien())return error('eCorregir','Escribe quién hace el cambio.');
   $('bGuardar').disabled=true;
   try{
-    const r=await api('consent_nota_corregir',{id:actual.id,nombre:$('nombre').value,emails_nota:$('correos').value,emails_manual:$('manual').value,por:quien()});
+    const datos={id:actual.id,nombre:$('nombre').value,emails_nota:$('correos').value,emails_manual:$('manual').value,por:quien(),
+      lugar:$('lugar').value,elaboro:$('elaboro').value,comentarios:$('coment').value,
+      pagos:{Efectivo:Number($('pEf').value)||0,Transferencia:Number($('pTr').value)||0,Tarjeta:Number($('pTa').value)||0},
+      artistas:[...$('artistas').querySelectorAll('select[data-ren]')].map(s=>({i:Number(s.dataset.ren),id:s.value}))};
+    if(actual.dueno&&$('fechaN').value&&$('fechaN').value!==actual.fecha){
+      if(!confirm('¿Cambiar la fecha de la nota '+actual.id+' al '+fechaTxt($('fechaN').value)+'? Mueve las ventas de los dos días.')){$('bGuardar').disabled=false;return;}
+      datos.fecha=$('fechaN').value;
+    }
+    const r=await api('consent_nota_corregir',datos);
     if(AV)AV.borrar();
+    if(r.salio_del_dia){aLista();$('estado').textContent='Listo: la nota '+datos.id+' pasó al '+fechaTxt(datos.fecha)+'. Ya no sale en las notas de hoy.';return;}
     pintar(r.nota,r.cambios?'Cambios guardados. Si corregiste un correo, toca Reenviar correo.':'No había nada que cambiar.');
   }catch(x){error('eCorregir',x.message);}
   $('bGuardar').disabled=false;

@@ -13,7 +13,7 @@
   var yo = document.currentScript, PAG = (yo && yo.getAttribute('data-pagina')) || 'inicio';
   var INICIO = PAG === 'consentimiento' || PAG === 'nota' ? '../' : './';
   // Qué módulo pide cada página ('*' = todos; 'dueno' = solo dueños)
-  var PAGINAS = { inicio: '*', ayuda: '*', consentimiento: 'consentimiento', fichas: 'fichas', nota: 'nota', panel: 'panel', clientas: 'clientas', config: 'config', perfiles: 'dueno', avisos: 'avisos' };
+  var PAGINAS = { inicio: '*', ayuda: '*', consentimiento: 'consentimiento', fichas: 'fichas', nota: 'nota', panel: 'panel', clientas: 'clientas', config: 'config', perfiles: 'dueno', avisos: 'avisos', ligar: 'dueno' };
   var HORA = 60 * 60 * 1000, LIMITE = { ipad: HORA, otro: 6 * HORA };
   var K = { clave: 'yp_pink_clave', sesion: 'yp_sesion', act: 'yp_actividad' };
   // Sin la clave del aparato, las páginas usan esta marca: el servidor deja pasar con la sesión con PIN (Pink.gs pinkCheckClave)

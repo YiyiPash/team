@@ -91,6 +91,11 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
 .edbar{background:var(--warn-bg);color:var(--warn-fg);border-radius:14px;padding:10px 12px;margin-top:12px;font-size:13.5px;display:flex;flex-direction:column;gap:8px}
 .edbar .fila{flex-wrap:wrap}
 .mini{border:1.5px solid var(--line);background:var(--surface);color:var(--accent);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
+.recientes{margin-top:12px;display:grid;gap:8px}
+.recientes h2{font-size:15px;margin:0;color:var(--accent)}
+.rec{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.rec small{display:block;color:var(--mu);font-size:12.5px}
+.sinfirma{background:var(--warn-bg);color:var(--warn-fg);border-radius:12px;padding:10px 12px;font-size:14px;display:grid;gap:8px}
 .aviso{background:var(--warn-bg);color:var(--warn-fg);border-radius:12px;padding:10px 12px;font-size:14px}
 .act{font-size:13px;border-left:4px solid var(--warn-fg);background:var(--warn-bg);border-radius:8px;padding:6px 10px;margin-top:6px}
 </style>
@@ -121,12 +126,14 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
     <button class="btn" type="button" id="entrar">Entrar</button>
   </div>
   <p class="err" id="err"></p>
+  <section class="recientes" id="recientes" hidden aria-labelledby="tRec"></section>
   <div id="lista"></div>
 </div>
 
 <!-- Expediente de una clienta: perforaciones, línea de tiempo y "Anotar visita" -->
 <div class="panel" id="panel" hidden><div class="app">
-  <div class="brand"><span class="fila"><a class="yp-casita" href="./" style="margin:0">⌂ Inicio</a><button class="btn sec" type="button" id="cerrarPanel">← Volver</button></span><span class="fila"><button class="btn sec" type="button" id="btnEditar">✏️ Editar</button><button class="btn" type="button" id="btnAnotar">+ Anotar visita</button></span></div>
+  <div class="brand"><span class="fila"><a class="yp-casita" href="./" style="margin:0">⌂ Inicio</a><button class="btn sec" type="button" id="cerrarPanel">← Volver</button></span><span class="fila"><button class="btn sec" type="button" id="btnEditar" hidden>✏️ Editar</button><button class="btn sec" type="button" id="btnNota">🧾 Hacer nota</button><button class="btn" type="button" id="btnAnotar">+ Anotar visita</button></span></div>
+  <p class="aviso" id="avisoNota" hidden></p>
   <div id="expCont"></div>
   <div class="card" id="formVisita" hidden>
     <b style="font-size:17px">Anotar visita</b>
@@ -148,8 +155,8 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
     <div class="aviso"><b>⚠️ Vas a cambiar la historia de salud de esta persona.</b> Úsalo para anotar lo que pasó en otras fechas o para corregir un error.
       Cada cambio te pide confirmar y queda registrado: quién lo hizo, cuándo, qué había antes y qué quedó.
       Los datos de salud de un consentimiento firmado no se cambian: se agrega una actualización con fecha.</div>
-    <label class="campo" id="edPorBox">¿Quién hace el cambio?<input type="text" id="edPor" autocomplete="off" placeholder="Ej. Yoltic"></label>
-    <label class="campo">Clave de dueños<input type="password" id="edClave" autocomplete="off"></label>
+    <label class="campo" id="edPorBox" hidden>¿Quién hace el cambio?<input type="text" id="edPor" autocomplete="off" placeholder="Ej. Yoltic"></label>
+    <label class="campo">Tu PIN<input type="password" id="edClave" inputmode="numeric" maxlength="6" autocomplete="off"></label>
     <p class="err" id="edErr"></p>
     <div class="fila"><button class="btn sec" type="button" id="edCancelar">Cancelar</button><button class="btn" type="button" id="edEntrar" style="flex:1">Entiendo, editar</button></div>
   </div>
@@ -190,6 +197,7 @@ async function cargar(){
   try{
     const d=DEMO?{fecha:S.fecha,fichas:S.fecha===hoyISO()?DEMO_FICHAS:[]}:await api('consent_fichas',{fecha:S.fecha});
     if(d.fecha!==S.fecha)return;
+    cargarRecientes();
     S.fichas=d.fichas;
     $('estado').textContent=`${d.fichas.length} ${d.fichas.length===1?'clienta':'clientas'} · actualizado ${new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}${DEMO?' · DEMO':''}`;
     pintar();
@@ -284,23 +292,51 @@ document.addEventListener('click',e=>{
   if(!e.target.closest('.buscar'))$('res').hidden=true;
 });
 
+// ── Anotadas hace poco, sin nota (Luis, 22/11): para no olvidar el nombre al hacer la nota ──
+let RECIENTES=[];
+async function cargarRecientes(){
+  if(DEMO)return;
+  try{const r=await api('consent_exp_recientes');RECIENTES=r.personas||[];}catch(x){return;}
+  const box=$('recientes');
+  box.hidden=!RECIENTES.length;
+  box.innerHTML=RECIENTES.length?'<h2 id="tRec">Anotadas hace poco, sin nota</h2>'+RECIENTES.map((p,i)=>`<div class="rec"><span><b>${esc(p.apodo||p.nombre)}</b><small>${esc(p.nombre)} · ${esc(p.fecha===hoyISO()?'hoy':'ayer')} ${esc(p.hora)}${p.tipos.length?' · '+esc(p.tipos.join(', ')):''}${p.atendio?' · anotó '+esc(p.atendio):''}</small></span>
+    <span class="fila"><button class="mini" type="button" data-exp="${esc(p.id)}">Expediente</button><button class="btn" type="button" data-hnota="${i}" style="padding:8px 12px;font-size:13px">🧾 Hacer nota</button></span></div>`).join(''):'';
+}
+// La nota se abre con la clienta ya puesta. Los datos viajan en la memoria del celular (yp_handoff), nunca en la liga.
+function hacerNota(p){
+  try{localStorage.setItem('yp_handoff',JSON.stringify({desde:'expediente',id_clienta:p.id,apodo:p.apodo||'',visitas:p.visitas||[]}));}catch(e){}
+  location.href='nota/?desde=expediente';
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-hnota]');if(b)hacerNota(RECIENTES[+b.dataset.hnota]);});
+// Nunca ha firmado: el consentimiento se abre con sus datos ya puestos (yp_handoff_cons)
+function hacerConsentimiento(){
+  if(!E.d)return;
+  try{localStorage.setItem('yp_handoff_cons',JSON.stringify({desde:'expediente',id_clienta:E.d.persona.id,t:Date.now()}));}catch(e){}
+  location.href='consentimiento/?desde=expediente';
+}
+document.addEventListener('click',e=>{if(e.target.closest('[data-hcons]'))hacerConsentimiento();});
+
 // ── Expediente de la clienta ──
-const E={id:'',d:null};
-async function abrirExp(id){
+const E={id:'',d:null,nota:''};
+const esDueno=()=>!!(window.YP_SESION&&(YP_SESION.clave_rol==='dueno'||YP_SESION.rol==='Dueño'));
+async function abrirExp(id,nota){
   if(DEMO){alert('En la demo no hay expedientes. Ya conectado, aquí ves toda la historia de la clienta.');return;}
+  E.nota=nota!==undefined?nota:(E.id===id?E.nota:'');
   if(E.id!==id)ED.clave='';
-  E.id=id;E.d=null;$('panel').hidden=false;$('formVisita').hidden=true;$('btnAnotar').hidden=enEdicion();$('btnEditar').hidden=enEdicion();$('edAviso').hidden=true;$('edForm').hidden=true;window.scrollTo(0,0);$('panel').scrollTop=0;
+  E.id=id;E.d=null;$('panel').hidden=false;$('formVisita').hidden=true;$('btnAnotar').hidden=enEdicion();$('btnEditar').hidden=enEdicion()||!esDueno();$('btnNota').hidden=enEdicion()||!!E.nota;$('avisoNota').hidden=!E.nota;$('avisoNota').textContent=E.nota?'Viene de la nota '+E.nota+': la visita que anotes queda ligada a esa nota.':'';$('edAviso').hidden=true;$('edForm').hidden=true;window.scrollTo(0,0);$('panel').scrollTop=0;
   $('expCont').innerHTML='<p class="estado">Cargando expediente…</p>';
   try{E.d=await api('consent_expediente',{id});pintarExp();}
   catch(x){$('expCont').innerHTML=`<p class="err">${esc(x.message)}</p>`;}
 }
-$('cerrarPanel').onclick=()=>{$('panel').hidden=true;salirEdicion();};
+$('cerrarPanel').onclick=()=>{$('panel').hidden=true;E.nota='';salirEdicion();};
+$('btnNota').onclick=()=>{if(E.d)hacerNota({id:E.d.persona.id,apodo:E.d.persona.apodo,visitas:E.d.visitas.filter(v=>v.fecha===hoyISO()).map(v=>v.id)});};
 const fmtF=iso=>iso?new Date(iso+'T12:00').toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'}):'';
 const zonaTxt=p=>p.zona+(p.lado&&p.lado!=='Centro'?' '+p.lado.toLowerCase():'');
 function pintarExp(){
   const d=E.d,p=d.persona,ult=d.consentimientos[0];
   // Salud de su último consentimiento
-  let salud='<p class="estado">Sin consentimientos.</p>';
+  // Nunca firmó (Luis, 22/11): se ofrece hacer el consentimiento con sus datos ya puestos
+  let salud='<div class="sinfirma"><b>Nunca ha firmado un consentimiento.</b><span>Si hoy se le hace un servicio, primero hay que hacerlo.</span><button class="btn" type="button" data-hcons>📝 Hacer consentimiento</button></div>';
   if(ult){
     const al=[...lista(ult.enfermedades),...lista(ult.condiciones)];
     if(!ningun(ult.alergias))al.push('Alergia: '+ult.alergias);
@@ -387,6 +423,7 @@ $('vGuardar').onclick=async()=>{
     const r=await api('consent_visita',{id_clienta:E.id,tipo:$('vTipo').value,obs:$('vObs').value.trim(),estado:vEstado,accion,dias,
       perfos:[...$('vPerfos').querySelectorAll('input:checked')].map(i=>i.value),
       atiende:{id:store.get('yp_elaboro_id')||'',alias:store.get('yp_elaboro_alias')||''}});
+    if(E.nota)try{await api('consent_visita_ligar',{ids:[r.id_visita],no_nota:E.nota});}catch(x){}   // viene del Panel de notas (📋 Expediente)
     const fotos=YP.fotos($('vFotos'));
     for(let i=0;i<fotos.length;i++){b.textContent=`Subiendo foto ${i+1} de ${fotos.length}…`;
       await api('consent_foto',{id_visita:r.id_visita,foto:await reducir(fotos[i])});}
@@ -404,22 +441,21 @@ const ED={clave:'',por:'',form:null};
 const LADOS=['','Izquierdo','Derecho','Centro'];
 const ESTADOS=['Curando','Sana','Retirada'];
 const enEdicion=()=>!!ED.clave;
-function salirEdicion(){ED.clave='';ED.por='';ED.form=null;$('edAviso').hidden=true;$('edForm').hidden=true;$('btnEditar').hidden=false;$('btnAnotar').hidden=false;if(E.d)pintarExp();}
+function salirEdicion(){ED.clave='';ED.por='';ED.form=null;$('edAviso').hidden=true;$('edForm').hidden=true;$('btnEditar').hidden=!esDueno();$('btnAnotar').hidden=false;$('btnNota').hidden=!!E.nota;if(E.d)pintarExp();}
 $('btnEditar').onclick=()=>{
   if(!E.d)return;
   $('formVisita').hidden=true;$('edForm').hidden=true;
-  $('edPorBox').hidden=!!(window.YP_SESION&&window.YP_SESION.nombre);
+  $('edPorBox').hidden=true;   // desde el 22/11: el nombre sale de la sesión (solo dueños, con su PIN)
   $('edClave').value='';$('edErr').textContent='';
-  $('edAviso').hidden=false;$('btnEditar').hidden=true;$('btnAnotar').hidden=true;
+  $('edAviso').hidden=false;$('btnEditar').hidden=true;$('btnAnotar').hidden=true;$('btnNota').hidden=true;
   $('panel').scrollTop=0;window.scrollTo(0,0);setTimeout(()=>$('edAviso').scrollIntoView({behavior:'smooth',block:'start'}),50);
 };
 $('edCancelar').onclick=salirEdicion;
 $('edEntrar').onclick=async()=>{
   const clave=$('edClave').value,por=(window.YP_SESION&&window.YP_SESION.nombre)||$('edPor').value.trim();
-  if(!por){$('edErr').textContent='Escribe quién hace el cambio.';$('edPor').focus();return;}
-  if(!clave){$('edErr').textContent='Escribe la clave de dueños.';$('edClave').focus();return;}
+  if(!/^\d{6}$/.test(clave)){$('edErr').textContent='Escribe tu PIN (6 números).';$('edClave').focus();return;}
   const b=$('edEntrar');b.disabled=true;b.textContent='Revisando…';$('edErr').textContent='';
-  try{await api('consent_exp_editar',{que:'probar',clave_duenos:clave,por});
+  try{await api('consent_exp_editar',{que:'probar',pin:clave,por});
     ED.clave=clave;ED.por=por;$('edClave').value='';$('edAviso').hidden=true;pintarExp();$('panel').scrollTop=0;}
   catch(x){$('edErr').textContent=x.message;}
   finally{b.disabled=false;b.textContent='Entiendo, editar';}
@@ -457,11 +493,11 @@ async function guardarForm(){
   if(!confirm('¿Seguro? Esto queda guardado en el expediente y en la bitácora:\n\n'+cambios.join('\n')))return;
   const b=$('efGuardar');b.disabled=true;b.textContent='Guardando…';$('efErr').textContent='';
   try{await f.guardar(vals);$('edForm').hidden=true;ED.form=null;}
-  catch(x){$('efErr').textContent='No se guardó: '+x.message;if(/clave/i.test(x.message)&&/incorrecta|intentos/i.test(x.message))ED.clave='';}
+  catch(x){$('efErr').textContent='No se guardó: '+x.message;if(/PIN|intentos/i.test(x.message))ED.clave='';}
   finally{b.disabled=false;b.textContent='Guardar';}
 }
 async function edApi(que,datos){
-  const r=await api('consent_exp_editar',Object.assign({que,clave_duenos:ED.clave,por:ED.por,id_clienta:E.id},datos));
+  const r=await api('consent_exp_editar',Object.assign({que,pin:ED.clave,por:ED.por,id_clienta:E.id},datos));
   if(r.expediente){E.d=r.expediente;pintarExp();}
   return r;
 }
@@ -528,4 +564,13 @@ pintar();cargar();
 if(!DEMO&&store.get('yp_pink_clave'))cargarLista().catch(()=>{});
 // Desde el Inicio (Clientas → Expediente) se llega directo al buscador
 if(location.hash==='#buscar')setTimeout(()=>{$('buscar').scrollIntoView({block:'center'});$('buscar').focus();},150);
+// Desde el Panel de notas (📋 Expediente, 22/11): abre su expediente listo para anotar la visita (o subir fotos)
+if(location.hash==='#exp'){
+  let h=null;try{h=JSON.parse(localStorage.getItem('yp_abrir_exp')||'null');localStorage.removeItem('yp_abrir_exp');}catch(e){}
+  history.replaceState(null,'',location.pathname);
+  if(h&&h.id&&Date.now()-(h.t||0)<15*60000){
+    const abrir=async()=>{await abrirExp(h.id,h.nota||'');if(E.d&&E.d.consentimientos.length)$('btnAnotar').click();};
+    if(window.YP_SESION)abrir();else document.addEventListener('yp-sesion',abrir,{once:true});
+  }
+}
 </script>
