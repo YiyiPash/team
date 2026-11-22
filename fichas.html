@@ -339,12 +339,14 @@ function pintarExp(){
       <div class="pills"><span class="pill">${p.edad!==''?esc(p.edad)+' años':'Edad sin dato'}</span>
         ${p.tipo!=='Titular'&&p.tutor?`<span class="pill menor">Menor · ${esc((p.tutor.parentesco||'tutor').toLowerCase())}: ${esc(p.tutor.nombre)}</span>`:''}
         <span class="pill">WhatsApp …${esc(p.wa4)}</span></div>
+      <div id="waExp"></div>
       ${salud}</div>
     ${enEdicion()?`<div class="edbar"><b>✏️ Modo edición · ${esc(ED.por)}</b><span>Todo lo que guardes queda en la bitácora.</span>
       <div class="fila"><button class="mini" type="button" data-ed="perfoNueva">+ Perforación de otro estudio</button><button class="mini" type="button" data-ed="visitaNueva">+ Visita de otra fecha</button><button class="mini" type="button" data-ed="salir">Terminar</button></div></div>`:''}
     <div class="sec2">Perforaciones</div>${perfos}
     ${tats?`<div class="sec2">Tatuajes</div>${tats}`:''}
     <div class="sec2">Historia</div><div class="tl">${ev.map(x=>x.h).join('')||'<p class="estado">Sin historia.</p>'}</div>`;
+  if(window.YP&&YP.whatsapp)YP.whatsapp($('waExp'),p.id);   // 💬 WhatsApp libre (22/11)
 }
 // Ver una foto en grande (se pide al servidor; no se da acceso a Drive)
 document.addEventListener('click',async e=>{

@@ -1007,23 +1007,51 @@ function sizeCanvas(){
   if(img){const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,r.width,r.height);im.src=img;}
 }
 function pos(e){const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
-// Dedo o pluma (iPad): con pluma el trazo sigue la presión y la palma apoyada no pinta
-let conPluma=false;
+// Dedo o pluma (iPad): con pluma el trazo sigue la presión y la palma apoyada no pinta.
+// Trazo suave (Luis, 21/11: se veía "cuadriculado"): se toman todos los puntos que da la pantalla y se unen con curvas
+// de punto medio a punto medio (el punto tomado es la guía), con el grosor suavizado para que no brinque.
+let conPluma=false,tr=null;   // tr: puntos del trazo que se está dibujando
 const grosor=e=>e.pointerType==='pen'?Math.max(1.1,(e.pressure||.5)*3.6):2.4;
+const medio=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
 cv.addEventListener('pointerdown',e=>{
   if(e.pointerType==='pen')conPluma=true;else if(conPluma&&e.pointerType==='touch')return;
-  e.preventDefault();drawing=e.pointerId;last=pos(e);cv.setPointerCapture(e.pointerId);
+  e.preventDefault();drawing=e.pointerId;try{cv.setPointerCapture(e.pointerId);}catch(x){}
   try{trazos.push(ctx.getImageData(0,0,cv.width,cv.height));if(trazos.length>40)trazos.shift();}catch(x){}
-  ctx.beginPath();ctx.arc(last.x,last.y,grosor(e)/2,0,7);ctx.fillStyle='#111827';ctx.fill();marcar();});
+  const p=pos(e);tr=[{x:p.x,y:p.y,w:grosor(e)}];last=tr[0];
+  ctx.beginPath();ctx.arc(p.x,p.y,tr[0].w/2,0,7);ctx.fillStyle='#111827';ctx.fill();marcar();});
 cv.addEventListener('pointermove',e=>{
-  if(drawing===false||e.pointerId!==drawing)return;
-  (e.getCoalescedEvents?e.getCoalescedEvents():[e]).forEach(ev=>{const p=pos(ev);ctx.lineWidth=grosor(ev);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;});});
-['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,e=>{if(e.pointerId===drawing)drawing=false;}));
+  if(drawing===false||e.pointerId!==drawing||!tr)return;
+  const co=e.getCoalescedEvents?e.getCoalescedEvents():[];   // todos los puntos que tomó la pantalla (si no hay, el del evento)
+  (co.length?co:[e]).forEach(ev=>{
+    const p=pos(ev),q=tr[tr.length-1];
+    if(Math.hypot(p.x-q.x,p.y-q.y)<0.8)return;            // puntitos encimados: solo meten temblor
+    const pt={x:p.x,y:p.y,w:q.w*.6+grosor(ev)*.4};tr.push(pt);
+    const n=tr.length,a=tr[n-2],m1=medio(a,pt),m0=n===2?tr[0]:medio(tr[n-3],a);
+    ctx.lineWidth=a.w;ctx.beginPath();ctx.moveTo(m0.x,m0.y);
+    if(n===2)ctx.lineTo(m1.x,m1.y);else ctx.quadraticCurveTo(a.x,a.y,m1.x,m1.y);
+    ctx.stroke();last=pt;
+  });});
+function finTrazo(e){
+  if(e.pointerId!==drawing)return;
+  drawing=false;
+  if(tr&&tr.length>1){const n=tr.length,a=tr[n-1],m=medio(tr[n-2],a);ctx.lineWidth=a.w;ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(a.x,a.y);ctx.stroke();}
+  tr=null;
+}
+['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,finTrazo));
 function marcar(){S.firmaVacia=false;$('sigph').hidden=true;}
-// La firma se manda a 600 px de ancho para que pese poco
+// La firma se manda recortada a lo que se dibujó (Luis, 21/11: en el PDF salía chica porque iba todo el recuadro en blanco),
+// con un margen chico y a lo más 900 px de ancho para que pese poco.
 function firmaPNG(){
-  const w=Math.min(600,cv.width),h=Math.round(cv.height*w/cv.width),c=document.createElement('canvas');
-  c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(cv,0,0,w,h);
+  const W=cv.width,H=cv.height;let x0=W,y0=H,x1=-1,y1=-1;
+  try{
+    const d=ctx.getImageData(0,0,W,H).data;
+    for(let y=0;y<H;y++){const f=y*W*4;for(let x=0;x<W;x++)if(d[f+x*4+3]>16){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}}
+  }catch(e){x0=0;y0=0;x1=W-1;y1=H-1;}
+  if(x1<0){x0=0;y0=0;x1=W-1;y1=H-1;}
+  const m=Math.round(6*(window.devicePixelRatio||1));
+  x0=Math.max(0,x0-m);y0=Math.max(0,y0-m);x1=Math.min(W-1,x1+m);y1=Math.min(H-1,y1+m);
+  const cw=x1-x0+1,ch=y1-y0+1,k=Math.min(1,900/cw),w=Math.max(1,Math.round(cw*k)),h=Math.max(1,Math.round(ch*k)),c=document.createElement('canvas');
+  c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(cv,x0,y0,cw,ch,0,0,w,h);
   return c.toDataURL('image/png');
 }
 $('limpiar').onclick=()=>{ctx.clearRect(0,0,cv.width,cv.height);trazos.length=0;S.firmaVacia=true;$('sigph').hidden=false;};
@@ -1226,7 +1254,7 @@ function documento(d,hoy){
     <tr><td>Tutor: ${esc(t?t.nombre:'-')}</td><td>Parentesco: ${esc(t?t.parentesco:'-')}</td><td>Teléfono: ${esc(t?t.whatsapp:'-')}</td></tr>
   </table>
   ${consentHTML()}
-  <div class="firma"><img src="${d.firma.png}" alt="Firma"><div class="ln">${esc(d.firma.nombre)}${d.firma.firmante==='Tutor'?` · ${esc(t.parentesco)} y tutor(a) de ${esc(p.nombre_completo)}`:''}</div></div>`;
+  <div class="firma"><img src="${d.firma.png}" alt="Firma"><div class="ln">Firma</div></div>`;
 }
 const _show=show;
 show=function(n){_show(n);if(n===9)listo();};

@@ -64,6 +64,7 @@ label{display:grid;gap:4px;font-size:13px;font-weight:600}
     <form class="card" id="f">
       <h2 id="tit"></h2>
       <p class="mu" id="sub"></p>
+      <div id="waCli"></div>
       <label for="apodo">Apodo<input id="apodo" autocomplete="off"></label>
       <label for="nombre">Nombre completo<input id="nombre" autocomplete="off"></label>
       <label for="whatsapp">WhatsApp<input id="whatsapp" inputmode="tel" autocomplete="off"></label>
@@ -151,6 +152,7 @@ function pintar(c,msg){
   $('historial').hidden=!c.cambios.length;
   $('historial').innerHTML='<h2>Cambios</h2>'+c.cambios.map(x=>'<div class="ev"><b>'+esc(NOMBRES[x.campo]||x.campo)+'</b> · '+esc(x.por)+' · '+esc(x.fecha)+'<br>'+esc(x.antes||'(vacío)')+' → '+esc(x.despues||'(vacío)')+'</div>').join('');
   pintarPink(c.pink);
+  if(window.YP&&YP.whatsapp)YP.whatsapp($('waCli'),c.id);   // 💬 WhatsApp libre (22/11)
   AV=window.YP&&YP.avance?YP.avance($('f'),c.id):null;   // avance guardado: si sales a medias, al volver sigue ahí
   if(!msg&&AV&&AV.restaurar()){$('fn').oninput&&$('fn').oninput();$('aviso').textContent='Seguiste donde te quedaste: todavía no está guardado.';$('aviso').hidden=false;}
   scrollTo(0,0);

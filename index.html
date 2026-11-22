@@ -29,6 +29,7 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
 .m-cli{--c:#8a4fc7;--c2:#ecdcfb}
 .m-ayu{--c:#2a8f7e;--c2:#cff0e9}
 .m-conf{--c:#4b5a74;--c2:#dde3ee}
+.m-av{--c:#1f8a5b;--c2:#d3f1e2}
 .mod{display:grid;gap:8px}
 .mod h2{margin:10px 0 0;font-size:12.5px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:7px}
 .mod h2::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
@@ -74,6 +75,10 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
     <a class="op" href="fichas.html#buscar" data-ver="fichas"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path class="r" d="M5 12a3 3 0 0 1 3-3h7l3 3h14a3 3 0 0 1 3 3v15a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/><path d="M5 17h30"/><path class="w" d="M20 29s-4-2.4-4-5a2.1 2.1 0 0 1 4-1 2.1 2.1 0 0 1 4 1c0 2.6-4 5-4 5z"/></svg></span><span><b>Expediente</b><small>Busca a una clienta: perforaciones, visitas y fotos</small></span></a>
     <a class="op" href="clientas.html" data-ver="clientas"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><circle class="r" cx="16" cy="14" r="6"/><path class="r" d="M5 33c0-6 5-10 11-10s11 4 11 10z"/><path class="w" d="M31 16s-4.5-2.7-4.5-5.6a2.3 2.3 0 0 1 4.5-1.1 2.3 2.3 0 0 1 4.5 1.1c0 2.9-4.5 5.6-4.5 5.6z"/></svg></span><span><b>Datos y Pink Club</b><small>Corregir datos, puntos y notas de papel</small></span></a>
   </section>
+  <section class="mod m-av" aria-labelledby="mW" data-ver="avisos">
+    <h2 id="mW">Avisos</h2>
+    <a class="op" id="opAvisos" href="avisos.html" data-ver="avisos"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path class="r" d="M7.5 33l2.3-6.6A12.6 12.6 0 1 1 14.6 31z"/><path class="w" d="M15.2 14.6c.5 4.2 4.6 8.4 9.3 9.4l2.1-2.3-3.1-1.7-1.3 1.3c-1.7-.7-3.5-2.5-4.3-4.3l1.3-1.3-1.7-3.1z"/></svg></span><span><b id="tAvisos">Avisos por WhatsApp</b><small id="sAvisos">Manuales, bienvenidas, cumpleaños y revisiones por mandar</small></span></a>
+  </section>
   <section class="mod m-conf" aria-labelledby="mF" data-ver="config dueno">
     <h2 id="mF">Configuración</h2>
     <a class="op" href="config.html" data-ver="config dueno"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path class="r" d="M17.6 5h4.8l.9 4.2a11 11 0 0 1 2.9 1.7l4.1-1.4 2.4 4.2-3.2 2.8a11 11 0 0 1 0 3.4l3.2 2.8-2.4 4.2-4.1-1.4a11 11 0 0 1-2.9 1.7l-.9 4.2h-4.8l-.9-4.2a11 11 0 0 1-2.9-1.7l-4.1 1.4-2.4-4.2 3.2-2.8a11 11 0 0 1 0-3.4L6.3 13.7l2.4-4.2 4.1 1.4a11 11 0 0 1 2.9-1.7z"/><circle class="w" cx="20" cy="18.4" r="4.6"/></svg></span><span><b>Configuración</b><small>Zonas, lugares, mensajes, equipo y accesos</small></span></a>
@@ -107,13 +112,19 @@ function pintarCobrar(n){
   $('sCobrar').textContent=n===1?'Una nota pendiente de cobrar':n?n+' notas pendientes de cobrar':'Nada pendiente de cobrar';
   $('opCobrar').classList.toggle('hay',n>0);
 }
+function pintarAvisos(n){
+  $('tAvisos').innerHTML='Avisos por WhatsApp'+(n?'<span class="cuenta">'+n+'</span>':'');
+  $('sAvisos').textContent=n===1?'Un mensaje por mandar':n?n+' mensajes por mandar':'Nada por mandar';
+  $('opAvisos').classList.toggle('hay',n>0);
+}
 function recordar(k,n){const g=guardadas();g[k]=n;try{localStorage.setItem(CUENTAS,JSON.stringify(g));}catch(e){}}
-{const g=guardadas();if(g.f!==undefined)pintarFirmar(g.f);if(g.c!==undefined)pintarCobrar(g.c);}
+{const g=guardadas();if(g.f!==undefined)pintarFirmar(g.f);if(g.c!==undefined)pintarCobrar(g.c);if(g.a!==undefined)pintarAvisos(g.a);}
 async function contar(){
   const clave=leer('yp_pink_clave'),s=window.YP_SESION;
   if(!clave||!s)return;
   const puede=m=>window.YP&&YP.puede(m);
   if(puede('consentimiento'))api('consent_por_firmar',clave).then(d=>{const n=(d.consentimientos||[]).length;pintarFirmar(n);recordar('f',n);}).catch(()=>{});
+  if(puede('avisos'))api('consent_avisos_lista',clave).then(d=>{const n=(d.pendientes||[]).length;pintarAvisos(n);recordar('a',n);}).catch(()=>{});
   if(puede('nota'))try{
     const n=((await api('consent_por_cobrar',clave)).consentimientos||[]).length;
     pintarCobrar(n);recordar('c',n);

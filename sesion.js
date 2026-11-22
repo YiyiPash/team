@@ -13,7 +13,7 @@
   var yo = document.currentScript, PAG = (yo && yo.getAttribute('data-pagina')) || 'inicio';
   var INICIO = PAG === 'consentimiento' || PAG === 'nota' ? '../' : './';
   // Qué módulo pide cada página ('*' = todos; 'dueno' = solo dueños)
-  var PAGINAS = { inicio: '*', ayuda: '*', consentimiento: 'consentimiento', fichas: 'fichas', nota: 'nota', panel: 'panel', clientas: 'clientas', config: 'config', perfiles: 'dueno' };
+  var PAGINAS = { inicio: '*', ayuda: '*', consentimiento: 'consentimiento', fichas: 'fichas', nota: 'nota', panel: 'panel', clientas: 'clientas', config: 'config', perfiles: 'dueno', avisos: 'avisos' };
   var HORA = 60 * 60 * 1000, LIMITE = { ipad: HORA, otro: 6 * HORA };
   var K = { clave: 'yp_pink_clave', sesion: 'yp_sesion', act: 'yp_actividad' };
   // Sin la clave del aparato, las páginas usan esta marca: el servidor deja pasar con la sesión con PIN (Pink.gs pinkCheckClave)
@@ -89,6 +89,8 @@
     'font:600 13px Montserrat,system-ui,sans-serif;color:#d6347f;background:#fff;border:1.5px solid #f8c4dc;border-radius:999px;padding:6px 13px;text-decoration:none;box-shadow:0 2px 0 #f8c4dc;margin:4px 0}',
     '.yp-casita:focus-visible{outline:3px solid #ff74af;outline-offset:2px}',
     '[data-ver].ys-oculto{display:none!important}',
+    '.yp-wa{display:block;text-align:center;text-decoration:none;border-radius:999px;padding:11px 14px;font:700 14px Montserrat,system-ui,sans-serif;background:#1f8a5b;color:#fff;border:none}',
+    '.yp-wa[aria-disabled="true"]{background:#e8efe9;color:#5d6b62;pointer-events:none}.yp-wa:focus-visible{outline:3px solid #ff74af;outline-offset:2px}',
     '.yp-fotos{display:grid;gap:8px}.yp-fotos-bt{display:flex;gap:8px;flex-wrap:wrap}',
     '.yp-fotos-bt button{flex:1 1 140px;font:600 14px Montserrat,system-ui,sans-serif;color:#d6347f;background:#fff;border:1.5px solid #f8c4dc;border-radius:12px;padding:11px 10px;cursor:pointer}',
     '.yp-fotos-bt button:focus-visible{outline:3px solid #ff74af;outline-offset:2px}',
@@ -298,6 +300,25 @@
   var fotosDe = function (inp) { if (!inp) return []; if (!inp._ypFotos) mejorarFotos(inp); return inp._ypFotos.slice(); };
   var fotosLimpiar = function (inp) { if (inp && inp._ypFotos) { inp._ypFotos = []; inp._ypPintar(); } if (inp) inp.value = ''; };
 
-  window.YP = { sesion: leerSesion, cambiar: function () { cerrar(''); }, puede: function (m) { return puede(leerSesion(), m); }, avance: avance, fotos: fotosDe, fotosLimpiar: fotosLimpiar };
+  // ── WhatsApp libre (Luis, 22/11): botón para escribirle a una clienta (al tutor si es menor), con un saludo que se puede borrar.
+  // No se guarda nada. YP.whatsapp(contenedor, idClienta) pone el botón; pide el número antes, para que el toque abra WhatsApp directo.
+  var WA_CACHE = {};
+  function whatsapp(caja, id) {
+    if (!caja) return;
+    caja.innerHTML = '';
+    if (!id) return;
+    var a = document.createElement('a'); a.className = 'yp-wa'; a.target = '_blank'; a.rel = 'noopener';
+    a.setAttribute('aria-disabled', 'true'); a.textContent = '💬 Enviar WhatsApp…';
+    caja.appendChild(a);
+    var k = String(id).toUpperCase();
+    (WA_CACHE[k] || (WA_CACHE[k] = api('consent_wa_numero', { id: id, sesion: (leerSesion() || {}).token }).catch(function (x) { delete WA_CACHE[k]; throw x; }))).then(function (d) {
+      if (caja.firstChild !== a) return;
+      if (!d.wa) { a.textContent = 'Sin WhatsApp registrado'; return; }
+      a.href = d.link; a.removeAttribute('aria-disabled');
+      a.textContent = '💬 Enviar WhatsApp' + (d.menor ? ' a ' + (d.nombre || 'su tutor') + (d.parentesco ? ' (' + String(d.parentesco).toLowerCase() + ')' : ' (tutor)') : '');
+    }).catch(function (x) { if (caja.firstChild === a) a.textContent = /acceso/i.test(x.message) ? 'WhatsApp: tu perfil no tiene acceso' : 'No se pudo cargar el WhatsApp'; });
+  }
+
+  window.YP = { sesion: leerSesion, cambiar: function () { cerrar(''); }, puede: function (m) { return puede(leerSesion(), m); }, avance: avance, fotos: fotosDe, fotosLimpiar: fotosLimpiar, whatsapp: whatsapp };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { arrancar(); buscarFotos(); }); else { arrancar(); buscarFotos(); }
 })();
