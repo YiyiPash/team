@@ -603,12 +603,13 @@ async function init(){
 // ── VIENE DEL CONSENTIMIENTO ────────────────────────────────────────
 // El consentimiento deja los datos en este celular (yp_handoff) y abre la nota con ?desde=consentimiento.
 async function tomarDelConsentimiento(){
-  if(!/[?&]desde=(consentimiento|expediente)/.test(location.search))return;
+  if(!/[?&]desde=(consentimiento|expediente|pedido)/.test(location.search))return;
   let h=null;
   try{h=JSON.parse(localStorage.getItem('yp_handoff')||'null');}catch(e){}
   localStorage.removeItem('yp_handoff');
   history.replaceState(null,'',location.pathname);
   if(h&&h.desde==='expediente'&&h.id_clienta)return tomarDelExpediente(h);
+  if(h&&h.desde==='pedido'&&h.id_pedido)return tomarDelPedido(h);
   if(!h||h.desde!=='consentimiento')return;
   if(tabConAlgo(getTab()))addTab();   // había una nota a medias: el consentimiento va en una nota nueva
   notaCargando('Trayendo lo del consentimiento…');
@@ -630,6 +631,40 @@ async function tomarDelExpediente(h){
     guardarAvanceNota();
   }catch(e){toast('⚠️ '+e.message);}
   finally{notaListo();}
+}
+// Desde Pedidos (sesión 3, 22/11): "Cobrar en nota" abre la nota con la clienta, lo que pidió (del catálogo o como ítem libre),
+// el precio acordado y el anticipo que dejó. Al registrarla, el pedido queda Entregado con el número de nota.
+async function tomarDelPedido(h){
+  if(tabConAlgo(getTab()))addTab();
+  notaCargando('Trayendo el pedido…');
+  try{
+    const tab=getTab();tab.pedido=h.id_pedido;
+    if(h.id_clienta){
+      const d=await pinkApi('pink_buscar',{q:h.id_clienta});
+      const p=(d.resultados||[]).find(x=>x.id===h.id_clienta);
+      if(p)pinkAgregarPersona(p);else toast('⚠️ No encontré a '+h.id_clienta+' en el Pink Club');
+    }
+    const src=h.sku?catalogo.find(i=>i.sku===h.sku):null;
+    const it=src?itemDeCatalogo(src):itemLibre();
+    if(!src)Object.assign(it,{descripcion:h.descripcion||'Pedido',nombre_prod:h.descripcion||'Pedido'});
+    const precio=Number(h.precio);
+    if(h.precio!==''&&h.precio!==null&&h.precio!==undefined&&isFinite(precio))Object.assign(it,{precio:precio,precio_prod:precio,importe:precio});
+    tab.items.push(it);
+    if(Number(h.anticipo)>0){tab.anticipo_activo=true;tab.anticipo_monto=Number(h.anticipo);}
+    const txt='Pedido '+h.id_pedido+(Number(h.anticipo)>0?' (anticipo $'+Number(h.anticipo)+(h.forma_anticipo?' '+String(h.forma_anticipo).toLowerCase():'')+')':'');
+    tab.form.comentarios=tab.form.comentarios?tab.form.comentarios+'\n'+txt:txt;
+    if(!tab.form.nombre_clienta&&h.apodo)tab.form.nombre_clienta=h.apodo;
+    loadTabForm(tab);
+    if(h.apodo&&!h.id_clienta)onNombre(h.apodo);
+    guardarAvanceNota();
+  }catch(e){toast('⚠️ '+e.message);}
+  finally{notaListo();}
+}
+// Al registrar la nota: el pedido queda Entregado con su número (si falla, se marca a mano en Pedidos)
+function ligarPedidoNota(tab,nota){
+  if(!tab.pedido)return;
+  pinkApi('consent_ped_cobrado',{id:tab.pedido,no_nota:nota}).then(()=>{toast('📦 Pedido '+tab.pedido+' entregado');tab.pedido='';guardarAvanceNota();})
+    .catch(e=>toast('⚠️ La nota quedó, pero marca el pedido '+tab.pedido+' como entregado en Pedidos ('+e.message+')'));
 }
 // Llena la nota abierta con un consentimiento, venga del mismo celular o de la fila Por cobrar
 async function aplicarConsentimiento(h){
@@ -785,7 +820,7 @@ function onZonaTexto(id,v){const it=getTab().items.find(i=>i.id===id);if(it){it.
 
 // ── PRENOTA: la misma nota, guardada a medias ───────────────────────
 // La artista la deja lista y recepción la cobra desde Por cobrar. No cuenta como venta hasta registrarse.
-const PRENOTA_CAMPOS=['form','items','pink','emails_nota','emails_manual','manual_mismo','elaboro','consent','publico','pagosActivos','pagosMontos','anticipo_activo','anticipo_monto'];
+const PRENOTA_CAMPOS=['form','items','pink','emails_nota','emails_manual','manual_mismo','elaboro','consent','publico','pagosActivos','pagosMontos','anticipo_activo','anticipo_monto','pedido'];
 async function guardarPrenota(){
   saveCurrentForm();
   const tab=getTab();
@@ -1249,7 +1284,7 @@ async function confirmarEnvio(){
   try{
     const res=await fetch(AS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),redirect:'follow'});
     const json=await res.json();
-    if(json.ok){tab.registrada=true;tab.prenota='';ligarVisitasNota(tab,json.data.nota);mostrarExito(json.data.nota,tab.emails_nota);guardarAvanceNota();}
+    if(json.ok){tab.registrada=true;tab.prenota='';ligarVisitasNota(tab,json.data.nota);ligarPedidoNota(tab,json.data.nota);mostrarExito(json.data.nota,tab.emails_nota);guardarAvanceNota();}
     else throw new Error(json.error||'Error del servidor');
   }catch(e){toast('❌ Error: '+e.message);}
   finally{btn.disabled=false;btn.textContent='Registrar Nota ✨';}

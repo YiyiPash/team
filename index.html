@@ -64,11 +64,15 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
     <a class="op" id="opFirmar" href="consentimiento/?ver=firmar" data-ver="consentimiento"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M5 33c3-3 6 1 9-1s4-4 7-2"/><path class="r" d="M26 6.5l7.5 7.5L20 27.5l-8.5 1 1-8.5z"/><path d="M22.5 10l7.5 7.5"/></svg></span><span><b id="tFirmar">Por firmar</b><small id="sFirmar">Firma con su artista, ya con zonas y material listos</small></span></a>
     <a class="op" href="fichas.html" data-ver="fichas"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="r" x="5" y="9" width="30" height="24" rx="4"/><path d="M9 22h5l2.5-6 4.5 10 2.5-5H31"/></svg></span><span><b>Fichas del día</b><small>Salud y zonas de cada clienta, para la artista</small></span></a>
   </section>
-  <section class="mod m-vent" aria-labelledby="mV" data-ver="nota panel">
+  <section class="mod m-vent" aria-labelledby="mV" data-ver="nota panel precios catalogo pedidos">
     <h2 id="mV">Ventas</h2>
     <a class="op" href="nota/" data-ver="nota"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path class="r" d="M10 5h20v29l-3.3-2.2-3.4 2.2-3.3-2.2-3.4 2.2-3.3-2.2L10 34z"/><path d="M15 13h10M15 18h10M15 23h6"/></svg></span><span><b>Nueva nota</b><small>Productos, servicios o una venta sin consentimiento</small></span></a>
     <a class="op" id="opCobrar" href="nota/?ver=cobrar" data-ver="nota"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M10 11l13-6 3.5 6"/><rect class="r" x="5" y="11" width="29" height="22" rx="4"/><path class="w" d="M34 19h-6.5a3.5 3.5 0 0 0 0 7H34z"/><circle cx="28" cy="22.5" r="1.1"/></svg></span><span><b id="tCobrar">Por cobrar</b><small id="sCobrar">Consentimientos y prenotas que aún no tienen nota</small></span></a>
     <a class="op" href="panel.html" data-ver="panel"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="r" x="6" y="8" width="28" height="26" rx="4"/><path d="M6 15h28M13 5v6M27 5v6"/><path d="M14.5 24.5l4 4 7.5-8"/></svg></span><span><b>Notas del día</b><small>Corregir, reenviar o anular notas de hoy</small></span></a>
+    <a class="op" href="precios.html" data-ver="precios catalogo"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path class="r" d="M6 19.5V8a2 2 0 0 1 2-2h11.5L34 20.5 20.5 34z"/><circle class="w" cx="13" cy="13" r="2.8"/></svg></span><span><b>Precios</b><small>Busca el precio de cualquier pieza o servicio</small></span></a>
+    <a class="op" href="catalogo.html" data-ver="catalogo"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="r" x="6" y="6" width="22" height="28" rx="4"/><path d="M11 13h12M11 18h12M11 23h7"/><path class="w" d="M24 31l1-5 8.5-8.5 4 4L29 30z"/></svg></span><span><b>Catálogo</b><small>Agregar, cambiar precio o dar de baja</small></span></a>
+    <a class="op" id="opPedidos" href="pedidos.html" data-ver="pedidos"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path class="r" d="M6 14l14-7 14 7v14l-14 7-14-7z"/><path d="M6 14l14 7 14-7M20 21v14"/><path class="w" d="M13 10.5l14 7v5l-3 1.5v-5L10 12z"/></svg></span><span><b id="tPedidos">Pedidos</b><small id="sPedidos">Encargos de clientas: pedido, llegó, avisado, entregado</small></span></a>
+    <a class="op" href="bazar.html" data-ver="pedidos precios catalogo"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="r" x="5" y="11" width="30" height="21" rx="4"/><path d="M14 11l2.5-4h7L26 11"/><circle class="w" cx="20" cy="21.5" r="5.5"/></svg></span><span><b>Bazar: precios rápidos</b><small>Foto y precio de lo que no está en el catálogo</small></span></a>
   </section>
   <section class="mod m-cli" aria-labelledby="mL" data-ver="fichas clientas">
     <h2 id="mL">Clientas</h2>
@@ -118,14 +122,21 @@ function pintarAvisos(n){
   $('sAvisos').textContent=n===1?'Un mensaje por mandar':n?n+' mensajes por mandar':'Nada por mandar';
   $('opAvisos').classList.toggle('hay',n>0);
 }
+function pintarPedidos(p){
+  if(!$('tPedidos'))return;const n=p.n||0,l=p.l||0;
+  $('tPedidos').innerHTML='Pedidos'+(n?'<span class="cuenta">'+n+'</span>':'');
+  $('sPedidos').textContent=!n?'Nada pendiente':l?(l===1?'Uno ya llegó: avísale':l+' ya llegaron: avísales')+(n>l?' · '+(n-l)+' más abiertos':''):n===1?'Un pedido por llegar o entregar':n+' pedidos por llegar o entregar';
+  $('opPedidos').classList.toggle('hay',l>0);
+}
 function recordar(k,n){const g=guardadas();g[k]=n;try{localStorage.setItem(CUENTAS,JSON.stringify(g));}catch(e){}}
-{const g=guardadas();if(g.f!==undefined)pintarFirmar(g.f);if(g.c!==undefined)pintarCobrar(g.c);if(g.a!==undefined)pintarAvisos(g.a);}
+{const g=guardadas();if(g.f!==undefined)pintarFirmar(g.f);if(g.c!==undefined)pintarCobrar(g.c);if(g.a!==undefined)pintarAvisos(g.a);if(g.ped)pintarPedidos(g.ped);}
 async function contar(){
   const clave=leer('yp_pink_clave'),s=window.YP_SESION;
   if(!clave||!s)return;
   const puede=m=>window.YP&&YP.puede(m);
   if(puede('consentimiento'))api('consent_por_firmar',clave).then(d=>{const n=(d.consentimientos||[]).length;pintarFirmar(n);recordar('f',n);}).catch(()=>{});
   if(puede('avisos'))api('consent_avisos_lista',clave).then(d=>{const n=(d.pendientes||[]).length;pintarAvisos(n);recordar('a',n);}).catch(()=>{});
+  if(puede('pedidos'))api('consent_ped_lista',clave).then(d=>{const P=d.pedidos||[],c={n:P.filter(x=>['Pedido','Llegó','Avisado'].includes(x.estado)).length,l:P.filter(x=>x.estado==='Llegó').length};pintarPedidos(c);recordar('ped',c);}).catch(()=>{});
   if(puede('nota'))try{
     const n=((await api('consent_por_cobrar',clave)).consentimientos||[]).length;
     pintarCobrar(n);recordar('c',n);
