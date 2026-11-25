@@ -603,13 +603,14 @@ async function init(){
 // ── VIENE DEL CONSENTIMIENTO ────────────────────────────────────────
 // El consentimiento deja los datos en este celular (yp_handoff) y abre la nota con ?desde=consentimiento.
 async function tomarDelConsentimiento(){
-  if(!/[?&]desde=(consentimiento|expediente|pedido)/.test(location.search))return;
+  if(!/[?&]desde=(consentimiento|expediente|pedido|cita)/.test(location.search))return;
   let h=null;
   try{h=JSON.parse(localStorage.getItem('yp_handoff')||'null');}catch(e){}
   localStorage.removeItem('yp_handoff');
   history.replaceState(null,'',location.pathname);
   if(h&&h.desde==='expediente'&&h.id_clienta)return tomarDelExpediente(h);
   if(h&&h.desde==='pedido'&&h.id_pedido)return tomarDelPedido(h);
+  if(h&&h.desde==='cita'&&h.id_cita)return tomarDeCita(h);
   if(!h||h.desde!=='consentimiento')return;
   if(tabConAlgo(getTab()))addTab();   // había una nota a medias: el consentimiento va en una nota nueva
   notaCargando('Trayendo lo del consentimiento…');
@@ -659,6 +660,34 @@ async function tomarDelPedido(h){
     guardarAvanceNota();
   }catch(e){toast('⚠️ '+e.message);}
   finally{notaListo();}
+}
+// Desde Citas (25/11): "Llegó → Hacer nota" abre la nota con la clienta y el anticipo ya marcado (para que no se olvide).
+// Al registrarla, la cita queda Atendida con el número de nota.
+async function tomarDeCita(h){
+  if(tabConAlgo(getTab()))addTab();
+  notaCargando('Trayendo la cita…');
+  try{
+    const tab=getTab();tab.cita=h.id_cita;
+    if(h.id_clienta){
+      const d=await pinkApi('pink_buscar',{q:h.id_clienta});
+      const p=(d.resultados||[]).find(x=>x.id===h.id_clienta);
+      if(p)pinkAgregarPersona(p);else toast('⚠️ No encontré a '+h.id_clienta+' en el Pink Club');
+    }
+    if(Number(h.anticipo)>0){tab.anticipo_activo=true;tab.anticipo_monto=Number(h.anticipo);}
+    const txt='Cita '+h.id_cita+(h.servicio?' · '+h.servicio:'')+(Number(h.anticipo)>0?' (anticipo $'+Number(h.anticipo)+(h.forma_anticipo?' '+String(h.forma_anticipo).toLowerCase():'')+')':'');
+    tab.form.comentarios=tab.form.comentarios?tab.form.comentarios+'\n'+txt:txt;
+    if(!tab.form.nombre_clienta&&h.apodo)tab.form.nombre_clienta=h.apodo;
+    loadTabForm(tab);
+    if(h.apodo&&!h.id_clienta)onNombre(h.apodo);
+    if(h.menor)toast('Es menor de edad: debe venir con su tutor'+(h.tutor?' ('+h.tutor+')':''));
+    guardarAvanceNota();
+  }catch(e){toast('⚠️ '+e.message);}
+  finally{notaListo();}
+}
+function ligarCitaNota(tab,nota){
+  if(!tab.cita)return;
+  pinkApi('consent_cit_nota',{id:tab.cita,no_nota:nota}).then(()=>{toast('🗓️ Cita '+tab.cita+' atendida');tab.cita='';guardarAvanceNota();})
+    .catch(e=>toast('⚠️ La nota quedó, pero la cita '+tab.cita+' no se marcó atendida ('+e.message+')'));
 }
 // Al registrar la nota: el pedido queda Entregado con su número (si falla, se marca a mano en Pedidos)
 function ligarPedidoNota(tab,nota){
@@ -820,7 +849,7 @@ function onZonaTexto(id,v){const it=getTab().items.find(i=>i.id===id);if(it){it.
 
 // ── PRENOTA: la misma nota, guardada a medias ───────────────────────
 // La artista la deja lista y recepción la cobra desde Por cobrar. No cuenta como venta hasta registrarse.
-const PRENOTA_CAMPOS=['form','items','pink','emails_nota','emails_manual','manual_mismo','elaboro','consent','publico','pagosActivos','pagosMontos','anticipo_activo','anticipo_monto','pedido'];
+const PRENOTA_CAMPOS=['form','items','pink','emails_nota','emails_manual','manual_mismo','elaboro','consent','publico','pagosActivos','pagosMontos','anticipo_activo','anticipo_monto','pedido','cita'];
 async function guardarPrenota(){
   saveCurrentForm();
   const tab=getTab();
@@ -1284,7 +1313,7 @@ async function confirmarEnvio(){
   try{
     const res=await fetch(AS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),redirect:'follow'});
     const json=await res.json();
-    if(json.ok){tab.registrada=true;tab.prenota='';ligarVisitasNota(tab,json.data.nota);ligarPedidoNota(tab,json.data.nota);mostrarExito(json.data.nota,tab.emails_nota);guardarAvanceNota();}
+    if(json.ok){tab.registrada=true;tab.prenota='';ligarVisitasNota(tab,json.data.nota);ligarPedidoNota(tab,json.data.nota);ligarCitaNota(tab,json.data.nota);mostrarExito(json.data.nota,tab.emails_nota);guardarAvanceNota();}
     else throw new Error(json.error||'Error del servidor');
   }catch(e){toast('❌ Error: '+e.message);}
   finally{btn.disabled=false;btn.textContent='Registrar Nota ✨';}

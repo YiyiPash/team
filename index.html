@@ -30,6 +30,7 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
 .m-ayu{--c:#2a8f7e;--c2:#cff0e9}
 .m-conf{--c:#4b5a74;--c2:#dde3ee}
 .m-av{--c:#1f8a5b;--c2:#d3f1e2}
+.m-cit{--c:#2b72b8;--c2:#d4e6f8}
 .mod{display:grid;gap:8px}
 .mod h2{margin:10px 0 0;font-size:12.5px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:7px}
 .mod h2::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
@@ -63,6 +64,10 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
     <a class="op" href="consentimiento/" data-ver="consentimiento"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="r" x="9" y="7" width="22" height="28" rx="4"/><rect class="w" x="15" y="4.5" width="10" height="6" rx="2"/><path class="w" d="M20 27s-6-3.6-6-7.6a3.2 3.2 0 0 1 6-1.6 3.2 3.2 0 0 1 6 1.6c0 4-6 7.6-6 7.6z"/></svg></span><span><b>Generar consentimiento</b><small>Indicaciones, datos y salud de la clienta, perforación o tatuaje</small></span></a>
     <a class="op" id="opFirmar" href="consentimiento/?ver=firmar" data-ver="consentimiento"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M5 33c3-3 6 1 9-1s4-4 7-2"/><path class="r" d="M26 6.5l7.5 7.5L20 27.5l-8.5 1 1-8.5z"/><path d="M22.5 10l7.5 7.5"/></svg></span><span><b id="tFirmar">Por firmar</b><small id="sFirmar">Firma con su artista, ya con zonas y material listos</small></span></a>
     <a class="op" href="fichas.html" data-ver="fichas"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="r" x="5" y="9" width="30" height="24" rx="4"/><path d="M9 22h5l2.5-6 4.5 10 2.5-5H31"/></svg></span><span><b>Fichas del día</b><small>Salud y zonas de cada clienta, para la artista</small></span></a>
+  </section>
+  <section class="mod m-cit" aria-labelledby="mT" data-ver="citas agendar">
+    <h2 id="mT">Citas</h2>
+    <a class="op" id="opCitas" href="citas.html" data-ver="citas agendar"><span class="ic" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="r" x="6" y="8" width="28" height="26" rx="4"/><path d="M6 15h28M13 5v6M27 5v6"/><circle class="w" cx="20" cy="25" r="5.5"/><path d="M20 22.5V25l1.8 1.2"/></svg></span><span><b id="tCitas">Agenda</b><small id="sCitas">Citas del día, horarios libres y los horarios de Yol</small></span></a>
   </section>
   <section class="mod m-vent" aria-labelledby="mV" data-ver="nota panel precios catalogo pedidos">
     <h2 id="mV">Ventas</h2>
@@ -106,6 +111,7 @@ async function api(action,clave){
 }
 // La cuenta de Por cobrar se ve aquí para saber si alguien espera nota sin entrar a la nota
 const CUENTAS='yp_inicio_cuentas';
+const hoyISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
 const guardadas=()=>{try{return JSON.parse(leer(CUENTAS)||'{}')}catch(e){return {}}};
 function pintarFirmar(n){
   $('tFirmar').innerHTML='Por firmar'+(n?'<span class="cuenta">'+n+'</span>':'');
@@ -128,8 +134,14 @@ function pintarPedidos(p){
   $('sPedidos').textContent=!n?'Nada pendiente':l?(l===1?'Uno ya llegó: avísale':l+' ya llegaron: avísales')+(n>l?' · '+(n-l)+' más abiertos':''):n===1?'Un pedido por llegar o entregar':n+' pedidos por llegar o entregar';
   $('opPedidos').classList.toggle('hay',l>0);
 }
+function pintarCitas(c){
+  if(!$('tCitas')||!c)return;const h=c.hoy||0,m=c.man||0;
+  $('tCitas').innerHTML='Agenda'+(h?'<span class="cuenta">'+h+'</span>':'');
+  $('sCitas').textContent=(h?(h===1?'Una cita hoy':h+' citas hoy'):'Sin citas hoy')+' · '+(m?(m===1?'una mañana':m+' mañana'):'nada mañana');
+  $('opCitas').classList.toggle('hay',h>0);
+}
 function recordar(k,n){const g=guardadas();g[k]=n;try{localStorage.setItem(CUENTAS,JSON.stringify(g));}catch(e){}}
-{const g=guardadas();if(g.f!==undefined)pintarFirmar(g.f);if(g.c!==undefined)pintarCobrar(g.c);if(g.a!==undefined)pintarAvisos(g.a);if(g.ped)pintarPedidos(g.ped);}
+{const g=guardadas();if(g.f!==undefined)pintarFirmar(g.f);if(g.c!==undefined)pintarCobrar(g.c);if(g.a!==undefined)pintarAvisos(g.a);if(g.ped)pintarPedidos(g.ped);if(g.cit&&g.cit.f===hoyISO())pintarCitas(g.cit);}
 async function contar(){
   const clave=leer('yp_pink_clave'),s=window.YP_SESION;
   if(!clave||!s)return;
@@ -137,6 +149,8 @@ async function contar(){
   if(puede('consentimiento'))api('consent_por_firmar',clave).then(d=>{const n=(d.consentimientos||[]).length;pintarFirmar(n);recordar('f',n);}).catch(()=>{});
   if(puede('avisos'))api('consent_avisos_lista',clave).then(d=>{const n=(d.pendientes||[]).length;pintarAvisos(n);recordar('a',n);}).catch(()=>{});
   if(puede('pedidos'))api('consent_ped_lista',clave).then(d=>{const P=d.pedidos||[],c={n:P.filter(x=>['Pedido','Llegó','Avisado'].includes(x.estado)).length,l:P.filter(x=>x.estado==='Llegó').length};pintarPedidos(c);recordar('ped',c);}).catch(()=>{});
+  if(puede('citas')||puede('agendar'))fetch(AS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'consent_cit_semana',clave,desde:hoyISO(),dias:2}),redirect:'follow'}).then(r=>r.json()).then(j=>{if(!j.ok)return;
+    const n=x=>x?x.citas.filter(c=>!['No vino','Cancelada'].includes(c.estado)).length:0,c={hoy:n(j.data.dias[0]),man:n(j.data.dias[1]),f:hoyISO()};pintarCitas(c);recordar('cit',c);}).catch(()=>{});
   if(puede('nota'))try{
     const n=((await api('consent_por_cobrar',clave)).consentimientos||[]).length;
     pintarCobrar(n);recordar('c',n);

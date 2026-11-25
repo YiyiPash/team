@@ -374,7 +374,7 @@ $('fNuevo').onsubmit=async e=>{
 const checks=(sel,pre)=>D.modulos.map(m=>`<label><input type="checkbox" value="${esc(m.clave)}"${sel.includes(m.clave)?' checked':''}${pre||''}> ${esc(m.nombre)}</label>`).join('');
 function pintarTipos(){
   $('tipos').innerHTML=D.tipos.map(t=>`<div class="card" data-tipo="${esc(t.tipo)}">
-    <h2>${esc(ROL(t.tipo))}${t.tipo==='iPad'?' <span class="mu" style="font-weight:500">· se cierra tras 1 h sin uso</span>':''}</h2>
+    <h2>${esc(ROL(t.tipo))}${t.tipo==='iPad'?' <span class="mu" style="font-weight:500">· se cierra tras 6 h sin uso</span>':''}</h2>
     ${t.fijo?'<p class="mu">Ve todo, siempre. También Equipo, Accesos y Notas anteriores.</p>':`<div class="mods">${checks(t.modulos)}</div>`}
     <p class="estado" data-estado aria-live="polite"></p></div>`).join('');
   if(!$('tMods').children.length)$('tMods').innerHTML=checks([]);

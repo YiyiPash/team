@@ -3,7 +3,7 @@
 // · Se entra con Usuario (luis, yiyi, kat, ipad…) + PIN de 6 números y "Entrar". Sin botones de personas ni teclado.
 // · La clave maestra del estudio solo se pide al crear un PIN o en un aparato nuevo; al escribirla, el aparato queda registrado.
 // · Cada perfil ve los módulos de su tipo de acceso: data-ver="nota panel" sale si tiene alguno; "dueno" = solo dueños.
-// · Sin usarse: el iPad se cierra a la hora; los demás perfiles, a las 6 horas. Lo que estaba a medias no se pierde.
+// · Sin usarse: el iPad se cierra a las 6 horas; los demás perfiles, a las 48 horas (Luis, 25/11). Lo que estaba a medias no se pierde.
 // · Al entrar otra persona, siempre llega al Inicio. "Cambiar de persona" solo está en el Inicio, y pregunta antes.
 // · Toda petición al Apps Script lleva la sesión; el servidor revisa que valga y que el perfil tenga acceso.
 // · Casita: los elementos con class="yp-casita" quedan fijos arriba (los estilos van aquí para que sean iguales en todas).
@@ -13,8 +13,8 @@
   var yo = document.currentScript, PAG = (yo && yo.getAttribute('data-pagina')) || 'inicio';
   var INICIO = PAG === 'consentimiento' || PAG === 'nota' ? '../' : './';
   // Qué módulo pide cada página ('*' = todos; 'dueno' = solo dueños)
-  var PAGINAS = { inicio: '*', ayuda: '*', consentimiento: 'consentimiento', fichas: 'fichas', nota: 'nota', panel: 'panel', clientas: 'clientas', config: 'config', perfiles: 'dueno', avisos: 'avisos', ligar: 'dueno', precios: 'precios catalogo pedidos', catalogo: 'catalogo', pedidos: 'pedidos', bazar: 'pedidos precios catalogo' };
-  var HORA = 60 * 60 * 1000, LIMITE = { ipad: HORA, otro: 6 * HORA };
+  var PAGINAS = { inicio: '*', ayuda: '*', consentimiento: 'consentimiento', fichas: 'fichas', nota: 'nota', panel: 'panel', clientas: 'clientas', config: 'config', perfiles: 'dueno', avisos: 'avisos', ligar: 'dueno', precios: 'precios catalogo pedidos', catalogo: 'catalogo', pedidos: 'pedidos', bazar: 'pedidos precios catalogo', citas: 'citas agendar' };
+  var HORA = 60 * 60 * 1000, LIMITE = { ipad: 6 * HORA, otro: 48 * HORA };
   var K = { clave: 'yp_pink_clave', sesion: 'yp_sesion', act: 'yp_actividad' };
   // Sin la clave del aparato, las páginas usan esta marca: el servidor deja pasar con la sesión con PIN (Pink.gs pinkCheckClave)
   var CON_SESION = 'con-sesion-pin';
@@ -214,11 +214,11 @@
     pantallaEntrar(aviso);
   }
 
-  // ── Tiempo sin usarse: iPad 1 h, los demás 6 h ───────────────────────
+  // ── Tiempo sin usarse: iPad 6 h, los demás 48 h ───────────────────────
   var ultimo = 0;
   function actividad() { var t = Date.now(); if (t - ultimo > 20000) { ultimo = t; if (leerSesion()) ls.set(K.act, String(t)); } }
   function vencida(s) { var a = Number(ls.get(K.act)) || 0; return !!(s && a && Date.now() - a > limiteDe(s)); }
-  var avisoTiempo = function (s) { return (s && s.clave_rol === 'ipad' ? 'El iPad estuvo 1 hora' : 'El aparato estuvo 6 horas') + ' sin usarse. Lo que estaba a medias se guardó.'; };
+  var avisoTiempo = function (s) { return (s && s.clave_rol === 'ipad' ? 'El iPad estuvo 6 horas' : 'El aparato estuvo 48 horas') + ' sin usarse. Lo que estaba a medias se guardó.'; };
   function revisarHora() { var s = leerSesion(); if (s && vencida(s) && !capaAbierta()) cerrar(avisoTiempo(s)); }
   ['pointerdown', 'keydown', 'touchstart'].forEach(function (ev) { document.addEventListener(ev, actividad, { passive: true, capture: true }); });
   setInterval(revisarHora, 30000);
