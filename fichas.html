@@ -141,8 +141,8 @@ h1{font-family:var(--font);font-weight:700;font-size:23px;line-height:1.2;color:
     <div class="campo">¿Qué revisaste?<div class="checks" id="vPerfos"></div></div>
     <label class="campo">¿Qué se vio?<textarea id="vObs" rows="3" placeholder="Ej. Se colocan aros por inflamación"></textarea></label>
     <div class="campo">¿Cómo quedan?<div class="chips" id="vEstado">
-      <button class="chip" type="button" data-e="" aria-pressed="true">No cambia</button><button class="chip" type="button" data-e="Curando" aria-pressed="false">Curando</button>
-      <button class="chip" type="button" data-e="Sana" aria-pressed="false">Sana</button><button class="chip" type="button" data-e="Retirada" aria-pressed="false">Retirada</button></div></div>
+      <button class="chip" type="button" data-e="" aria-pressed="true">No cambia</button><button class="chip" type="button" data-e="Curando" aria-pressed="false">Cicatrizando</button>
+      <button class="chip" type="button" data-e="Sana" aria-pressed="false">Cicatrizado</button><button class="chip" type="button" data-e="Retirada" aria-pressed="false">Retirada</button></div></div>
     <label class="campo">Próxima acción <span style="font-weight:400">(opcional; ese día sale el recordatorio)</span><input type="text" id="vAccion" placeholder="Ej. Retiro de aros de silicón"></label>
     <div class="campo">¿En cuántos días?<div class="fila"><input type="number" id="vDias" min="1" inputmode="numeric" style="max-width:110px">
       <div class="chips" style="margin:0"><button class="chip" type="button" data-d="7">7</button><button class="chip" type="button" data-d="14">14</button><button class="chip" type="button" data-d="30">30</button></div></div></div>
@@ -350,8 +350,8 @@ function pintarExp(){
   }
   salud+=(d.actualizaciones||[]).map(a=>`<div class="act"><b>Actualización · ${esc(a.campo)}</b> <span class="estado">desde ${esc(fmtF(a.fecha))}${a.por?' · '+esc(a.por):''}</span><div>${esc(a.texto)}</div></div>`).join('')
     +(enEdicion()?'<div><button class="mini" type="button" data-ed="salud">+ Actualización de salud</button></div>':'');
-  const tats=(d.tatuajes||[]).map(x=>`<div class="perfo"><span>🖋️ ${esc(x.zona)}<small>${esc(fmtF(x.fecha))}${x.tatuadora?' · '+esc(x.tatuadora):''} · ${esc([x.dimensiones,x.color,x.tipo].filter(Boolean).join(' · '))}${x.prueba?' · alergia: '+esc(x.prueba):''}${x.no_nota?' · Nota '+esc(x.no_nota):''}</small></span><span class="est ${esc(x.estado)}">${esc(x.estado||'—')}</span></div>`).join('');
-  const perfos=d.perforaciones.map(x=>`<div class="perfo"><span>${esc(zonaTxt(x))}<small>${esc(fmtF(x.fecha))}${x.perforadora?' · '+esc(x.perforadora):''}${x.origen?' · '+esc(x.origen):''}${x.no_nota?' · Nota '+esc(x.no_nota):''}</small>${x.notas?`<small>${esc(x.notas)}</small>`:''}</span><span class="fila"><span class="est ${esc(x.estado)}">${esc(x.estado||'—')}</span>${enEdicion()?`<button class="mini" type="button" data-ed="perfo|${esc(x.id)}">Editar</button>`:''}</span></div>`).join('')||'<p class="estado">Sin perforaciones registradas.</p>';
+  const tats=(d.tatuajes||[]).map(x=>`<div class="perfo"><span>🖋️ ${esc(x.zona)}<small>${esc(fmtF(x.fecha))}${x.tatuadora?' · '+esc(x.tatuadora):''} · ${esc([x.dimensiones,x.color,x.tipo].filter(Boolean).join(' · '))}${x.prueba?' · alergia: '+esc(x.prueba):''}${x.no_nota?' · Nota '+esc(x.no_nota):''}</small></span><span class="est ${esc(x.estado)}">${esc(estTxt(x.estado))}</span></div>`).join('');
+  const perfos=d.perforaciones.map(x=>`<div class="perfo"><span>${esc(zonaTxt(x))}<small>${esc(fmtF(x.fecha))}${x.perforadora?' · '+esc(x.perforadora):''}${x.origen?' · '+esc(x.origen):''}${x.no_nota?' · Nota '+esc(x.no_nota):''}</small>${x.notas?`<small>${esc(x.notas)}</small>`:''}</span><span class="fila"><span class="est ${esc(x.estado)}">${esc(estTxt(x.estado))}</span>${enEdicion()?`<button class="mini" type="button" data-ed="perfo|${esc(x.id)}">Editar</button>`:''}</span></div>`).join('')||'<p class="estado">Sin perforaciones registradas.</p>';
   // Línea de tiempo: consentimientos y visitas, lo más nuevo arriba
   const todos=[...d.perforaciones,...(d.tatuajes||[]).map(t=>({...t,zona:'Tatuaje en '+t.zona,lado:''}))];
   const zonas=ids=>ids.split(',').map(s=>s.trim()).map(i=>todos.find(x=>x.id===i)).filter(Boolean).map(zonaTxt).join(', ');
@@ -364,7 +364,7 @@ function pintarExp(){
     ...d.visitas.map(v=>({k:v.fecha+v.hora,h:`<div class="ev"><b>🩺 ${esc(v.tipo)}</b> <span class="f">${esc(fmtF(v.fecha))} ${esc(v.hora)}${v.atendio?' · '+esc(v.atendio):''}</span>
       ${v.perfos?`<div class="f">${esc(zonas(v.perfos))}</div>`:''}
       ${v.obs?`<div>${esc(v.obs)}</div>`:''}
-      ${v.estado?`<div class="f">Queda: <span class="est ${esc(v.estado)}">${esc(v.estado)}</span></div>`:''}
+      ${v.estado?`<div class="f">Queda: <span class="est ${esc(v.estado)}">${esc(estTxt(v.estado))}</span></div>`:''}
       ${v.accion?`<div class="prox">⏰ ${esc(v.accion)} · ${esc(fmtF(v.fecha_accion))}</div>`:''}
       ${enEdicion()?`<div style="margin-top:6px"><button class="mini" type="button" data-ed="visita|${esc(v.id)}">Editar visita</button></div>`:''}
       ${v.fotos.length?`<div class="thumbs">${v.fotos.map(f=>f.mini?`<img src="${esc(f.mini)}" data-foto="${esc(f.id)}" alt="Foto de evolución">`
@@ -440,6 +440,10 @@ $('vGuardar').onclick=async()=>{
 const ED={clave:'',por:'',form:null};
 const LADOS=['','Izquierdo','Derecho','Centro'];
 const ESTADOS=['Curando','Sana','Retirada'];
+// 27/11: en las hojas sigue Curando / Sana / Retirada; aquí solo cambia lo que se ve (Luis)
+const ESTADO_TXT={Curando:'Cicatrizando',Sana:'Cicatrizado',Retirada:'Retirada'};
+const estTxt=e=>ESTADO_TXT[e]||e||'—';
+const ESTADOS_OPS=ESTADOS.map(e=>[e,ESTADO_TXT[e]]);
 const enEdicion=()=>!!ED.clave;
 function salirEdicion(){ED.clave='';ED.por='';ED.form=null;$('edAviso').hidden=true;$('edForm').hidden=true;$('btnEditar').hidden=!esDueno();$('btnAnotar').hidden=false;$('btnNota').hidden=!!E.nota;if(E.d)pintarExp();}
 $('btnEditar').onclick=()=>{
@@ -506,7 +510,7 @@ function edPerfoNueva(){
   abrirForm('Perforación de otro estudio',[
     {k:'zona',t:'text',l:'Zona',ph:'Ej. Helix'},{k:'lado',t:'sel',l:'Lado',ops:LADOS},
     {k:'fecha',t:'date',l:'¿Cuándo se la hizo? (aproximado está bien)'},{k:'estudio',t:'text',l:'¿Dónde?',ph:'Ej. Estudio en CDMX',opc:true},
-    {k:'estado',t:'sel',l:'¿Cómo está hoy?',ops:ESTADOS,v:'Curando'},{k:'notas',t:'area',l:'Notas',ph:'Ej. Llegó con pieza de mala calidad',opc:true}],
+    {k:'estado',t:'sel',l:'¿Cómo está hoy?',ops:ESTADOS_OPS,v:'Curando'},{k:'notas',t:'area',l:'Notas',ph:'Ej. Llegó con pieza de mala calidad',opc:true}],
     v=>edApi('perfo_nueva',v));
   ED.form.nuevo=true;
 }
@@ -514,7 +518,7 @@ function edPerfo(id){
   const x=E.d.perforaciones.find(p=>p.id===id);if(!x)return;
   abrirForm('Editar perforación · '+zonaTxt(x),[
     {k:'fecha',t:'date',l:'Fecha',v:x.fecha},{k:'zona',t:'text',l:'Zona',v:x.zona},{k:'lado',t:'sel',l:'Lado',ops:LADOS,v:x.lado},
-    {k:'estado',t:'sel',l:'Estado',ops:ESTADOS,v:x.estado},{k:'notas',t:'area',l:'Notas',v:x.notas,opc:true}],
+    {k:'estado',t:'sel',l:'Estado',ops:ESTADOS_OPS,v:x.estado},{k:'notas',t:'area',l:'Notas',v:x.notas,opc:true}],
     v=>edApi('perfo_editar',Object.assign({id},v)));
   ED.form.nuevo=false;
 }
@@ -523,7 +527,7 @@ function edVisitaNueva(){
     {k:'fecha',t:'date',l:'Fecha de la visita'},{k:'hora',t:'time',l:'Hora',opc:true},
     {k:'tipo',t:'sel',l:'Tipo de visita',ops:E.d.tipos,v:E.d.tipos[0]},{k:'perfos',t:'checks',l:'¿Qué se revisó?',ops:opsPerfos(),v:[]},
     {k:'obs',t:'area',l:'¿Qué se vio o qué se hizo?',ph:'Ej. Se cambió la pieza por titanio'},
-    {k:'estado',t:'sel',l:'¿Cómo quedó?',ops:[['','No cambia'],...ESTADOS.map(e=>[e,e])],v:''},
+    {k:'estado',t:'sel',l:'¿Cómo quedó?',ops:[['','No cambia'],...ESTADOS_OPS],v:''},
     {k:'fotos',t:'file',l:'Fotos de ese día',opc:true}],
     async v=>{const fotos=v.fotos;delete v.fotos;
       const r=await edApi('visita_nueva',Object.assign({atiende:{id:'',alias:ED.por}},v));
@@ -540,7 +544,7 @@ function edVisita(id){
     {k:'fecha',t:'date',l:'Fecha',v:v.fecha},{k:'tipo',t:'sel',l:'Tipo de visita',ops:tipos,v:v.tipo},
     {k:'perfos',t:'checks',l:'¿Qué se revisó?',ops:opsPerfos(),v:[...new Set(ids)]},
     {k:'obs',t:'area',l:'Observaciones',v:v.obs},
-    {k:'estado',t:'sel',l:'¿Cómo quedó?',ops:[['','Sin dato'],...ESTADOS.map(e=>[e,e])],v:v.estado}],
+    {k:'estado',t:'sel',l:'¿Cómo quedó?',ops:[['','Sin dato'],...ESTADOS_OPS],v:v.estado}],
     x=>edApi('visita_editar',Object.assign({id},x)));
   ED.form.nuevo=false;
 }

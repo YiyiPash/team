@@ -108,7 +108,9 @@ label.l{display:grid;gap:4px;font-size:13px;font-weight:700;color:var(--mu)}
       <div id="cliManual" class="dos" hidden>
         <label class="l" for="fNombre">Nombre<input id="fNombre" maxlength="80" autocomplete="off"></label>
         <label class="l" for="fWa">WhatsApp (10 números)<input id="fWa" inputmode="tel" maxlength="14" autocomplete="off"></label>
+        <button class="link" type="button" id="cliLigar">🔎 Ya está registrada: buscarla por nombre o ID</button>
       </div>
+      <p class="mu" id="cliNota" hidden>Su nombre y su WhatsApp salen de su registro.</p>
     </div>
     <label class="l" for="fDesc">¿Qué pidió?<textarea id="fDesc" maxlength="300" placeholder="Ej. Shinny igual a la de su perforación, dorada"></textarea></label>
     <label class="l" for="fSku">Del catálogo (opcional)<select id="fSku"><option value="">No está en el catálogo / no sé</option></select></label>
@@ -179,6 +181,7 @@ function abrir(id){
   const abierto=['Pedido','Llegó','Avisado'].includes(p.estado);
   $('vIn').innerHTML=`<h2 id="vTit">${esc(p.id)} · ${esc(p.nombre)}</h2>
     <p class="mu">${p.id_clienta?esc(p.id_clienta)+' · ':''}pidió el ${fechaTxt(p.fecha)}${p.lugar?' en '+esc(p.lugar):''}${p.registro_por?' · lo anotó '+esc(p.registro_por):''}</p>
+    <button class="btn sec" type="button" data-acc="editar">✏️ Editar pedido</button>
     ${p.estado==='Cancelado'?'<p class="err">Cancelado</p>':`<div class="pasos">${orden.map((e,k)=>`<span class="paso${k<i?' ya':k===i?' hoy':''}">${e}</span>`).join('')}</div>`}
     <p style="margin:0;font-size:16px">${esc(p.descripcion)}</p>
     <div class="fotos" id="vFotos">${p.fotos.map(f=>`<span class="foto" data-ver="${f}">${minis[f]?`<img alt="Foto de referencia" src="${minis[f]}">`:'Foto'}${abierto?`<button class="x" type="button" data-quitar="${f}" aria-label="Quitar foto">×</button>`:''}</span>`).join('')}</div>
@@ -191,7 +194,7 @@ function abrir(id){
     <p class="err" id="vErr" hidden></p>
     ${abierto?`<div class="btns">${p.estado==='Pedido'?'<button class="btn verde" type="button" data-acc="llego">Ya llegó</button>':'<span></span>'}<button class="btn wa" type="button" data-acc="avisar">💬 Avisarle</button></div>
       <button class="btn oro" type="button" data-acc="cobrar">🧾 Cobrar en nota${p.anticipo?' (resta '+pesos(p.anticipo)+')':''}</button>
-      <div class="btns"><button class="btn sec" type="button" data-acc="editar">Corregir</button><button class="btn baja" type="button" data-acc="cancelar">Cancelar pedido</button></div>
+      <button class="btn baja" type="button" data-acc="cancelar">Cancelar pedido</button>
       <button class="link" type="button" data-acc="entregado">Ya se entregó (con otra nota o sin nota)</button>`
      :`<button class="link" type="button" data-acc="reabrir">Regresarlo a "${p.estado==='Cancelado'?'Pedido':'Avisado'}" (si se marcó por error)</button>`}
     <button class="btn sec" type="button" data-acc="cerrar">Cerrar</button>`;
@@ -225,7 +228,7 @@ $('vIn').addEventListener('click',async e=>{
     try{localStorage.setItem('yp_handoff',JSON.stringify({desde:'pedido',id_pedido:V.id,id_clienta:V.id_clienta,apodo:V.nombre,sku:V.sku,descripcion:V.descripcion,precio:V.precio,anticipo:V.anticipo,forma_anticipo:V.forma_anticipo}));}catch(x){}
     location.href='nota/?desde=pedido';return;
   }
-  if(a==='editar'){cerrarVer();return abrirForm(V);}
+  if(a==='editar'){const p=V;cerrarVer();return abrirForm(p);}   // antes se perdía el pedido (V=null) y abría uno nuevo
   if(a==='cancelar')return vConf('<b>¿Cancelar '+esc(V.id)+'?</b><label class="l" for="cMot">¿Por qué?<input id="cMot" maxlength="200" placeholder="Ej. ya no lo quiso"></label>'+(V.anticipo?'<p class="mu">Ojo: dejó '+pesos(V.anticipo)+' de anticipo. Acuerden si se devuelve.</p>':''),
     ()=>{const m=$('cMot').value.trim();if(!m){vError('Escribe por qué se cancela.');return;}cambiar('consent_ped_estado',{estado:'Cancelado',motivo:m},'Cancelando…','Pedido '+V.id+' cancelado.');});
   if(a==='entregado')return vConf('<b>¿Ya se entregó?</b><label class="l" for="cNota">Número de nota (si hubo)<input id="cNota" placeholder="D-0200"></label>',
@@ -241,8 +244,8 @@ $('hVer').addEventListener('click',e=>{if(e.target.id==='hVer')cerrarVer();});
 
 // ── Nuevo / corregir ──
 async function abrirForm(p){
-  F={id:p?p.id:'',cli:p&&p.id_clienta?{id:p.id_clienta,apodo:p.nombre}:null};
-  $('fTit').textContent=p?'Corregir '+p.id:'Nuevo pedido';
+  F={id:p?p.id:'',lugar:p?p.lugar:'',cli:p&&p.id_clienta?{id:p.id_clienta,apodo:p.nombre}:null};
+  $('fTit').textContent=p?'Editar '+p.id:'Nuevo pedido';
   $('fErr').hidden=true;$('cliQ').value='';$('cliRes').innerHTML='';
   $('fNombre').value=p&&!p.id_clienta?p.nombre:'';$('fWa').value=p?p.whatsapp:'';
   $('fDesc').value=p?p.descripcion:'';$('fPrecio').value=p&&p.precio!==''?p.precio:'';$('fNota').value=p?p.no_nota_pedido:'';
@@ -256,7 +259,7 @@ async function abrirForm(p){
 }
 function pintarCli(modo){
   $('cliElegida').hidden=!F.cli;$('cliTxt').textContent=F.cli?F.cli.apodo+' · '+F.cli.id:'';
-  $('cliBuscar').hidden=!!F.cli||modo==='manual';$('cliManual').hidden=!!F.cli||modo!=='manual';
+  $('cliBuscar').hidden=!!F.cli||modo==='manual';$('cliManual').hidden=!!F.cli||modo!=='manual';$('cliNota').hidden=!F.cli;
 }
 let tBus=null;
 $('cliQ').addEventListener('input',()=>{clearTimeout(tBus);const q=$('cliQ').value.trim();if(q.length<2){$('cliRes').innerHTML='';return;}
@@ -265,6 +268,7 @@ $('cliQ').addEventListener('input',()=>{clearTimeout(tBus);const q=$('cliQ').val
     catch(x){$('cliRes').innerHTML='<p class="err">'+esc(msg(x.message))+'</p>';}},350);});
 $('cliRes').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(!b)return;F.cli={id:b.dataset.id,apodo:b.dataset.apodo};pintarCli('');});
 $('cliQuitar').onclick=()=>{F.cli=null;pintarCli('');$('cliQ').focus();};
+$('cliLigar').onclick=()=>{pintarCli('');$('cliQ').value=$('fNombre').value.trim();$('cliQ').focus();$('cliQ').select();$('cliQ').dispatchEvent(new Event('input'));};
 $('cliSinId').onclick=()=>{pintarCli('manual');$('fNombre').value=$('cliQ').value.trim();$('fNombre').focus();};
 $('fSku').addEventListener('change',()=>{const x=(CAT.productos||[]).find(p=>p.codigo===$('fSku').value);if(x){if(!$('fPrecio').value)$('fPrecio').value=x.precio;if(!$('fDesc').value.trim())$('fDesc').value=x.nombre;}});
 $('fCancelar').onclick=()=>{$('hForm').hidden=true;};
@@ -273,7 +277,7 @@ $('form').addEventListener('submit',async e=>{
   e.preventDefault();const err=m=>{$('fErr').textContent=msg(m);$('fErr').hidden=false;};$('fErr').hidden=true;
   const pedido={id_clienta:F.cli?F.cli.id:'',nombre:F.cli?'':$('fNombre').value.trim(),whatsapp:F.cli?'':$('fWa').value.trim(),descripcion:$('fDesc').value.trim(),
     sku:$('fSku').value,precio:$('fPrecio').value.trim(),anticipo:$('fAnt').value.trim(),forma_anticipo:$('fForma').value,no_nota_pedido:$('fNota').value.trim(),
-    lugar:leer('yp_lugar'),notas:$('fNotas').value.trim()};
+    lugar:F.id?F.lugar:leer('yp_lugar'),notas:$('fNotas').value.trim()};
   if(!pedido.id_clienta&&!pedido.nombre)return err('Busca a la clienta o escribe su nombre.');
   if(!pedido.descripcion){$('fDesc').focus();return err('Escribe qué pidió.');}
   if(Number(pedido.anticipo)>0&&!pedido.forma_anticipo){$('fForma').focus();return err('¿Cómo pagó el anticipo?');}
@@ -282,7 +286,7 @@ $('form').addEventListener('submit',async e=>{
     let r=await api('consent_ped_guardar',{id:F.id,pedido},'Guardando el pedido…');
     for(const f of fotos)r=await api('consent_ped_foto',{id:r.guardado,foto:await reducir(f)},'Subiendo la foto…');
     D=r;$('hForm').hidden=true;estado=D.pedidos.find(p=>p.id===r.guardado)?.estado||estado;pintar();
-    okMsg((F.id?'Corregido ✓ ':'Pedido anotado ✓ ')+r.guardado);scrollTo(0,0);
+    okMsg((F.id?(r.sin_cambios?'Sin cambios en ':'Guardado ✓ '):'Pedido anotado ✓ ')+r.guardado);scrollTo(0,0);
   }catch(x){err(x.message);}
 });
 function reducir(file){return new Promise((ok,no)=>{const img=new Image(),u=URL.createObjectURL(file);

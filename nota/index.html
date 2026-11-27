@@ -1416,7 +1416,7 @@ function pintarVisitaNota(){
       <label>Tipo de visita<select id="vnTipo">${d.tipos.map(t=>`<option>${esc(t)}</option>`).join('')}</select></label>
       <div class="vn-l">¿Qué se revisó?<div class="vn-checks">${items.length?items.map(x=>`<label><input type="checkbox" value="${esc(x.id)}"${activas.includes(x)?' checked':''}> ${esc(zonaTxt_VN(x))} <small>(${esc(fmtF_VN(x.fecha))})</small></label>`).join(''):'<span class="vn-mu">Sin perforaciones registradas.</span>'}</div></div>
       <label>¿Qué se hizo o qué se propuso?<textarea id="vnObs" rows="3" placeholder="Ej. Se cambió la pieza por titanio; se propone downsize en 15 días"></textarea></label>
-      <div class="vn-l">¿Cómo quedan?<div class="vn-chips" id="vnEstado">${[['','No cambia'],['Curando','Curando'],['Sana','Sana'],['Retirada','Retirada']].map(([v,t])=>`<button type="button" class="vn-chip" data-e="${v}" aria-pressed="${v===''}">${t}</button>`).join('')}</div></div>
+      <div class="vn-l">¿Cómo quedan?<div class="vn-chips" id="vnEstado">${[['','No cambia'],['Curando','Cicatrizando'],['Sana','Cicatrizado'],['Retirada','Retirada']].map(([v,t])=>`<button type="button" class="vn-chip" data-e="${v}" aria-pressed="${v===''}">${t}</button>`).join('')}</div></div>
       <label>Próxima acción <small>(opcional; ese día sale el recordatorio)</small><input type="text" id="vnAccion" placeholder="Ej. Revisión de downsize"></label>
       <label>¿En cuántos días?<input type="number" id="vnDias" min="1" inputmode="numeric" style="max-width:120px"></label>
       <label>Fotos de evolución <small>(privadas, solo para el equipo)</small><input type="file" id="vnFotos" accept="image/*" multiple></label>
